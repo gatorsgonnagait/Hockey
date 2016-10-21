@@ -10,7 +10,6 @@ import java.awt.*;
 
 public abstract class MovingObject extends JComponent {
 
-
     Point   location;
     double     speed;
     double  angle;

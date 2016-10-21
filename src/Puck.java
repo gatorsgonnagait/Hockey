@@ -12,6 +12,8 @@ public class Puck extends MovingObject {
 
     int postTimer = 0;
     int hold = 0;
+    boolean behindNet = false;
+
     double frictionCoefficient = .95;
     public Puck(int id, Point point, int speed, double angle, int radius, Color color) {
         super(id, point, speed, angle, radius, color);
@@ -19,6 +21,7 @@ public class Puck extends MovingObject {
         dummy_radius = radius + adjustment;
 
     }
+
 
 
     @Override
@@ -32,18 +35,37 @@ public class Puck extends MovingObject {
         positionCalculation(angle);
     }
 
+    public void behindNet(){
+        /*if( (location.x < leftGoalLine && location.y < topGoalPost )
+            ||(location.x < leftGoalLine  && location.y > bottomGoalPost)
+            ||(location.x <= leftGoalBack && location.y > topGoalPost && location.y < bottomGoalPost)
+            ||(location.x > rightGoalLine && location.y < topGoalPost)
+            ||(location.x > rightGoalLine  && location.y > bottomGoalPost)
+            ||(location.x > rightGoalBack && location.y > topGoalPost && location.y < bottomGoalPost) ){
 
+            behindNet = true;
+        }
+        else
+            behindNet = false;*/
+
+        if(location.x < leftGoalLine + dummy_radius && location.x > rightGoalLine - dummy_radius){
+            behindNet = false;
+        }
+        else{
+            behindNet = true;
+        }
+
+
+    }
 
     public boolean goalScoredLeft(){
         if(location.x > leftGoalBack
-                && location.x < leftGoalLine
-                && location.y  - dummy_radius > topGoalPost
-                && location.y  + dummy_radius< bottomGoalPost ){
-            System.out.println("test");
+                && location.x + radius< leftGoalLine
+                && location.y - dummy_radius > topGoalPost
+                && location.y  + dummy_radius < bottomGoalPost ){
+
+
             setSpeed(0);
-
-            //Player.release = 0;
-
             return true;
         }
         return false;
@@ -51,11 +73,11 @@ public class Puck extends MovingObject {
 
     public boolean goalScoredRight(){
         if(location.x < rightGoalBack
-                && location.x > rightGoalLine
+                && location.x - radius > rightGoalLine
                 && location.y - dummy_radius > topGoalPost
                 && location.y + dummy_radius < bottomGoalPost ){
-            setSpeed(0);
 
+            setSpeed(0);
             return true;
         }
         return false;
@@ -63,21 +85,15 @@ public class Puck extends MovingObject {
 
 
     public void reflection(double angle, int n){
-        //System.out.println(getPoint());
 
         double reflectAngle =0;
-
         if(n == 1){
-
-            reflectAngle = (-1) * angle + Math.PI;
+            reflectAngle = (-1) * angle + Math.PI; //verstical walls
         }
         else if(n == 2){
-
-            reflectAngle = (-1)*angle;
-            //System.out.println("reflect angle " + reflectAngle);
+            reflectAngle = (-1)*angle;//horizontal angle
         }
         setAngle(reflectAngle);
-
     }
 
     double reflectionAngleWithTangent(Point center){
@@ -107,14 +123,7 @@ public class Puck extends MovingObject {
     public void hitWalls(){
 
 
-        double distanceFromLeftTopPost = Math.sqrt(Math.pow((leftGoalLine - location.x), 2)
-                + Math.pow((topGoalPost + adjustment - location.y), 2));
-        double distanceFromLeftBottomPost = Math.sqrt(Math.pow((leftGoalLine - location.x), 2)
-                + Math.pow((bottomGoalPost - adjustment - location.y), 2));
-        double distanceFromRightTopPost = Math.sqrt(Math.pow((rightGoalLine - location.x), 2)
-                + Math.pow((topGoalPost + adjustment - location.y), 2));
-        double distanceFromRightBottomPost = Math.sqrt(Math.pow((rightGoalLine - location.x), 2)
-                + Math.pow((bottomGoalPost - adjustment - location.y), 2));
+
 
         if(location.x <= leftBoundary + dummy_radius) {
             location.x = leftBoundary + dummy_radius;
@@ -176,56 +185,112 @@ public class Puck extends MovingObject {
 
 
 
-        // Left goal post
-        if(location.x < leftGoalLine && location.y < topGoalPost){
-            if(location.y >= topGoalPost- dummy_radius && location.x > leftGoalBack){
+
+
+    }
+
+    public void hitGoals(){
+
+        //inside goal posts
+
+
+        if( (location.x < leftGoalLine && location.x > leftGoalBack && location.y < topGoalPost )
+                || (location.x > rightGoalLine && location.x < rightGoalBack && location.y < topGoalPost) ){//top of left/right goal
+
+            //System.out.println("top region");
+            if(location.y >= topGoalPost - dummy_radius){
+                location.y = topGoalPost - dummy_radius;
+                //System.out.println("top");
                 reflection(angle, 2);
             }
         }
-        else if(location.x < leftGoalLine  && location.y > bottomGoalPost){
-            if(location.y <= bottomGoalPost+ dummy_radius && location.x > leftGoalBack){
+        else if( (location.x < leftGoalLine  && location.x > leftGoalBack && location.y > bottomGoalPost )
+                || (location.x > rightGoalLine  && location.x < rightGoalBack && location.y > bottomGoalPost ) ){//bottom of left/ right goal
+
+            //System.out.println("bottom region");
+            if(location.y <= bottomGoalPost + dummy_radius ){
+
+                location.y = bottomGoalPost + dummy_radius;
                 reflection(angle, 2);
             }
         }
-        else if(location.x < leftGoalBack && location.y > topGoalPost &&
-                location.y < bottomGoalPost){
-            if(location.x >= leftGoalBack- dummy_radius)
-                reflection(angle, 1);
-        }
-        // Right Goal post
-        else if(location.x > rightGoalLine && location.y < topGoalPost){
-            if(location.y >= topGoalPost- dummy_radius && location.x < rightGoalBack){
-                reflection(angle, 2);
-            }
-        }
-        else if(location.x > rightGoalLine  && location.y > bottomGoalPost){
-            if(location.y <= bottomGoalPost+ dummy_radius && location.x < rightGoalBack){
-                reflection(angle, 2);
-            }
-        }
-        else if(location.x > rightGoalBack && location.y > topGoalPost &&
-                location.y < bottomGoalPost){
-            if(location.x <= rightGoalBack+ dummy_radius)
-                reflection(angle, 1);
-        }
-        // hit the post,,aa
-        else if((distanceFromLeftBottomPost < dummy_radius
-                || distanceFromLeftTopPost < dummy_radius
-                || distanceFromRightBottomPost < dummy_radius
-                || distanceFromRightTopPost < dummy_radius )
-                && (location.x - dummy_radius - 2 > leftGoalLine || location.x + dummy_radius + 2 < rightGoalLine ) && postTimer > 5){
 
 
 
-            System.out.println("hit post");
-            setAngle((-1) * angle + Math.PI);
+        else if(location.y > topGoalPost  && location.y < bottomGoalPost ) {
+
+            if( (location.x  < leftGoalLine && location.x > leftGoalBack ) || ( location.x > rightGoalLine && location.x < rightGoalBack) ) {
+
+                if(location.y <= topGoalPost + 11) {
+                    //System.out.println("noooo");
+                    location.y = topGoalPost +11;
+                    reflection(angle, 2);
+                    //speed = speed/2;
+
+
+                }
+                else if(location.y >= bottomGoalPost - 11){
+                    location.y = bottomGoalPost - 11;
+                    reflection(angle, 2);
+                    //speed = speed/2;
+                }
+
+            }
+            else if(location.x < leftGoalBack ){//back of left goal
+                    //System.out.println("back");
+                if(location.x >= leftGoalBack - 11) {
+                    location.x = leftGoalBack -11;
+                    reflection(angle, 1);
+                }
+            }
+            else if(location.x > rightGoalBack ){//back of right goal
+                //System.out.println("back");
+                if(location.x <= rightGoalBack + 11) {
+
+                    location.x = rightGoalBack + 11;
+                    reflection(angle, 1);
+                }
+            }
+
+
+        }
+
+
+        hitPosts();
+
+    }
+
+
+
+
+    public void hitPosts(){
+        double distanceFromLeftTopPost = Math.sqrt(Math.pow((leftGoalLine - location.x), 2)
+                + Math.pow((topGoalPost  - (location.y + adjustment)), 2));
+        double distanceFromLeftBottomPost = Math.sqrt(Math.pow((leftGoalLine - location.x), 2)
+                + Math.pow((bottomGoalPost - location.y), 2));
+
+        double distanceFromRightTopPost = Math.sqrt(Math.pow((rightGoalLine - location.x), 2)
+                + Math.pow((topGoalPost + adjustment - location.y), 2));
+        double distanceFromRightBottomPost = Math.sqrt(Math.pow((rightGoalLine - location.x), 2)
+                + Math.pow((bottomGoalPost - adjustment - location.y), 2));
+
+        // hit the post
+        if((distanceFromLeftBottomPost < radius
+                || distanceFromLeftTopPost < radius
+                || distanceFromRightBottomPost < radius
+                || distanceFromRightTopPost < radius )
+                && (location.x - dummy_radius > leftGoalLine || location.x + dummy_radius < rightGoalLine ) && postTimer > 5){
+
+            reflection(angle, 1);
+            // vertical reflection
             postTimer = 0;
-
 
         }
         postTimer++;
 
+
     }
+
 
     public void goalEdges(){
 

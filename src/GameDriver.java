@@ -35,21 +35,27 @@ public class GameDriver {
 
 
 
-   // Component.Identifier componentIdentifier = component.getIdentifier();
+
+    // Component.Identifier componentIdentifier = component.getIdentifier();
 
     private void searchForControllers() {
+        //mouse pad is automatically allowed
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
 
+        System.out.println(controllers.length);
         for(int i = 0; i < controllers.length; i++){
             controller = controllers[i];
 
-            if (controller.getType() == net.java.games.input.Controller.Type.GAMEPAD ) {
+            if (controller.getType() == Controller.Type.GAMEPAD ) {
                 // Add new controller to the list of all controllers.
                 foundControllers.add(controller);
-
+                System.out.println(foundControllers.get(0));
+                System.out.println(foundControllers.get(0).getPortNumber());
+                System.out.println("controller is plugged in ");
                 // Add new controller to the list on the window.
                 //window.addControllerName(controller.getName() + " - " + controller.getType().toString() + " type");
             }
+
 
         }
         //System.out.println(foundControllers);
@@ -58,20 +64,16 @@ public class GameDriver {
 
 
     public GameDriver(){
-        ui      = new UI("Hockey");
+        ui = new UI("Hockey");
 
-
-        // Moving objects
         puck = new Puck(0,new Point(500, 275), 0, 0, 8, Color.BLACK);
 
 
-        // CREATING PLAYERS AND GOALIES mmm
-
-        p1   = new Player(1,new Point(480, 275), 3, 3*Math.PI - 0.523599, 12, Color.RED, puck);
-        p2   = new Player(2,new Point(690, 370), 0, 3*Math.PI - 0.523599, 12, Color.GREEN, puck);
-        p3   = new Player(3,new Point(320, 170), 3, 4*Math.PI - 0.523599, 12, Color.MAGENTA, puck);
-        p4   = new Player(4,new Point(530, 275), 3, 4*Math.PI - 0.523599, 12, Color.BLUE, puck);
-        g1   = new Goalie1(5,new Point(190+20, 275), 3, 4*Math.PI - 0.523599, 10, Color.LIGHT_GRAY, puck);
+        p1   = new Player(1,new Point(480, 275), 0, 0, 12, Color.RED, puck);
+        p2   = new Player(2,new Point(320, 170), 0, 0, 12, Color.ORANGE, puck);
+        p3   = new Player(3,new Point(530, 275), 0, Math.PI, 12, Color.CYAN, puck);
+        p4   = new Player(4,new Point(690, 370), 0, Math.PI, 12, Color.GREEN, puck);
+        g1   = new Goalie1(5,new Point(190+20, 275), 3, 0, 10, Color.LIGHT_GRAY, puck);
         g2   = new Goalie2(6,new Point(810-20, 275), 3, Math.PI, 10, Color.LIGHT_GRAY, puck);
 
         Rink.selectedPlayer = p1;
@@ -79,24 +81,30 @@ public class GameDriver {
         Rink.selectedPlayer3 = p3;
         Rink.selectedPlayer4 = p4;
 
-
         searchForControllers();
 
 
+
+
         if(!foundControllers.isEmpty()){
-            rink    = new Rink(foundControllers.get(0));
+            Rink.selectedPlayer.controller = foundControllers.get(0);
+
+            //Rink.selectedPlayer2.controller = foundControllers.get(1);
+
+            rink = new Rink();
+            //rink    = new Rink(foundControllers.get(0));
         }
         else{
             rink = new Rink();
         }
 
+
         rink.addKeys();
         //s1.setPlayer(p1);
-        // GIVING PUCK REFERENCE TO GOALIES
-        //g1.setPuck(puck);
-        //g2.setPuck(puck);
+
 
         // ADDING OBJECTS TO THE RINK
+        System.out.println("test2");
         rink.add(p1);
         rink.add(p2);
         rink.add(p3);
@@ -113,8 +121,7 @@ public class GameDriver {
 
 
         rink.addMouseMotionListener(rink);
-
-       // rink.addKeyListener(rink);
+        // rink.addKeyListener(rink);
     }
 
     private class KBListener implements KeyListener {
@@ -176,3 +183,4 @@ public class GameDriver {
 
 
 }
+

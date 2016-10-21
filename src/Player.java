@@ -1,4 +1,12 @@
+import net.java.games.input.*;
+
+import javax.swing.*;
 import java.awt.*;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -8,8 +16,7 @@ import java.util.LinkedList;
  * @version 1
  */
 
-public class Player extends MovingObject{
-
+public class Player extends MovingObject {
 
     Color teamColor;
     Puck puck;
@@ -34,14 +41,43 @@ public class Player extends MovingObject{
     double tempSpeed;
     double tempAngle;
     double frictionCoefficient = .8;
+    int startX;
+    int startY;static int i = 0;
+
+    Controller controller;
+    int xAxisPercentage = 0;
+    int yAxisPercentage = 0;
+    String buttonIndex = "";
+    double initAngle;
+
+    MouseEvent e = null;
+    boolean dragged = false;
+    static boolean moved = false;
 
     public Player(int id, Point point, int speed, double angle, int radius, Color color, Puck puck) {
         super(id, point, speed, angle, radius, color);
         this.teamColor = color;
         this.puck = puck;
         this.stick = new Stick(20);
-        dummy_radius = stick.length;
+        dummy_radius = stick.length + adjustment;
+        startX = point.x;
+        startY = point.y;
+        initAngle = angle;
     }
+
+    public Player(int id, Point point, int speed, double angle, int radius, Color color, Puck puck, Controller c) {
+        super(id, point, speed, angle, radius, color);
+        this.teamColor = color;
+        this.puck = puck;
+        this.stick = new Stick(20);
+        dummy_radius = stick.length + adjustment;
+        startX = point.x;
+        startY = point.y;
+        initAngle = angle;
+        controller = c;
+    }
+
+
 
 
     public void setPuck(Puck pk){
@@ -56,6 +92,86 @@ public class Player extends MovingObject{
         g2d.fillOval(location.x - radius, location.y - radius, radius*2, radius*2); // i think this is right
     }
 
+    public int getAxisValueInPercentage(float axisValue) {
+        return (int)(((2 - (1 - axisValue)) * 100) / 2);
+    }
+
+    public void gamepad(){
+
+        // Currently selected controller.
+        //int selectedControllerIndex = window.getSelectedControllerName();
+        //Controller controller = foundControllers.get(selectedControllerIndex);
+
+        controller.poll();
+        net.java.games.input.Component[] components = controller.getComponents();
+
+        buttonInputLimitFrames++;
+
+        for(int i=0; i < components.length; i++) {
+            //System.out.println(components[i].getName());
+            net.java.games.input.Component component = components[i];
+            net.java.games.input.Component.Identifier componentIdentifier = component.getIdentifier();
+
+            if (componentIdentifier.getName().matches("^[0-9]*$")) { // If the component identifier name contains only numbers, then this is a button.
+                // Is button pressed?
+                boolean isItPressed = true;
+                if (component.getPollData() == 0.0f) {
+                    isItPressed = false;
+                }
+                else{
+                    buttonIndex = component.getIdentifier().toString();
+                    buttonActions();
+                    //System.out.println(buttonIndex);
+
+                }
+                continue;
+            }
+
+            if (component.isAnalog()) {
+                float axisValue = component.getPollData();
+                //System.out.println(axisValue);
+                int axisValueInPercentage = getAxisValueInPercentage(axisValue);
+
+
+                // X axis
+                if (componentIdentifier == net.java.games.input.Component.Identifier.Axis.X) {
+                    xAxisPercentage = axisValueInPercentage;
+                    //System.out.println("X " + xAxisPercentage);
+                    continue; // Go to next component.
+                }
+                // Y axis
+                if (componentIdentifier == net.java.games.input.Component.Identifier.Axis.Y) {
+                    yAxisPercentage = axisValueInPercentage;
+                    // System.out.println("Y " + yAxisPercentage);
+                    continue; // Go to next component.
+                }
+
+            }
+            //if button index is not null, wait a half a second il next input
+        }
+    }
+
+
+    public void buttonActions(){
+
+        if(buttonInputLimitFrames >20) {
+
+            if (buttonIndex.equals("0")) {
+                pressZeroButton();
+
+            } else if (buttonIndex.equals("1") || buttonIndex.equals("3")) {
+                pressOneButton();
+
+            } else if (buttonIndex.equals("2")) {
+                pressTwoButton();
+            }
+
+            if (buttonIndex != "") {
+                buttonInputLimitFrames = 0;
+            }
+
+        }
+    }
 
 
     public void rubWalls(){
@@ -75,16 +191,16 @@ public class Player extends MovingObject{
                 location.x = rightBoundary - dummy_radius;
                 break;
             case 5:
-                location.y = topGoalPost - dummy_radius;//left and right goal top
+                location.y = topGoalPost - dummy_radius - 5;//left and right goal top
                 break;
             case 6:
-                location.y = bottomGoalPost + dummy_radius;//left and right goal bottom
+                location.y = bottomGoalPost + dummy_radius + 5;//left and right goal bottom
                 break;
             case 7:
-                location.x = leftGoalBack - dummy_radius;//left  goal back
+                location.x = leftGoalBack - dummy_radius - 5;//left  goal back
                 break;
             case 8:
-                location.x = rightGoalBack + dummy_radius;//right goal back
+                location.x = rightGoalBack + dummy_radius + 5;//right goal back
                 break;
             case 9:
                 location.x = leftGoalLine + radius;//left goal front
@@ -121,7 +237,7 @@ public class Player extends MovingObject{
 
     public void hitWalls(){
 
-        dummy_radius = stick.length;
+
         if(location.y <= topBoundary + dummy_radius || stick.b <= topBoundary){
             hitWall = 1;
         }
@@ -135,41 +251,42 @@ public class Player extends MovingObject{
             hitWall = 4;
         }
 
-        else if(location.x < leftGoalLine && location.y  <= topGoalPost){//left goal top
-            if(location.y >= topGoalPost - dummy_radius && location.x >= leftGoalBack){
-                //System.out.println(location.x + " " + location.y);
+        else if(location.x < leftGoalLine && location.y  < topGoalPost){//left goal top
+            if(location.y >= topGoalPost - dummy_radius - 5 && location.x > leftGoalBack){
                 hitWall = 5;
             }
         }
-        else if(location.x  < leftGoalLine  && location.y >= bottomGoalPost){//left goal bottom
-            if(location.y <= bottomGoalPost + dummy_radius && location.x >= leftGoalBack){
+        else if(location.x  < leftGoalLine  && location.y > bottomGoalPost){//left goal bottom
+            if(location.y <= bottomGoalPost + dummy_radius + 5 && location.x > leftGoalBack){
                 hitWall = 6;
             }
         }
         else if(location.x < leftGoalBack && location.y > topGoalPost &&//left goal back
                 location.y < bottomGoalPost){
-            if(location.x >= leftGoalBack- dummy_radius)
+
+            if(location.x >= leftGoalBack - dummy_radius - 5)
                 hitWall = 7;
         }
         // Right Goal post
-        else if(location.x > rightGoalLine && location.y <= topGoalPost){//right goal top
-            if(location.y >= topGoalPost- dummy_radius && location.x <= rightGoalBack){
+        else if(location.x > rightGoalLine && location.y < topGoalPost){//right goal top
+            if(location.y >= topGoalPost - dummy_radius - 5 && location.x < rightGoalBack){
                 hitWall = 5;
             }
         }
-        else if(location.x > rightGoalLine  && location.y >= bottomGoalPost){//right goal bottom
-            if(location.y <= bottomGoalPost+ dummy_radius && location.x <= rightGoalBack){
+        else if(location.x > rightGoalLine  && location.y > bottomGoalPost){//right goal bottom
+            if(location.y <= bottomGoalPost + dummy_radius + 5 && location.x < rightGoalBack){
                 hitWall = 6;
             }
         }
         else if(location.x > rightGoalBack && location.y > topGoalPost &&//right goal back
                 location.y < bottomGoalPost){
-            if(location.x <= rightGoalBack+ dummy_radius)
+            if(location.x <= rightGoalBack + dummy_radius + 5 ) {
                 hitWall = 8;
+            }
         }
 
         else if(location.x > leftGoalLine && location.y > topGoalPost &&//left goal front
-                location.y < bottomGoalPost){
+                location.y < bottomGoalPost  && location.x < rightGoalLine){
             if(location.x <= leftGoalLine + radius)
                 hitWall = 9;
             else if(location.x >= rightGoalLine - radius) //right goal front
@@ -385,8 +502,8 @@ public class Player extends MovingObject{
     public void stickHandling() {// of its close itll turn on the hold method
 
         //Puck puck = player.puck;
-        int stickHoldingPointX = (int) Math.round((location.x + (radius - adjustment) * Math.cos(angle)));
-        int stickHoldingPointY = (int) Math.round((location.y + (radius - adjustment) * Math.sin(angle)));
+        int stickHoldingPointX = (int) Math.round((location.x + (radius ) * Math.cos(angle)));
+        int stickHoldingPointY = (int) Math.round((location.y + (radius ) * Math.sin(angle)));
 
         double distance = getDistance(puck.location.x, stickHoldingPointX, puck.location.y, stickHoldingPointY);
 
@@ -413,8 +530,8 @@ public class Player extends MovingObject{
 
     public void holdPuck() {
         //possession = id;
-        int stickHoldingPointX = (int) Math.round((location.x + 12 * Math.cos(angle)));
-        int stickHoldingPointY = (int) Math.round((location.y + 12 * Math.sin(angle)));
+        int stickHoldingPointX = (int) Math.round((location.x + (radius ) * Math.cos(angle)));
+        int stickHoldingPointY = (int) Math.round((location.y + (radius ) * Math.sin(angle)));
 
         puck.location.x = stickHoldingPointX;
         puck.location.y = stickHoldingPointY;
@@ -457,9 +574,9 @@ public class Player extends MovingObject{
 
     public void bodyCheck(){
 
-            bodyCheckFrames++;
-            positionCalculation(angle);
-            stick.updateLocation();
+        bodyCheckFrames++;
+        positionCalculation(angle);
+        stick.updateLocation();
         if (bodyCheckFrames > 2 && bodyCheckFrames < 80) {//activate it between frame 2 and frame 80
 
             if(bodyCheckFrames < 10){ //only make it move forward for 10 bodyCheckFrames at this speed
@@ -477,17 +594,9 @@ public class Player extends MovingObject{
     }
 
 
-    public void stealStart(){
-        if(stealFrames >= 20|| stealFrames == 0) {
-            stealFlag = true;
-            stealFrames = 0;
-        }
-    }
-
-
     public void steal(){
         stealFrames++;
-        if (stealFrames > 10) {
+        if (stealFrames > 10) {//steal flag only last for 10 active frames
             stealFlag = false;
             stealFrames = 0;
         }
@@ -498,7 +607,7 @@ public class Player extends MovingObject{
             wristShot();
         }
         else{
-            stealFlag = true;
+            stealFlag = true;//starts steal
         }
     }
 
@@ -526,7 +635,6 @@ public class Player extends MovingObject{
 
         double Y;
         double X;
-        System.out.println(puck.hold);
 
         if(release == 0 && puck.hold == 0) {
             stickHandling();
@@ -561,6 +669,11 @@ public class Player extends MovingObject{
 
     }
 
+
+
+
+
+
     protected class Stick {
 
         //Player player;
@@ -570,9 +683,6 @@ public class Player extends MovingObject{
         int b;
         int length;
 
-
-
-
         public Stick(int length) {
             x = location.x;
             y = location.y;
@@ -581,19 +691,12 @@ public class Player extends MovingObject{
             b = (int) (y + length * Math.sin(getAngle()));
         }
 
-
-
         public void updateLocation() {
             x = location.x;
             y = location.y;
             a = (int)(x + length * Math.cos(angle));
             b = (int)(y + length * Math.sin(angle));
         }
-
-
-
-
-
 
         public void draw(Graphics2D g2d) {
             g2d.setStroke(new BasicStroke(5));

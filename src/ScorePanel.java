@@ -15,6 +15,7 @@ public class ScorePanel extends JPanel implements Runnable{
     int score1 = 0;
     int score2 = 0;
     public static int fps = 0;
+
     Thread t;
 
     public ScorePanel(){
