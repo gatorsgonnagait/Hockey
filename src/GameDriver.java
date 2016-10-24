@@ -115,6 +115,8 @@ public class GameDriver {
         rink.add(puck);
         // added moving objects
 
+
+
         ui.add(rink);
         ui.pack();
         ui.setVisible(true);

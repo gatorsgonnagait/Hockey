@@ -33,7 +33,7 @@ public abstract class MovingObject extends JComponent {
     static int topGoalPost = 235;
     static int bottomGoalPost = 315;
     static int horizontalMiddle = 275;
-    static int verticalCenter = 500;//ss
+    static int verticalCenter = 500;
     static int leftGoalBack = 160;
     static int rightGoalBack = 840;
 
