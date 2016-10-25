@@ -49,8 +49,8 @@ public class GameDriver {
             if (controller.getType() == Controller.Type.GAMEPAD ) {
                 // Add new controller to the list of all controllers.
                 foundControllers.add(controller);
-                System.out.println(foundControllers.get(0));
-                System.out.println(foundControllers.get(0).getPortNumber());
+                System.out.println(controller);
+                System.out.println(controller.getPortNumber());
                 System.out.println("controller is plugged in ");
                 // Add new controller to the list on the window.
                 //window.addControllerName(controller.getName() + " - " + controller.getType().toString() + " type");
@@ -88,8 +88,7 @@ public class GameDriver {
 
         if(!foundControllers.isEmpty()){
             Rink.selectedPlayer.controller = foundControllers.get(0);
-
-            //Rink.selectedPlayer2.controller = foundControllers.get(1);
+            Rink.selectedPlayer2.controller = foundControllers.get(1);
 
             rink = new Rink();
             //rink    = new Rink(foundControllers.get(0));

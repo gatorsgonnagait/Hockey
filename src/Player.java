@@ -42,7 +42,8 @@ public class Player extends MovingObject {
     double tempAngle;
     double frictionCoefficient = .8;
     int startX;
-    int startY;static int i = 0;
+    int startY;
+    static int i = 0;
 
     Controller controller;
     int xAxisPercentage = 0;
