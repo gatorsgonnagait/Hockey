@@ -403,6 +403,7 @@ public class Player extends MovingObject {
         double distance = getDistance(xNeutral, xAxisPercentage, yNeutral, yAxisPercentage);
         double controllerX = xAxisPercentage - xNeutral;
         double controllerY = yAxisPercentage - yNeutral;
+
         double newAngle = Math.atan2(controllerY, controllerX);
 
         stick.updateLocation();

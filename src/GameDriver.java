@@ -70,8 +70,8 @@ public class GameDriver {
 
 
         p1   = new Player(1,new Point(480, 275), 0, 0, 12, Color.RED, puck);
-        p2   = new Player(2,new Point(320, 170), 0, 0, 12, Color.ORANGE, puck);
-        p3   = new Player(3,new Point(530, 275), 0, Math.PI, 12, Color.CYAN, puck);
+        p2   = new Player(2,new Point(320, 170), 0, 0, 12, Color.BLUE, puck);
+        p3   = new Player(3,new Point(530, 275), 0, Math.PI, 12, Color.YELLOW, puck);
         p4   = new Player(4,new Point(690, 370), 0, Math.PI, 12, Color.GREEN, puck);
         g1   = new Goalie1(5,new Point(190+20, 275), 3, 0, 10, Color.LIGHT_GRAY, puck);
         g2   = new Goalie2(6,new Point(810-20, 275), 3, Math.PI, 10, Color.LIGHT_GRAY, puck);
@@ -88,7 +88,7 @@ public class GameDriver {
 
         if(!foundControllers.isEmpty()){
             Rink.selectedPlayer.controller = foundControllers.get(0);
-            Rink.selectedPlayer2.controller = foundControllers.get(1);
+            //Rink.selectedPlayer2.controller = foundControllers.get(1);
 
             rink = new Rink();
             //rink    = new Rink(foundControllers.get(0));
