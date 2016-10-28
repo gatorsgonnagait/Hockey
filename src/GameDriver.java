@@ -1,6 +1,7 @@
 import net.java.games.input.*;
 import net.java.games.input.Component;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -32,7 +33,7 @@ public class GameDriver {
     MouseEvent e;
 
     public ArrayList<Controller> foundControllers = new ArrayList<>();
-
+    Player[]  activePlayers;
 
 
 
@@ -80,12 +81,23 @@ public class GameDriver {
         Rink.selectedPlayer2 = p2;
         Rink.selectedPlayer3 = p3;
         Rink.selectedPlayer4 = p4;
-
+        activePlayers = new Player[] {p1,p2,p3,p4};
+        int i = 0;
         searchForControllers();
+        for(Controller controller : foundControllers){
+            activePlayers[i].controller = controller;
+            i++;
+        }
 
+        JFrame menuFrame = new JFrame();
+        Menu menu = new Menu(1366, 768, activePlayers);
+        menuFrame.add(menu);
+        menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        menuFrame.pack();
+        menuFrame.setVisible(true);
 
-
+        /*
         if(!foundControllers.isEmpty()){
             Rink.selectedPlayer.controller = foundControllers.get(0);
             //Rink.selectedPlayer2.controller = foundControllers.get(1);
@@ -122,7 +134,7 @@ public class GameDriver {
 
 
         rink.addMouseMotionListener(rink);
-        // rink.addKeyListener(rink);
+        // rink.addKeyListener(rink);*/
     }
 
     private class KBListener implements KeyListener {

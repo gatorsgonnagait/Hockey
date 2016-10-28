@@ -38,6 +38,7 @@ public class Player extends MovingObject {
     int slideLimit = 9;
     double oldAngle = 0;
     int buttonInputLimitFrames = 0;
+    int stickInputLimitFrames = 0;
     double tempSpeed;
     double tempAngle;
     double frictionCoefficient = .8;
@@ -107,6 +108,7 @@ public class Player extends MovingObject {
         net.java.games.input.Component[] components = controller.getComponents();
 
         buttonInputLimitFrames++;
+        stickInputLimitFrames++;
 
         for(int i=0; i < components.length; i++) {
             //System.out.println(components[i].getName());

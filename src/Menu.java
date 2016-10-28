@@ -3,8 +3,6 @@ import net.java.games.input.ControllerEnvironment;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
 import java.util.ArrayList;
 
 /**
@@ -13,7 +11,8 @@ import java.util.ArrayList;
 public class Menu extends JPanel implements Runnable{
 
     Controller controller;
-    public ArrayList<Controller> foundControllers = new ArrayList<>();
+    //public ArrayList<Controller> foundControllers = new ArrayList<>();
+    //public ArrayList<Player> activePlayers = new ArrayList<>();
     Color color;
 
     int height;
@@ -45,7 +44,7 @@ public class Menu extends JPanel implements Runnable{
     int yAxisPercentage = 0;
     String buttonIndex = "";
     int buttonInputLimitFrames = 0;
-    int stickInputLimitFrames = 0;
+
 
 
     Image colorNum;
@@ -58,12 +57,18 @@ public class Menu extends JPanel implements Runnable{
 
 
 
-    Controller[] controllerArray = new Controller[4];
+    Controller[] teamPositions = new Controller[4];
+    Player[] activePlayers;
+    Player p1;
+    Player p2;
+    Player p3;
+    Player p4;
+
     Thread t;
 
     boolean paintRedButton = false;
 
-    public Menu(int width, int height){
+    public Menu(int width, int height, Player[] activePlayers){
         this.width = width;
         this.height = height;
         setPreferredSize(new Dimension(width, height));
@@ -89,6 +94,8 @@ public class Menu extends JPanel implements Runnable{
         yLocation3 = horizontalThreeFifths;
         xLocation4 = verticalCenterPos;
         yLocation4 = horizontalFourFifths;
+        this.activePlayers = activePlayers;
+
     }
 
     @Override
@@ -145,98 +152,201 @@ public class Menu extends JPanel implements Runnable{
         int xNeutral = 49;
         int yNeutral = 49;
 
-
-        for( Controller controller : foundControllers ){
-            gamepad();
+        for( int i = 0; i < activePlayers.length; i++){
+            if(activePlayers[i].controller == null)
+                continue;
+            activePlayers[i].gamepad();
             //everything will happen here
+            controller = activePlayers[i].controller;
 
+            if(activePlayers[i].stickInputLimitFrames >10) {
 
-            //System.out.println(xAxisPercentage);
-
-            if(stickInputLimitFrames >10) {
-
-                if (xAxisPercentage < xNeutral - 40) {
+                if (activePlayers[i].xAxisPercentage < xNeutral - 40) {//if the player is already on the right side and wants to return to the middle
                     //move left
 
-                    if (controllerArray[2] == controller) {
-                        controllerArray[2] = null;
+                    if (teamPositions[2] == controller) {
+                        teamPositions[2] = null;
                         System.out.println("center 3");
-                        xLocation1 = verticalCenterPos;
-                        yLocation1 = horizontalFifths;
+                        if(controller == activePlayers[0].controller){
+                            xLocation1 = verticalCenterPos;
+                            yLocation1 = horizontalFifths;
+                        }
+                        else if(controller == activePlayers[1].controller){
+                            xLocation2 = verticalCenterPos;
+                            yLocation2 = horizontalTwoFifths;
+                        }
+
                     }
-                    else if (controllerArray[3] == controller) {
-                        controllerArray[3] = null;
+                    else if (teamPositions[3] == controller) {
+                        teamPositions[3] = null;
                         System.out.println("center 4");
-                        xLocation1 = verticalCenterPos;
-                        yLocation1 = horizontalFifths;
+                        if(controller == activePlayers[0].controller){
+                            xLocation1 = verticalCenterPos;
+                            yLocation1 = horizontalFifths;
+                        }
+                        else if(controller == activePlayers[1].controller){
+                            xLocation2 = verticalCenterPos;
+                            yLocation2 = horizontalTwoFifths;
+                        }
                     }
-                    else {
+                    else {//if current position is in the center and you press left
 
-                        if (controllerArray[0] == null) {
-                            controllerArray[0] = controller;
+
+                        if (teamPositions[0] == null) {
+
+                            teamPositions[0] = controller;
                             System.out.println("left 1");
-                            xLocation1 = verticalLeftPos;
-                            yLocation1 = horizontalThirds;
+                            if(controller == activePlayers[0].controller){
+                                xLocation1 = verticalLeftPos;
+                                yLocation1 = horizontalThirds;
+                            }
+                            else if(controller == activePlayers[1].controller){
+                                xLocation2 = verticalLeftPos;
+                                yLocation2 = horizontalThirds;
+                            }
 
-                        } else if (controllerArray[0] == controller) {
+                        }
+                        else if(teamPositions[0] == controller) {
                             System.out.println("already in left top spot");
-                            xLocation1 = verticalLeftPos;
-                            yLocation1 = horizontalThirds;
+                            if (controller == activePlayers[0].controller) {
+                                xLocation1 = verticalLeftPos;
+                                yLocation1 = horizontalThirds;
+                            } else if (controller == activePlayers[1].controller) {
+                                xLocation2 = verticalLeftPos;
+                                yLocation2 = horizontalThirds;
+                            }
+                        }
+                        else if (teamPositions[0] != controller) {// if one is already in top left spot
+                            //try for 2nd player spot
+
+                            if (teamPositions[1] == null) {
+                                teamPositions[1] = controller;
+                                System.out.println("left 2");
+                                if(controller == activePlayers[0].controller){
+                                    xLocation1 = verticalLeftPos;
+                                    yLocation1 = horizontalTwoThirds;
+                                }
+                                else if(controller == activePlayers[1].controller){
+                                    xLocation2 = verticalLeftPos;
+                                    yLocation2 = horizontalTwoThirds;
+                                }
+                            }
+                            else if(teamPositions[1] == controller) {
+                                System.out.println("already in left bottom spot");
+                                /*if (i == 0) {
+                                    xLocation1 = verticalLeftPos;
+                                    yLocation1 = horizontalTwoThirds;
+                                } else if (i == 1) {
+                                    xLocation2 = verticalLeftPos;
+                                    yLocation2 = horizontalTwoThirds;
+                                }*/
+                            }
+                            else if(teamPositions[1] != controller){
+                                System.out.println("Spots are taken up");
+                            }
+
                         }
 
-                        else if (controllerArray[1] == null) {
-                            controllerArray[1] = controller;
-                            System.out.println("left 2");
 
-                        }
-                        else if (controllerArray[1] == controller) {
-                            System.out.println("already in left bottom spot");
-                        }
+
                     }
 
                 }
-                else if (xAxisPercentage > xNeutral + 40) {
+                else if (activePlayers[i].xAxisPercentage > xNeutral + 40) {
 
-
-                    if (controllerArray[0] == controller) {
-                        controllerArray[0] = null;
+                    if (teamPositions[0] == controller) {
+                        teamPositions[0] = null;
                         System.out.println("center 1");
-                        xLocation1 = verticalCenterPos;
-                        yLocation1 = horizontalFifths;
-                    } else if (controllerArray[1] == controller) {
-                        controllerArray[1] = null;
+                        if(controller == activePlayers[0].controller){
+                            xLocation1 = verticalCenterPos;
+                            yLocation1 = horizontalFifths;
+                        }
+                        else if(controller == activePlayers[1].controller){
+                            xLocation2 = verticalCenterPos;
+                            yLocation2 = horizontalTwoFifths;
+                        }
+
+                    }
+                    else if (teamPositions[1] == controller) {
+                        teamPositions[1] = null;
                         System.out.println("center 2");
+                        if(controller == activePlayers[0].controller){
+                            xLocation1 = verticalCenterPos;
+                            yLocation1 = horizontalFifths;
+                        }
+                        else if(controller == activePlayers[1].controller){
+                            xLocation2 = verticalCenterPos;
+                            yLocation2 = horizontalTwoFifths;
+                        }
                     }
-                    else {
+                    else {//if current position is in the center and you press right
 
-                        if (controllerArray[2] == null) {
-                            controllerArray[2] = controller;
+
+                        if (teamPositions[2] == null) {
+
+                            teamPositions[2] = controller;
                             System.out.println("right 1");
-                            xLocation1 = verticalRightPos;
-                            yLocation1 = horizontalThirds;
+                            if(controller == activePlayers[0].controller){
+                                xLocation1 = verticalRightPos;
+                                yLocation1 = horizontalThirds;
+                            }
+                            else if(controller == activePlayers[1].controller){
+                                xLocation2 = verticalRightPos;
+                                yLocation2 = horizontalThirds;
+                            }
+
                         }
-                        else if (controllerArray[2] == controller) {
-                            System.out.println("already in right top spot");
-                            xLocation1 = verticalRightPos;
-                            yLocation1 = horizontalThirds;
+                        else if(teamPositions[2] == controller) {
+                            System.out.println("already in top right spot");
+                            if (controller == activePlayers[0].controller) {
+                                xLocation1 = verticalRightPos;
+                                yLocation1 = horizontalThirds;
+                            } else if (controller == activePlayers[1].controller) {
+                                xLocation2 = verticalRightPos;
+                                yLocation2 = horizontalThirds;
+                            }
+                        }
+                        else if (teamPositions[2] != controller) {// if one is already in top left spot
+                            //try for 2nd player spot
+
+                            if (teamPositions[3] == null) {
+                                teamPositions[3] = controller;
+                                System.out.println("right 2");
+                                if(controller == activePlayers[0].controller){
+                                    xLocation1 = verticalRightPos;
+                                    yLocation1 = horizontalTwoThirds;
+                                }
+                                else if(controller == activePlayers[1].controller){
+                                    xLocation2 = verticalRightPos;
+                                    yLocation2 = horizontalTwoThirds;
+                                }
+                            }
+                            else if(teamPositions[3] == controller) {
+                                System.out.println("already in left bottom spot");
+                                /*if (i == 0) {
+                                    xLocation1 = verticalLeftPos;
+                                    yLocation1 = horizontalTwoThirds;
+                                } else if (i == 1) {
+                                    xLocation2 = verticalLeftPos;
+                                    yLocation2 = horizontalTwoThirds;
+                                }*/
+                            }
+                            else if(teamPositions[3] != controller){
+                                System.out.println("Spots are taken up");
+                            }
+
                         }
 
-                        else if (controllerArray[3] == null) {
-                            controllerArray[3] = controller;
-                            System.out.println("right 2");
-                        } else if (controllerArray[3] == controller) {
-                            System.out.println("already in right bottom spot");
-                        }
                     }
+
                 }
-
-                stickInputLimitFrames = 0;
-
+                activePlayers[i].stickInputLimitFrames = 0;
 
             }
+            i++;
         }
     }
-
+    /*
     private void searchForControllers() {
         //mouse pad is automatically allowed
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
@@ -253,9 +363,11 @@ public class Menu extends JPanel implements Runnable{
                 //System.out.println(foundControllers.get(1));
                 System.out.println("controller is plugged in ");
 
+                activePlayers[i].controller = foundControllers.get(i);
+
             }
         }
-    }
+    }*/
 
 
     public int getAxisValueInPercentage(float axisValue) {
@@ -268,7 +380,7 @@ public class Menu extends JPanel implements Runnable{
         net.java.games.input.Component[] components = controller.getComponents();
 
         buttonInputLimitFrames++;
-        stickInputLimitFrames++;
+        //stickInputLimitFrames++;
 
         for(int i=0; i < components.length; i++) {
             net.java.games.input.Component component = components[i];
@@ -351,7 +463,7 @@ public class Menu extends JPanel implements Runnable{
     @Override
     public void run() {
         System.out.println("run");
-        searchForControllers();
+        //searchForControllers();
 
         while(true) {
 
