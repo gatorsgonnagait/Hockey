@@ -60,7 +60,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
 
     Rink() {
-        setPreferredSize(new Dimension(1000,550));
+        setPreferredSize(new Dimension(GameDriver.width, GameDriver.height));
         add(scorePanel);
         setVisible(true);
     }
@@ -73,42 +73,70 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
         rink.setStroke(new BasicStroke(3));
 
+        rink.setColor(Color.BLUE);//crease
+        //fillArc(int x, int y, int width, int height, int startAngle, int arcAngle)
+        //rink.fillArc(190-40, 232, 86, 86, 90, -180);
+        rink.fillArc(GameDriver.leftGoalLine - GameDriver.goalLength/2+GameDriver.width/500, GameDriver.topGoalPost, GameDriver.goalLength, GameDriver.goalLength, 90, -180);
+        rink.fillArc(GameDriver.rightGoalLine - GameDriver.goalLength/2, GameDriver.topGoalPost, GameDriver.goalLength, GameDriver.goalLength, 90, 180);
+
+
         rink.setColor(Color.RED);
-        rink.draw(new Line2D.Double(190, 100, 190, 450)); // first vertical lines on rink
+        //rink.draw(new Line2D.Double(190, 100, 190, 450)); // first vertical lines on rink
+        rink.draw(new Line2D.Double(GameDriver.leftGoalLine, GameDriver.topBoundary, GameDriver.leftGoalLine, GameDriver.bottomBoundary));
         rink.setColor(Color.BLUE);
-        rink.draw(new Line2D.Double(340, 100, 340, 450));
+        //rink.draw(new Line2D.Double(340, 100, 340, 450));
+        rink.draw(new Line2D.Double(GameDriver.leftBoundary + GameDriver.rinkWidth/3, GameDriver.topBoundary, GameDriver.leftBoundary + GameDriver.rinkWidth * 1/3, GameDriver.bottomBoundary));
         rink.setColor(Color.RED);
-        rink.draw(new Line2D.Double(500, 100, 500, 450));
+        //rink.draw(new Line2D.Double(500, 100, 500, 450));
+        rink.draw(new Line2D.Double(GameDriver.verticalCenter, GameDriver.topBoundary, GameDriver.verticalCenter, GameDriver.bottomBoundary));
         rink.setColor(Color.BLUE);
-        rink.draw(new Line2D.Double(660, 100, 660, 450));
+        //rink.draw(new Line2D.Double(660, 100, 660, 450));
+        rink.draw(new Line2D.Double(GameDriver.leftBoundary + GameDriver.rinkWidth * 2/3, GameDriver.topBoundary, GameDriver.leftBoundary + GameDriver.rinkWidth * 2/3, GameDriver.bottomBoundary));
         rink.setColor(Color.RED);
-        rink.draw(new Line2D.Double(810, 100, 810, 450)); // last line
+        //rink.draw(new Line2D.Double(810, 100, 810, 450)); // last line
+        rink.draw(new Line2D.Double(GameDriver.leftBoundary + GameDriver.rinkWidth * 8/9, GameDriver.topBoundary, GameDriver.leftBoundary + GameDriver.rinkWidth * 8/9, GameDriver.bottomBoundary));
 
-        rink.setColor(Color.GREEN);// center X line
-        rink.draw(new Line2D.Double(190, 275, 810, 275));
 
-        rink.setColor(Color.RED); //goals
-        rink.draw(new Rectangle2D.Double(MovingObject.leftGoalBack, MovingObject.topGoalPost, 30, 80));
-        rink.draw(new Rectangle2D.Double(MovingObject.rightGoalLine, MovingObject.topGoalPost, 30, 80));
 
+        /*
         rink.drawOval(445, 220, 110, 110);
         rink.setColor(Color.BLACK);
         rink.draw(new RoundRectangle2D.Double(100, 100, 800, 350, 200, 200));
+        */
 
-        rink.setColor(Color.BLUE);//crease
-        rink.fillArc(190-40, 232, 86, 86, 90, -180);
-        rink.fillArc(810-40-5, 232, 86, 86, 90, 180);
+        //rink.setColor(Color.GREEN);// center X line
+        //rink.draw(new Line2D.Double(GameDriver.leftGoalLine, GameDriver.horizontalMiddle, GameDriver.rightGoalLine, GameDriver.horizontalMiddle));
+
+        rink.setColor(Color.RED); //goals
+        //rink.draw(new Rectangle2D.Double(MovingObject.leftGoalBack, MovingObject.topGoalPost, 30, 80));
+        rink.draw(new Rectangle2D.Double(GameDriver.leftGoalBack, GameDriver.topGoalPost, GameDriver.goalWidth, GameDriver.goalLength));
+        //rink.draw(new Rectangle2D.Double(MovingObject.rightGoalLine, MovingObject.topGoalPost, 30, 80));
+        rink.draw(new Rectangle2D.Double(GameDriver.rightGoalLine, GameDriver.topGoalPost, GameDriver.goalWidth, GameDriver.goalLength));
+        //center circle
+        rink.setColor(Color.BLUE);
+        rink.drawOval(GameDriver.verticalCenter - GameDriver.height/12, GameDriver.horizontalMiddle - GameDriver.height/12, GameDriver.height/6, GameDriver.height/6);
+        rink.setColor(Color.BLACK);
+        //public abstract void setRoundRect(double x,double y,double w,double h,double arcWidth, double arcHeight)
+        rink.draw(new RoundRectangle2D.Double(GameDriver.leftBoundary, GameDriver.topBoundary, GameDriver.rinkWidth, GameDriver.rinkHeight, GameDriver.rinkWidth/5, GameDriver.rinkWidth/5));
+
+
+
 
         rink.setColor(Color.BLACK);
-        Arc2D arc1 = new Arc2D.Double(100, 100, 200, 200, 90, 90, Arc2D.OPEN);
+        //Arc2D arc1 = new Arc2D.Double(100, 100, 200, 200, 90, 90, Arc2D.OPEN);
+        //Arc2D arc1 = new Arc2D.Double(GameDriver.leftBoundary, GameDriver.topBoundary, GameDriver.topBoundary*5/4, GameDriver.topBoundary*5/4, 90, 90, Arc2D.OPEN);
+        Arc2D arc1 = new Arc2D.Double(GameDriver.leftBoundary, GameDriver.topBoundary, GameDriver.rinkWidth/5, GameDriver.rinkWidth/5, 90, 90, Arc2D.OPEN);
         rink.draw(arc1);
-        Arc2D arc2 = new Arc2D.Double(100, 250, 200, 200, 180, 90, Arc2D.OPEN);
+        //Arc2D arc2 = new Arc2D.Double(100, 250, 200, 200, 180, 90, Arc2D.OPEN);
+        Arc2D arc2 = new Arc2D.Double(GameDriver.leftBoundary, GameDriver.bottomBoundary - GameDriver.rinkWidth, GameDriver.rinkWidth/5 , GameDriver.rinkWidth/5, 180, 90, Arc2D.OPEN);
         rink.draw(arc2);
 
-        Arc2D arc3 = new Arc2D.Double(700, 100, 200, 200, 0, 90, Arc2D.OPEN);
+        //Arc2D arc3 = new Arc2D.Double(700, 100, 200, 200, 0, 90, Arc2D.OPEN);
+        Arc2D arc3 = new Arc2D.Double(GameDriver.width, GameDriver.topBoundary, GameDriver.rinkWidth/5, GameDriver.rinkWidth/5, 0, 90, Arc2D.OPEN);
         rink.draw(arc3);
 
-        Arc2D arc4 = new Arc2D.Double(700, 250, 200, 200, 270, 90, Arc2D.OPEN);
+        //Arc2D arc4 = new Arc2D.Double(700, 250, 200, 200, 270, 90, Arc2D.OPEN);
+        Arc2D arc4 = new Arc2D.Double(GameDriver.width, GameDriver.bottomBoundary - GameDriver.rinkWidth, GameDriver.rinkWidth/5, GameDriver.rinkWidth/5, 270, 90, Arc2D.OPEN);
         rink.draw(arc4);
 
 
@@ -158,13 +186,6 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
     }
 
 
-
-
-
-
-
-
-
     public void add(Player mo){
         players[mo.id] = mo;
         super.add(mo);
@@ -174,11 +195,6 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         this.puck = puck;
         super.add(puck);
     }
-
-
-
-
-
 
     public void updateAll(){
 
@@ -370,8 +386,8 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         goalieTimer++;
         if (goalieTimer == 400) {
             if (puck.hold == 5) {
-                if (players[1].location.x > players[1].leftGoalLine ||
-                        players[2].location.x > players[2].leftGoalLine) {
+                if (players[1].location.x > GameDriver.leftGoalLine ||
+                        players[2].location.x > GameDriver.leftGoalLine) {
                     goaliePassToTeammates1();
                 } else {
                     players[puck.hold].wristShot();
@@ -379,8 +395,8 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
                 goalieTimer = 0;
             } else if (puck.hold == 6) {
 
-                if (players[3].location.x < players[3].rightGoalLine ||
-                        players[4].location.x < players[4].rightGoalLine) {
+                if (players[3].location.x < GameDriver.rightGoalLine ||
+                        players[4].location.x < GameDriver.rightGoalLine) {
                     goaliePassToTeammates2();
                 } else {
                     players[puck.hold].wristShot();
@@ -536,14 +552,14 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             }
         }
 
-        if(puck.location.y > puck.horizontalMiddle - 50
-                && puck.location.y < puck.horizontalMiddle + 50
-                && puck.location.x > puck.verticalCenter - 50
-                && puck.location.x < puck.verticalCenter + 50){
+        if(puck.location.y > GameDriver.horizontalMiddle - 50
+                && puck.location.y < GameDriver.horizontalMiddle + 50
+                && puck.location.x > GameDriver.verticalCenter - 50
+                && puck.location.x < GameDriver.verticalCenter + 50){
 
             puck.speed = 0;
-            puck.location.y = puck.horizontalMiddle;
-            puck.location.x = puck.verticalCenter;
+            puck.location.y = GameDriver.horizontalMiddle;
+            puck.location.x = GameDriver.verticalCenter;
 
             resetTimer++;
             if( resetTimer == 100) {

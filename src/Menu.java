@@ -44,14 +44,13 @@ public class Menu extends JPanel implements Runnable{
     int yAxisPercentage = 0;
     String buttonIndex = "";
     int buttonInputLimitFrames = 0;
+    int xNeutral = 49;
+    int yNeutral = 49;
 
 
 
     Image colorNum;
-    Image num1 = Toolkit.getDefaultToolkit().getImage("img/one.png");
-    Image num2 = Toolkit.getDefaultToolkit().getImage("img/two.png");
-    Image num3 = Toolkit.getDefaultToolkit().getImage("img/three.png");
-    Image num4 = Toolkit.getDefaultToolkit().getImage("img/four.png");
+
     Image rednum1 = Toolkit.getDefaultToolkit().getImage("img/redone.png");
     Image bluenum2 = Toolkit.getDefaultToolkit().getImage("img/bluetwo.png");
 
@@ -68,8 +67,8 @@ public class Menu extends JPanel implements Runnable{
 
     boolean paintRedButton = false;
 
-    public Menu(int width, int height, Player[] activePlayers){
-        this.width = width;
+    public Menu(Player[] activePlayers){
+        /*this.width = width;
         this.height = height;
         setPreferredSize(new Dimension(width, height));
         setVisible(true);
@@ -94,6 +93,7 @@ public class Menu extends JPanel implements Runnable{
         yLocation3 = horizontalThreeFifths;
         xLocation4 = verticalCenterPos;
         yLocation4 = horizontalFourFifths;
+        */
         this.activePlayers = activePlayers;
 
     }
@@ -115,47 +115,29 @@ public class Menu extends JPanel implements Runnable{
         g2d.fillOval(verticalRightPos, horizontalThirds, circleDiameter, circleDiameter);
         g2d.fillOval(verticalRightPos, horizontalTwoThirds, circleDiameter, circleDiameter);
 
-        g2d.drawImage(num1, xLocation1, yLocation1, circleDiameter, circleDiameter, this);
-        g2d.drawImage(num2, xLocation2, yLocation2, circleDiameter, circleDiameter, this );
-        g2d.drawImage(num3, xLocation3, yLocation3, circleDiameter, circleDiameter, this);
-        g2d.drawImage(num4, xLocation4, yLocation4, circleDiameter, circleDiameter, this);
-
-
-
-
-
-
-
-        //g2d.fillOval(width/4 - circleDiameter/2, height/3 - circleDiameter/2, circleDiameter, circleDiameter);
-
-        /*
-        g2d.setColor(Color.BLACK);
-        g2d.fillOval(verticalCenter - circleDiameter/2, height/5 - circleDiameter/2, circleDiameter, circleDiameter);
-        g2d.fillOval(verticalCenter - circleDiameter/2, height/5 * 2 - circleDiameter/2, circleDiameter, circleDiameter);
-        g2d.fillOval(verticalCenter - circleDiameter/2, height/5 * 3 - circleDiameter/2, circleDiameter, circleDiameter);
-        g2d.fillOval(verticalCenter - circleDiameter/2, height/5 * 4 - circleDiameter/2, circleDiameter, circleDiameter);
-
-        g2d.setColor(Color.WHITE);
-        g2d.setFont(new Font("Monospace", Font.BOLD, 22));
-        g2d.drawString("1", verticalCenter- 7, height/5+ 7);
-        g2d.drawString("2", verticalCenter, height/5 * 2);
-        g2d.drawString("3", verticalCenter, height/5 * 3);
-        g2d.drawString("4", verticalCenter, height/5 * 4);
-        */
-
-
-
+        //g2d.drawImage(num1, xLocation1, yLocation1, circleDiameter, circleDiameter, this);
+        //g2d.drawImage(num2, xLocation2, yLocation2, circleDiameter, circleDiameter, this );
+        //g2d.drawImage(num3, xLocation3, yLocation3, circleDiameter, circleDiameter, this);
+        //g2d.drawImage(num4, xLocation4, yLocation4, circleDiameter, circleDiameter, this);
 
     }
 
     public void assignPlayers(){
-        int xNeutral = 49;
-        int yNeutral = 49;
+
 
         for( int i = 0; i < activePlayers.length; i++){
-            if(activePlayers[i].controller == null)
+            if(activePlayers[i].controller == null) {
+                System.out.println("hey");
                 continue;
+            }
+
+            //System.out.println(i+ " i");
             activePlayers[i].gamepad();
+            //System.out.println(activePlayers[i].xAxisPercentage + " x axis");
+            //System.out.println(activePlayers[0].stickInputLimitFrames + " player 1 frames");
+            //System.out.println(activePlayers[0] + "player 1");
+            //System.out.println(activePlayers[1] + "player 2");
+            //System.out.println(activePlayers[1].stickInputLimitFrames + " player 2 frames");
             //everything will happen here
             controller = activePlayers[i].controller;
 
@@ -195,12 +177,14 @@ public class Menu extends JPanel implements Runnable{
                         if (teamPositions[0] == null) {
 
                             teamPositions[0] = controller;
-                            System.out.println("left 1");
+
                             if(controller == activePlayers[0].controller){
+                                System.out.println("player 1 press left");
                                 xLocation1 = verticalLeftPos;
                                 yLocation1 = horizontalThirds;
                             }
                             else if(controller == activePlayers[1].controller){
+                                System.out.println("player 2 press left");
                                 xLocation2 = verticalLeftPos;
                                 yLocation2 = horizontalThirds;
                             }
@@ -246,11 +230,8 @@ public class Menu extends JPanel implements Runnable{
                             }
 
                         }
-
-
-
                     }
-
+                    activePlayers[i].stickInputLimitFrames = 0;
                 }
                 else if (activePlayers[i].xAxisPercentage > xNeutral + 40) {
 
@@ -338,12 +319,12 @@ public class Menu extends JPanel implements Runnable{
                         }
 
                     }
-
+                    activePlayers[i].stickInputLimitFrames = 0;
                 }
-                activePlayers[i].stickInputLimitFrames = 0;
+
 
             }
-            i++;
+
         }
     }
     /*
@@ -420,6 +401,95 @@ public class Menu extends JPanel implements Runnable{
             }
             //if button index is not null, wait a half a second il next input
         }
+    }
+
+    public void moveMenuLeft(int i){
+        if (teamPositions[2] == controller) {
+            teamPositions[2] = null;
+            System.out.println("center 3");
+            if(controller == activePlayers[0].controller){
+                xLocation1 = verticalCenterPos;
+                yLocation1 = horizontalFifths;
+            }
+            else if(controller == activePlayers[1].controller){
+                xLocation2 = verticalCenterPos;
+                yLocation2 = horizontalTwoFifths;
+            }
+
+        }
+        else if (teamPositions[3] == controller) {
+            teamPositions[3] = null;
+            System.out.println("center 4");
+            if(controller == activePlayers[0].controller){
+                xLocation1 = verticalCenterPos;
+                yLocation1 = horizontalFifths;
+            }
+            else if(controller == activePlayers[1].controller){
+                xLocation2 = verticalCenterPos;
+                yLocation2 = horizontalTwoFifths;
+            }
+        }
+        else {//if current position is in the center and you press left
+
+
+            if (teamPositions[0] == null) {
+
+                teamPositions[0] = controller;
+
+                if(controller == activePlayers[0].controller){
+                    System.out.println("player 1 press left");
+                    xLocation1 = verticalLeftPos;
+                    yLocation1 = horizontalThirds;
+                }
+                else if(controller == activePlayers[1].controller){
+                    System.out.println("player 2 press left");
+                    xLocation2 = verticalLeftPos;
+                    yLocation2 = horizontalThirds;
+                }
+
+            }
+            else if(teamPositions[0] == controller) {
+                System.out.println("already in left top spot");
+                if (controller == activePlayers[0].controller) {
+                    xLocation1 = verticalLeftPos;
+                    yLocation1 = horizontalThirds;
+                } else if (controller == activePlayers[1].controller) {
+                    xLocation2 = verticalLeftPos;
+                    yLocation2 = horizontalThirds;
+                }
+            }
+            else if (teamPositions[0] != controller) {// if one is already in top left spot
+                //try for 2nd player spot
+
+                if (teamPositions[1] == null) {
+                    teamPositions[1] = controller;
+                    System.out.println("left 2");
+                    if(controller == activePlayers[0].controller){
+                        xLocation1 = verticalLeftPos;
+                        yLocation1 = horizontalTwoThirds;
+                    }
+                    else if(controller == activePlayers[1].controller){
+                        xLocation2 = verticalLeftPos;
+                        yLocation2 = horizontalTwoThirds;
+                    }
+                }
+                else if(teamPositions[1] == controller) {
+                    System.out.println("already in left bottom spot");
+                                /*if (i == 0) {
+                                    xLocation1 = verticalLeftPos;
+                                    yLocation1 = horizontalTwoThirds;
+                                } else if (i == 1) {
+                                    xLocation2 = verticalLeftPos;
+                                    yLocation2 = horizontalTwoThirds;
+                                }*/
+                }
+                else if(teamPositions[1] != controller){
+                    System.out.println("Spots are taken up");
+                }
+
+            }
+        }
+        activePlayers[i].stickInputLimitFrames = 0;
     }
 
 

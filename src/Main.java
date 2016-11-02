@@ -7,9 +7,10 @@ import javax.swing.*;
  */
 public class Main {
 
-    public static void main(String[] args) {
 
-        GameDriver gd = new GameDriver();
+    public static void main(String[] args) {
+        // 1280, 720
+        GameDriver gd = new GameDriver(1366, 768 );
         ///*
 
         //*/

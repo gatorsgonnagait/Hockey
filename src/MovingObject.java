@@ -22,18 +22,17 @@ public abstract class MovingObject extends JComponent {
     int     dummy_radius;
     int     collisionFrames = 0;
     int     collisionDuration = 10;
+    /*
 
-    static int topBoundary = 100;
-    static int bottomBoundary = 450;
-    static int leftBoundary = 100;
-    static int rightBoundary = 900;
+    //static int topBoundary = 100;
+    //static int bottomBoundary = 450;
+    //static int leftBoundary = 100;
+    //static int rightBoundary = 900;
 
     static int leftGoalLine = 190;
     static int rightGoalLine = 810;
     static int topGoalPost = 235;
     static int bottomGoalPost = 315;
-    static int horizontalMiddle = 275;
-    static int verticalCenter = 500;
     static int leftGoalBack = 160;
     static int rightGoalBack = 840;
 
@@ -44,6 +43,12 @@ public abstract class MovingObject extends JComponent {
     Point arcCenter2 = new Point(rightBoundary-100,topBoundary+100);
     Point arcCenter3 = new Point(leftBoundary+100,bottomBoundary-100);
     Point arcCenter4 = new Point(rightBoundary - 100, bottomBoundary - 100);
+    */
+    Point arcCenter1 = new Point(GameDriver.leftBoundary + GameDriver.rinkWidth/8, GameDriver.topBoundary + GameDriver.rinkWidth/8);
+    Point arcCenter2 = new Point(GameDriver.rightBoundary - GameDriver.rinkWidth/8, GameDriver.topBoundary + GameDriver.rinkWidth/8);
+    Point arcCenter3 = new Point(GameDriver.leftBoundary + GameDriver.rinkWidth/8, GameDriver.bottomBoundary - GameDriver.rinkWidth/8);
+    Point arcCenter4 = new Point(GameDriver.rightBoundary - GameDriver.rinkWidth/8, GameDriver.bottomBoundary - GameDriver.rinkWidth/8);
+
 
     int hitWall = 0;
     boolean hitWalls = false;

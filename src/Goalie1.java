@@ -16,8 +16,8 @@ public class Goalie1 extends Player {
             location.y = location.y + 1; // moves down one pixel per frame
             count = 0;
         }
-        if(location.y >= bottomGoalPost) {
-            location.y = bottomGoalPost;
+        if(location.y >= GameDriver.bottomGoalPost) {
+            location.y = GameDriver.bottomGoalPost;
             //setAngle(Math.PI/2);
         }
 
@@ -28,8 +28,8 @@ public class Goalie1 extends Player {
             location.y = location.y - 1;
             count = 0;
         }
-        if(location.y <= topGoalPost) {
-            location.y = topGoalPost;
+        if(location.y <= GameDriver.topGoalPost) {
+            location.y = GameDriver.topGoalPost;
 
         }
     }
@@ -37,7 +37,7 @@ public class Goalie1 extends Player {
     @Override
     public void updateLocation() {
         stick.updateLocation();
-        location.x = leftGoalLine + 15;
+        location.x = GameDriver.leftGoalLine + 15;
         //double slope = (double) (horizontalMiddle - puck.location.y) / (leftGoalLine - puck.location.x);
         //double saveSpot = (horizontalMiddle + (210- leftGoalLine)*slope);
         double Y = puck.location.y - location.y;//makes it face puck
@@ -48,7 +48,7 @@ public class Goalie1 extends Player {
 
 
         // if puck is behind goal line
-        if (puck.location.x <= leftGoalLine){
+        if (puck.location.x <= GameDriver.leftGoalLine){
 
             if(puck.location.y < location.y){
                 moveGoalieUp();
