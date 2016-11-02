@@ -25,7 +25,7 @@ public class Puck extends MovingObject {
 
     @Override
     public void setRadius(int radius) {
-        super.setRadius(15);
+        super.setRadius(radius);
     }
 
 
@@ -198,16 +198,16 @@ public class Puck extends MovingObject {
 
             if( (location.x  < GameDriver.leftGoalLine && location.x > GameDriver.leftGoalBack ) || ( location.x > GameDriver.rightGoalLine && location.x < GameDriver.rightGoalBack) ) {
 
-                if(location.y <= GameDriver.topGoalPost + 11) {
+                if(location.y <= GameDriver.topGoalPost + bigBuffer) {
                     //System.out.println("noooo");
-                    location.y = GameDriver.topGoalPost +11;
+                    location.y = GameDriver.topGoalPost + bigBuffer;
                     reflection(angle, 2);
                     //speed = speed/2;
 
 
                 }
-                else if(location.y >= GameDriver.bottomGoalPost - 11){
-                    location.y = GameDriver.bottomGoalPost - 11;
+                else if(location.y >= GameDriver.bottomGoalPost - bigBuffer){
+                    location.y = GameDriver.bottomGoalPost - bigBuffer;
                     reflection(angle, 2);
                     //speed = speed/2;
                 }
@@ -215,16 +215,16 @@ public class Puck extends MovingObject {
             }
             else if(location.x < GameDriver.leftGoalBack ){//back of left goal
                     //System.out.println("back");
-                if(location.x >= GameDriver.leftGoalBack - 11) {
-                    location.x = GameDriver.leftGoalBack -11;
+                if(location.x >= GameDriver.leftGoalBack - bigBuffer) {
+                    location.x = GameDriver.leftGoalBack - bigBuffer;
                     reflection(angle, 1);
                 }
             }
             else if(location.x > GameDriver.rightGoalBack ){//back of right goal
                 //System.out.println("back");
-                if(location.x <= GameDriver.rightGoalBack + 11) {
+                if(location.x <= GameDriver.rightGoalBack + bigBuffer) {
 
-                    location.x = GameDriver.rightGoalBack + 11;
+                    location.x = GameDriver.rightGoalBack + bigBuffer;
                     reflection(angle, 1);
                 }
             }

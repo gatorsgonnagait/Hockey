@@ -534,15 +534,15 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             double Y = players[i].startY - players[i].location.y;
             double X = players[i].startX - players[i].location.x;
             players[i].setAngle(Math.atan2(Y, X));
-            players[i].location.x = (int) (players[i].location.x + 6 * Math.cos(players[i].angle));
-            players[i].location.y = (int) (players[i].location.y + 6 * Math.sin(players[i].angle));
+            players[i].location.x = (int) (players[i].location.x + players[i].playerSpeed*2 * Math.cos(players[i].angle));
+            players[i].location.y = (int) (players[i].location.y + players[i].playerSpeed*2 * Math.sin(players[i].angle));
             players[i].stick.updateLocation();
 
 
-            if(players[i].location.y > players[i].startY - 7
-                    && players[i].location.y < players[i].startY + 7
-                    && players[i].location.x > players[i].startX - 7
-                    && players[i].location.x < players[i].startX + 7){
+            if(players[i].location.y > players[i].startY - GameDriver.rinkWidth/100
+                    && players[i].location.y < players[i].startY +  GameDriver.rinkWidth/100
+                    && players[i].location.x > players[i].startX -  GameDriver.rinkWidth/100
+                    && players[i].location.x < players[i].startX +  GameDriver.rinkWidth/100){
 
                 players[i].location.x = players[i].startX;
                 players[i].location.y = players[i].startY;
@@ -552,14 +552,16 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             }
         }
 
-        if(puck.location.y > GameDriver.horizontalMiddle - 50
-                && puck.location.y < GameDriver.horizontalMiddle + 50
-                && puck.location.x > GameDriver.verticalCenter - 50
-                && puck.location.x < GameDriver.verticalCenter + 50){
+        if(puck.location.y > GameDriver.horizontalMiddle - GameDriver.rinkWidth/40
+                && puck.location.y < GameDriver.horizontalMiddle + GameDriver.rinkWidth/40
+                && puck.location.x > GameDriver.verticalCenter - GameDriver.rinkWidth/40
+                && puck.location.x < GameDriver.verticalCenter + GameDriver.rinkWidth/40){
 
-            puck.speed = 0;
+
             puck.location.y = GameDriver.horizontalMiddle;
             puck.location.x = GameDriver.verticalCenter;
+            puck.speed = 0;
+
 
             resetTimer++;
             if( resetTimer == 100) {

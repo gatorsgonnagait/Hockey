@@ -22,6 +22,8 @@ public abstract class MovingObject extends JComponent {
     int     dummy_radius;
     int     collisionFrames = 0;
     int     collisionDuration = 10;
+    int bigBuffer = Math.round(GameDriver.rinkWidth/80);
+    int smallBuffer = Math.round(GameDriver.rinkWidth/160);
     /*
 
     //static int topBoundary = 100;

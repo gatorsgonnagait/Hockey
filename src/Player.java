@@ -1,12 +1,7 @@
 import net.java.games.input.*;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -57,9 +52,10 @@ public class Player extends MovingObject {
     static boolean moved = false;
     Image img;
 
-    double slapShotSpeed = Math.round(GameDriver.width/100);
-    double wristShotSpeed = Math.round(GameDriver.width/160);
-    double playerSpeed = Math.round(GameDriver.width/300);
+    double slapShotSpeed = Math.round(GameDriver.rinkWidth/80);
+    double wristShotSpeed = Math.round(GameDriver.rinkWidth/160);
+    double playerSpeed = Math.round(GameDriver.rinkWidth/266);
+
 
     public Player(int id, Point point, int speed, double angle, int radius, Color color, Puck puck, Image img) {
         super(id, point, speed, angle, radius, color);
@@ -213,16 +209,16 @@ public class Player extends MovingObject {
                 location.x = GameDriver.rightBoundary - dummy_radius;
                 break;
             case 5:
-                location.y = GameDriver.topGoalPost - dummy_radius - 5;//left and right goal top
+                location.y = GameDriver.topGoalPost - dummy_radius - smallBuffer;//left and right goal top
                 break;
             case 6:
-                location.y = GameDriver.bottomGoalPost + dummy_radius + 5;//left and right goal bottom
+                location.y = GameDriver.bottomGoalPost + dummy_radius + smallBuffer;//left and right goal bottom
                 break;
             case 7:
-                location.x = GameDriver.leftGoalBack - dummy_radius - 5;//left  goal back
+                location.x = GameDriver.leftGoalBack - dummy_radius - smallBuffer;//left  goal back
                 break;
             case 8:
-                location.x = GameDriver.rightGoalBack + dummy_radius + 5;//right goal back
+                location.x = GameDriver.rightGoalBack + dummy_radius + smallBuffer;//right goal back
                 break;
             case 9:
                 location.x = GameDriver.leftGoalLine + radius;//left goal front
@@ -274,35 +270,35 @@ public class Player extends MovingObject {
         }
 
         else if(location.x < GameDriver.leftGoalLine && location.y  < GameDriver.topGoalPost){//left goal top
-            if(location.y >= GameDriver.topGoalPost - dummy_radius - 5 && location.x > GameDriver.leftGoalBack){
+            if(location.y >= GameDriver.topGoalPost - dummy_radius - smallBuffer && location.x > GameDriver.leftGoalBack){
                 hitWall = 5;
             }
         }
         else if(location.x  < GameDriver.leftGoalLine  && location.y > GameDriver.bottomGoalPost){//left goal bottom
-            if(location.y <= GameDriver.bottomGoalPost + dummy_radius + 5 && location.x > GameDriver.leftGoalBack){
+            if(location.y <= GameDriver.bottomGoalPost + dummy_radius + smallBuffer && location.x > GameDriver.leftGoalBack){
                 hitWall = 6;
             }
         }
         else if(location.x < GameDriver.leftGoalBack && location.y > GameDriver.topGoalPost &&//left goal back
                 location.y < GameDriver.bottomGoalPost){
 
-            if(location.x >= GameDriver.leftGoalBack - dummy_radius - 5)
+            if(location.x >= GameDriver.leftGoalBack - dummy_radius - smallBuffer)
                 hitWall = 7;
         }
         // Right Goal post
         else if(location.x > GameDriver.rightGoalLine && location.y < GameDriver.topGoalPost){//right goal top
-            if(location.y >= GameDriver.topGoalPost - dummy_radius - 5 && location.x < GameDriver.rightGoalBack){
+            if(location.y >= GameDriver.topGoalPost - dummy_radius - smallBuffer && location.x < GameDriver.rightGoalBack){
                 hitWall = 5;
             }
         }
         else if(location.x > GameDriver.rightGoalLine  && location.y > GameDriver.bottomGoalPost){//right goal bottom
-            if(location.y <= GameDriver.bottomGoalPost + dummy_radius + 5 && location.x < GameDriver.rightGoalBack){
+            if(location.y <= GameDriver.bottomGoalPost + dummy_radius + smallBuffer && location.x < GameDriver.rightGoalBack){
                 hitWall = 6;
             }
         }
         else if(location.x > GameDriver.rightGoalBack && location.y > GameDriver.topGoalPost &&//right goal back
                 location.y < GameDriver.bottomGoalPost){
-            if(location.x <= GameDriver.rightGoalBack + dummy_radius + 5 ) {
+            if(location.x <= GameDriver.rightGoalBack + dummy_radius + smallBuffer) {
                 hitWall = 8;
             }
         }
@@ -666,9 +662,9 @@ public class Player extends MovingObject {
             Y = puck.location.y - location.y;
             X = puck.location.x - location.x;
             setAngle(Math.atan2(Y, X));
+            setSpeed(wristShotSpeed);
             //goalie frozen on its track
-            location.x = (int) (location.x + 5 * Math.cos(angle));
-            location.y = (int) (location.y + 5 * Math.sin(angle));
+            positionCalculation(angle);
         }
         else if(puck.hold == 5 || puck.hold == 6){
 
@@ -682,10 +678,11 @@ public class Player extends MovingObject {
 
 
             puck.setAngle(Math.atan2(puckY, puckX));
-            puck.setSpeed(4);
+            puck.setSpeed(wristShotSpeed);
             //slapShot();
-            puck.location.x = (int) (puck.location.x + puck.speed * Math.cos(puck.angle));
-            puck.location.y = (int) (puck.location.y + puck.speed * Math.sin(puck.angle));
+            puck.positionCalculation(puck.angle);
+            //puck.location.x = (int) (puck.location.x + puck.speed * Math.cos(puck.angle));
+            //puck.location.y = (int) (puck.location.y + puck.speed * Math.sin(puck.angle));
 
         }
 
