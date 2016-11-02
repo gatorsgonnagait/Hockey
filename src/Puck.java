@@ -239,7 +239,7 @@ public class Puck extends MovingObject {
 
 
 
-
+    //
     public void hitPosts(){
         double distanceFromLeftTopPost = Math.sqrt(Math.pow((GameDriver.leftGoalLine - location.x), 2)
                 + Math.pow((GameDriver.topGoalPost  - (location.y + adjustment)), 2));
