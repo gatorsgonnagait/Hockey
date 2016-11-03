@@ -229,19 +229,19 @@ public class Player extends MovingObject {
                 break;
             case 11://top left net corner
                 location.x = GameDriver.leftGoalBack - dummy_radius ;
-                location.y = GameDriver.topGoalPost - dummy_radius ;
+                //location.y = GameDriver.topGoalPost - dummy_radius ;
                 break;
             case 12://bottom left net corner
                 location.x = GameDriver.leftGoalBack - dummy_radius;
-                location.y = GameDriver.bottomGoalPost + dummy_radius;
+                //location.y = GameDriver.bottomGoalPost + dummy_radius;
                 break;
             case 13://top right net corner
                 location.x = GameDriver.rightGoalBack + dummy_radius;
-                location.y = GameDriver.topGoalPost - dummy_radius;
+                //location.y = GameDriver.topGoalPost - dummy_radius;
                 break;
             case 14://bottom right net corner
                 location.x = GameDriver.rightGoalBack + dummy_radius;
-                location.y = GameDriver.bottomGoalPost + dummy_radius;
+                //location.y = GameDriver.bottomGoalPost + dummy_radius;
                 break;
 
         }
