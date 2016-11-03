@@ -181,6 +181,27 @@ public class Puck extends MovingObject {
                 reflection(angle, 2);
             }
         }
+        else if( location.x < GameDriver.leftGoalBack && location.y < GameDriver.topGoalPost){
+            //System.out.println("uppder back corner of the left net");
+
+            if(location.x >= GameDriver.leftGoalBack - dummy_radius && location.y >= GameDriver.topGoalPost - dummy_radius){
+                //System.out.println("reflect off top left corner");
+                location.x = GameDriver.leftGoalBack - dummy_radius;
+                location.y = GameDriver.topGoalPost - dummy_radius;
+                reflection(angle, 2);
+            }
+        }
+        else if( location.x > GameDriver.rightGoalBack && location.y < GameDriver.topGoalPost){
+            //System.out.println("uppder back corner of the right net");
+
+            if(location.x <= GameDriver.rightGoalBack + dummy_radius && location.y >= GameDriver.topGoalPost - dummy_radius){
+                //System.out.println("reflect off top right back corner");
+                location.x = GameDriver.rightGoalBack + dummy_radius;
+                location.y = GameDriver.topGoalPost - dummy_radius;
+                reflection(angle, 2);
+            }
+        }
+
         else if( (location.x < GameDriver.leftGoalLine  && location.x > GameDriver.leftGoalBack && location.y > GameDriver.bottomGoalPost )
                 || (location.x > GameDriver.rightGoalLine  && location.x < GameDriver.rightGoalBack && location.y > GameDriver.bottomGoalPost ) ){//bottom of left/ right goal
 
@@ -191,9 +212,30 @@ public class Puck extends MovingObject {
                 reflection(angle, 2);
             }
         }
+        else if( location.x < GameDriver.leftGoalBack && location.y > GameDriver.bottomGoalPost){
+            //System.out.println("lower back corner of the left net");
+
+            if(location.x >= GameDriver.leftGoalBack - dummy_radius && location.y <= GameDriver.bottomGoalPost + dummy_radius){
+                //System.out.println("reflect off bottom left corner");
+                location.x = GameDriver.leftGoalBack - dummy_radius;
+                location.y = GameDriver.bottomGoalPost + dummy_radius;
+                reflection(angle, 2);
+            }
+        }
+        else if( location.x > GameDriver.rightGoalBack && location.y > GameDriver.bottomGoalPost){
+            //System.out.println("lower back corner of the right net");
+
+            if(location.x <= GameDriver.rightGoalBack - dummy_radius && location.y <= GameDriver.bottomGoalPost + dummy_radius){
+                //System.out.println("reflect off bottom right corner");
+                location.x = GameDriver.rightGoalBack + dummy_radius;
+                location.y = GameDriver.bottomGoalPost + dummy_radius;
+                reflection(angle, 2);
+            }
+        }
 
 
 
+        //inside the goals
         else if(location.y > GameDriver.topGoalPost  && location.y < GameDriver.bottomGoalPost ) {
 
             if( (location.x  < GameDriver.leftGoalLine && location.x > GameDriver.leftGoalBack ) || ( location.x > GameDriver.rightGoalLine && location.x < GameDriver.rightGoalBack) ) {
@@ -233,13 +275,15 @@ public class Puck extends MovingObject {
         }
 
 
+
+
         hitPosts();
 
     }
 
 
 
-    //
+
     public void hitPosts(){
         double distanceFromLeftTopPost = Math.sqrt(Math.pow((GameDriver.leftGoalLine - location.x), 2)
                 + Math.pow((GameDriver.topGoalPost  - (location.y + adjustment)), 2));
