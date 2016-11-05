@@ -45,6 +45,7 @@ public class Player extends MovingObject {
     int xAxisPercentage;
     int yAxisPercentage;
     String buttonIndex = "";
+    String previousButton = "";
     double initAngle;
 
     MouseEvent e = null;
@@ -130,7 +131,8 @@ public class Player extends MovingObject {
             //System.out.println(components[i].getName());
             net.java.games.input.Component component = components[i];
             net.java.games.input.Component.Identifier componentIdentifier = component.getIdentifier();
-
+            //previousButton = component.getIdentifier().toString();
+            //System.out.println(previousButton);
             if (componentIdentifier.getName().matches("^[0-9]*$")) { // If the component identifier name contains only numbers, then this is a button.
                 // Is button pressed?
                 boolean isItPressed = true;
@@ -139,7 +141,10 @@ public class Player extends MovingObject {
                 }
                 else{
                     buttonIndex = component.getIdentifier().toString();
-                    buttonActions();
+                    if(previousButton.equals("")) {
+                        buttonActions();
+                    }
+
                     //System.out.println(buttonIndex);
 
                 }
@@ -173,9 +178,12 @@ public class Player extends MovingObject {
 
     public void buttonActions(){
 
+
+
         if(buttonInputLimitFrames >20) {
 
             if (buttonIndex.equals("0")) {
+                System.out.println("steal");
                 pressZeroButton();
 
             } else if (buttonIndex.equals("1") || buttonIndex.equals("3")) {
@@ -188,8 +196,8 @@ public class Player extends MovingObject {
             if (buttonIndex != "") {
                 buttonInputLimitFrames = 0;
             }
-
         }
+
     }
 
 
@@ -545,9 +553,9 @@ public class Player extends MovingObject {
         int stickHoldingPointX = (int) Math.round((location.x + (radius ) * Math.cos(angle)));
         int stickHoldingPointY = (int) Math.round((location.y + (radius ) * Math.sin(angle)));
 
-        double distance = getDistance(puck.location.x, stickHoldingPointX, puck.location.y, stickHoldingPointY);
+        double distance = getDistance(puck.location.x, stickHoldingPointX, puck.location.y, stickHoldingPointY);//distance from puck
 
-        if (distance <= puckGrabArea && release != 1) {
+        if (distance <= puckGrabArea && release != 1) {//of your
 
             if(puck.hold == 0){
 
@@ -556,6 +564,7 @@ public class Player extends MovingObject {
             else if (stealFlag){
                 puck.hold = id;
                 stealFlag = false;
+                stealFrames = 0;
             }
 
             //Rink.possession = id;
@@ -636,6 +645,7 @@ public class Player extends MovingObject {
 
     public void steal(){
         stealFrames++;
+        System.out.println(stealFrames);
         if (stealFrames > 10) {//steal flag only last for 10 active frames
             stealFlag = false;
             stealFrames = 0;
@@ -647,7 +657,14 @@ public class Player extends MovingObject {
             wristShot();
         }
         else{
-            stealFlag = true;//starts steal
+            if(stealFrames == 0) {
+                stealFlag = true;//starts steal
+            }
+            else if(stealFrames > 50) {
+                System.out.println("past frame limit");
+                stealFrames = 0;
+                stealFlag = true;//starts steal
+            }
         }
     }
 

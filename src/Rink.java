@@ -113,7 +113,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         //rink.draw(new Rectangle2D.Double(MovingObject.rightGoalLine, MovingObject.topGoalPost, 30, 80));
         rink.draw(new Rectangle2D.Double(GameDriver.rightGoalLine, GameDriver.topGoalPost, GameDriver.goalWidth, GameDriver.goalLength));
         //center circle
-        rink.setColor(Color.BLUE);
+        rink.setColor(Color.BLUE);// center circle
         rink.drawOval(GameDriver.verticalCenter - GameDriver.height/12, GameDriver.horizontalMiddle - GameDriver.height/12, GameDriver.height/6, GameDriver.height/6);
         rink.setColor(Color.BLACK);
         //public abstract void setRoundRect(double x,double y,double w,double h,double arcWidth, double arcHeight)
@@ -488,11 +488,11 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         if (toPlayer3 < toPlayer1 && toPlayer3 < toPlayer2 && toPlayer3 < toPlayer4) {// if player one is closest
             System.out.println("pass back to player 3");
 
-            players[5].setAngle(Math.atan2(Y3, X3));
+            players[6].setAngle(Math.atan2(Y3, X3));
         }
         else if (toPlayer4 < toPlayer1 && toPlayer4 < toPlayer2 && toPlayer4 < toPlayer3) {// if player 2 is closest
             System.out.println("pass back to player 4");
-            players[5].setAngle(Math.atan2(Y4, X4));
+            players[6].setAngle(Math.atan2(Y4, X4));
         }
         else if( (toPlayer3 < toPlayer1 || toPlayer3 < toPlayer2 || toPlayer4 < toPlayer1 || toPlayer4 < toPlayer2)){
 
@@ -552,10 +552,10 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             }
         }
 
-        if(puck.location.y > GameDriver.horizontalMiddle - GameDriver.rinkWidth/40
-                && puck.location.y < GameDriver.horizontalMiddle + GameDriver.rinkWidth/40
-                && puck.location.x > GameDriver.verticalCenter - GameDriver.rinkWidth/40
-                && puck.location.x < GameDriver.verticalCenter + GameDriver.rinkWidth/40){
+        if(puck.location.y > GameDriver.horizontalMiddle - GameDriver.rinkWidth/20
+                && puck.location.y < GameDriver.horizontalMiddle + GameDriver.rinkWidth/20
+                && puck.location.x > GameDriver.verticalCenter - GameDriver.rinkWidth/20
+                && puck.location.x < GameDriver.verticalCenter + GameDriver.rinkWidth/20){
 
 
             puck.location.y = GameDriver.horizontalMiddle;

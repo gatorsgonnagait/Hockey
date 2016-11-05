@@ -3,7 +3,7 @@ import java.util.LinkedList;
 
 public class Collision {
 
-
+    /*
     //ArrayList<ArrayList<MovingObject>> adjList = new ArrayList<>(7);
 
     private static int WHITE = 0;
@@ -95,7 +95,7 @@ public class Collision {
         }
     }
 
-    /*
+    //commented
     public void calculateCollisions(MovingObject ob1, MovingObject ob2){
         double Y = ob1.location.y - ob1.location.y;
         double X = ob1.location.x - ob2.location.x;
@@ -130,9 +130,9 @@ public class Collision {
         ob2.setAngle(Math.abs(ob2Angle));//TE
         System.out.println(ob1.angle);
         System.out.println(ob2.angle);
-    }*/
+    }
 
-/*
+
     public void calculateCollisions(MovingObject ob1, MovingObject ob2){
         double Y = ob1.location.y - ob1.location.y;
         double X = ob1.location.x - ob2.location.x;
@@ -175,7 +175,7 @@ public class Collision {
         System.out.println(ob1.angle);
         System.out.println(ob2.angle);//ll
     }
-*/
+    // commented
 
     public void calculateCollisions(MovingObject ob1, MovingObject ob2){
         System.out.println("Calculating for " + ob1.color + " and " + ob2.color);
@@ -209,4 +209,5 @@ public class Collision {
         System.out.println(ob1.id+" angle " + ob1.angle);
         System.out.println(ob2.id+" angle " + ob2.angle);
     }
+    */
 }

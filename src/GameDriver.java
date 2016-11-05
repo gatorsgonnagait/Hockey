@@ -142,6 +142,8 @@ public class GameDriver {
         rinkWidth = 6 * width/8;
         rinkHeight = 3 * height/5;
 
+        System.out.println();
+
         leftGoalLine = leftBoundary + rinkWidth/9;
         rightGoalLine = leftBoundary + rinkWidth * 8/9;
         topGoalPost = horizontalMiddle - rinkHeight * 4/35;
