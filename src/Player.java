@@ -33,6 +33,7 @@ public class Player extends MovingObject {
     int slideLimit = 9;
     double oldAngle = 0;
     int buttonInputLimitFrames;
+    int preventHoldingButtons;
     int stickInputLimitFrames = 0;
     double tempSpeed;
     double tempAngle;
@@ -56,6 +57,7 @@ public class Player extends MovingObject {
     double slapShotSpeed = Math.round(GameDriver.rinkWidth/65 );
     double wristShotSpeed = Math.round(GameDriver.rinkWidth/140);
     double playerSpeed = Math.round(GameDriver.rinkWidth/260);
+
 
 
     public Player(int id, Point point, int speed, double angle, int radius, Color color, Puck puck, Image img) {
@@ -116,7 +118,8 @@ public class Player extends MovingObject {
     }
 
     public void gamepad(){
-
+        System.out.println(previousButton);
+        boolean set = false;
         // Currently selected controller.
         //int selectedControllerIndex = window.getSelectedControllerName();
         //Controller controller = foundControllers.get(selectedControllerIndex);
@@ -125,6 +128,7 @@ public class Player extends MovingObject {
         net.java.games.input.Component[] components = controller.getComponents();
 
         buttonInputLimitFrames++;
+        //preventHoldingButtons = buttonInputLimitFrames;
         stickInputLimitFrames++;
 
         for(int i=0; i < components.length; i++) {
@@ -133,6 +137,9 @@ public class Player extends MovingObject {
             net.java.games.input.Component.Identifier componentIdentifier = component.getIdentifier();
             //previousButton = component.getIdentifier().toString();
             //System.out.println(previousButton);
+
+
+
             if (componentIdentifier.getName().matches("^[0-9]*$")) { // If the component identifier name contains only numbers, then this is a button.
                 // Is button pressed?
                 boolean isItPressed = true;
@@ -140,16 +147,22 @@ public class Player extends MovingObject {
                     isItPressed = false;
                 }
                 else{
+                    //System.out.println(buttonInputLimitFrames);
+                    set = true;
                     buttonIndex = component.getIdentifier().toString();
-                    if(previousButton.equals("")) {
+                    if (!buttonIndex.equals(previousButton)) {
+                        //System.out.println("test previous button");
                         buttonActions();
+                        previousButton = buttonIndex;
                     }
+
 
                     //System.out.println(buttonIndex);
 
                 }
                 continue;
             }
+
 
             if (component.isAnalog()) {
                 float axisValue = component.getPollData();
@@ -173,6 +186,9 @@ public class Player extends MovingObject {
             }
             //if button index is not null, wait a half a second il next input
         }
+        if(!set) {
+            previousButton = "";
+        }
     }
 
 
@@ -180,7 +196,7 @@ public class Player extends MovingObject {
 
 
 
-        if(buttonInputLimitFrames >20) {
+        if(buttonInputLimitFrames >40) {
 
             if (buttonIndex.equals("0")) {
                 System.out.println("steal");
@@ -645,7 +661,7 @@ public class Player extends MovingObject {
 
     public void steal(){
         stealFrames++;
-        System.out.println(stealFrames);
+        //System.out.println(stealFrames);
         if (stealFrames > 10) {//steal flag only last for 10 active frames
             stealFlag = false;
             stealFrames = 0;

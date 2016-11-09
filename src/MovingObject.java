@@ -118,6 +118,8 @@ public abstract class MovingObject extends JComponent {
         location.y = (int) Math.round((location.y + speed * Math.sin(angle)));
     }
 
+
+
     public double getDistance(int x1, double x2, int y1, double y2){
         return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
     }
