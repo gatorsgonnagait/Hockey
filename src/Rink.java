@@ -53,6 +53,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
     ScorePanel scorePanel = new ScorePanel();
     boolean setScore1 = false;
     boolean setScore2 = false;
+    static boolean isPuckSlow = true;
 
     static int i = 0;
 
@@ -201,15 +202,45 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
 
         possession = puck.hold;
-        if(i%15 == 0){//call friction method every 10 bodyCheckFrames
-            puck.speed = puck.setSpeedFriction(puck.frictionCoefficient);
 
-        }
+
+
+
         puck.hitWalls();
         puck.hitGoals();
         goalScored();
-        puck.updateLocation();
 
+        //System.out.println(puck.speed);
+        if(puck.speed > GameDriver.rinkWidth /300 ) {
+            //isPuckSlow = true;
+            if (i % 15 == 0) {
+                puck.speed = puck.setSpeedFriction(puck.frictionCoefficient);
+
+            }
+
+            puck.updateLocation();
+
+        }
+        else if ( puck.speed < GameDriver.rinkWidth/300 && puck.speed > 0.1 ){
+            if(Puck.pointList.size()==0) {
+                System.out.println(" slow puck");
+                puck.slowPuckLine();//run this once
+                //isPuckSlow = false;
+            }
+            //if (i % 15 == 0) {
+                System.out.println(" stop puck");
+                puck.stopPuck();
+
+            //}
+
+
+        }
+        else if(puck.speed <= .1){
+            puck.speed = 0;
+            if(Puck.pointList.size() != 0)
+                Puck.pointList.clear();
+            puck.updateLocation();
+        }
 
 
 

@@ -117,6 +117,11 @@ public abstract class MovingObject extends JComponent {
         location.x = (int) Math.round((location.x + speed * Math.cos(angle)));
         location.y = (int) Math.round((location.y + speed * Math.sin(angle)));
     }
+    /* fiz weird movement when the  objects slow down, interpolation
+    when the speed gets under 1.0, calculate the line that the object would be going through
+    find out end point on the line that would be the moving objects path until the speed hit zero
+    calculate a few points on the line and move the object alone that line til it hits zero
+     */
 
 
 
