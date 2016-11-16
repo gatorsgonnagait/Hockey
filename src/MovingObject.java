@@ -7,6 +7,7 @@
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public abstract class MovingObject extends JComponent {
 
@@ -24,6 +25,7 @@ public abstract class MovingObject extends JComponent {
     int     collisionDuration = 10;
     int bigBuffer = Math.round(GameDriver.rinkWidth/80);
     int smallBuffer = Math.round(GameDriver.rinkWidth/160);
+    ArrayList<double[]> pointList = new ArrayList<>();
     /*
 
     //static int topBoundary = 100;
@@ -131,6 +133,41 @@ public abstract class MovingObject extends JComponent {
 
     public static double getDistance(int x1, int x2, int y1, int y2){
         return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
+    }
+
+    public void interpolationLine(double driftAngle){
+
+        double X = (double) location.x;
+        double Y = (double) location.y;
+
+        for(int i = 0; i < 6; i++){
+            speed = speed * .95;
+            X = X + speed * Math.cos(driftAngle);
+            Y = Y + speed * Math.sin(driftAngle);
+
+            double[] arr = new double[]{X, Y};
+            pointList.add(arr);
+        }
+    }
+
+    int k = 0;
+    public void stopObject(){
+        if(k < pointList.size()) {
+
+            double pixelX = pointList.get(k)[0] % (int) pointList.get(k)[0];
+            double pixelY = pointList.get(k)[1] % (int) pointList.get(k)[1];
+
+            if( (pixelX < .4 || pixelX > .6) && (pixelY < .4 || pixelY > .6) ) {
+
+                location.x = (int) Math.round(pointList.get(k)[0]);
+                location.y = (int) Math.round(pointList.get(k)[1]);
+            }
+            k++;
+        }
+        else{
+            pointList.clear();
+            k = 0;
+        }
     }
 
 

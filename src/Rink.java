@@ -1,13 +1,4 @@
-
-import com.sun.org.apache.xml.internal.security.utils.SignerOutputStream;
-import com.sun.org.apache.xpath.internal.SourceTree;
-import net.java.games.input.Controller;
-import net.java.games.input.Component;
-import net.java.games.input.Component.Identifier;
-
-
 import javax.swing.*;
-import javax.swing.plaf.synth.SynthToggleButtonUI;
 import java.awt.event.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
@@ -18,8 +9,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Color;
-
-import java.util.ArrayList;
 
 
 /**
@@ -51,17 +40,12 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
     static int score = 0;
     int positionSwitch = 0;
 
-
-
     ScorePanel scorePanel = new ScorePanel();
     boolean setScore1 = false;
     boolean setScore2 = false;
     static boolean isPuckSlow = true;
 
     static int i = 0;
-
-
-
 
     Rink() {
         setPreferredSize(new Dimension(GameDriver.width, GameDriver.height));
@@ -173,15 +157,13 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         System.out.println("RUNNING");
         long m = 0;
         int frames = 0;
-        //int second= 0;
-        //long n = System.currentTimeMillis();
         long nano = System.nanoTime();
 
         while(true) {
             i++;
             scorePanel.fps++;
 
-            System.out.println("FPS " + scorePanel.fps);
+            //System.out.println("FPS " + scorePanel.fps);
 
             /*
             try {
@@ -192,8 +174,6 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             updateAll();
             repaint();
             */
-
-
             //40 fps 25000000 60 fps 16666667
             long initTime = System.nanoTime();
             updateAll();
@@ -237,11 +217,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         //int testX = puck.location.x;
         //int testY = puck.location.y;
 
-
         possession = puck.hold;
-
-
-
 
         puck.hitWalls();
         puck.hitGoals();
@@ -257,11 +233,11 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         else if ( puck.speed < GameDriver.rinkWidth/200 && puck.speed > 0.1 && puck.hold == 0){
 
             if(puck.pointList.size()==0) {
-                puck.slowPuckLine();//run this once
+                puck.interpolationLine();//run this once
             }
 
 
-            puck.stopPuck();
+            puck.stopObject();
         }
         else if(puck.speed <= .1 && puck.hold == 0){
             puck.speed = 0;
@@ -337,7 +313,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             mo.slapShot();
         }
 
-        if(mo.bodyCheckFlag){
+        else if(mo.bodyCheckFlag){
             mo.bodyCheck();
         }
         else if (mo == selectedPlayer4){
@@ -360,10 +336,11 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
             mo.updateLocationController(mo.xAxisPercentage, mo.yAxisPercentage);
         }
+
         else {
             if (mo.colliding) {
                 mo.updateLocationCol();
-            } else {
+            } else {// for goalies
                 mo.updateLocation();
             }
         }
@@ -385,15 +362,6 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         players[3].startX = players[4].startX;
         players[4].startY = tempY;
         players[4].startX = tempX;
-
-        //tempA = players[1].initAngle;
-        //players[1].initAngle = players[2].initAngle;
-        //players[2].initAngle = tempA;
-
-        //tempA = players[3].initAngle;
-        //players[3].initAngle = players[4].initAngle;
-        //players[4].initAngle = tempA;
-
 
     }
 
@@ -448,7 +416,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
     public void goalieHold(){
         goalieTimer++;
-        if (goalieTimer == 400) {
+        if (goalieTimer == 800) {
             if (puck.hold == 5) {
                 if (players[1].location.x > GameDriver.leftGoalLine ||
                         players[2].location.x > GameDriver.leftGoalLine) {
@@ -612,6 +580,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
                 players[i].location.y = players[i].startY;
                 players[i].angle = players[i].initAngle;
                 players[i].stick.updateLocation();
+                players[i].slideList.clear();
 
             }
         }
@@ -625,6 +594,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             puck.location.y = GameDriver.horizontalMiddle;
             puck.location.x = GameDriver.verticalCenter;
             puck.speed = 0;
+
 
 
             resetTimer++;
@@ -753,7 +723,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         getActionMap().put("button1", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("PRESS Jjjjjjjjjjjj");
+                //System.out.println("PRESS Jjjjjjjjjjjj");
                 selectedPlayer4.pressZeroButton();
 
 
@@ -791,22 +761,6 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
     }
 
-    private class MotionAction extends AbstractAction implements ActionListener
-    {
-        public MotionAction(Player p, double angle)
-        {
-            p = selectedPlayer2;
-            angle = selectedPlayer2.angle;
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-        }
-    }
-
-    public void useKeys(Player p, double angle){
-
-    }
 
 
 

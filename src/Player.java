@@ -22,10 +22,6 @@ public class Player extends MovingObject {
     double slideAngle= 0;
     int start = 0;
     LinkedList <Double> slideList = new LinkedList<>();
-    double oldDistance = 0;
-    int oldX = 0;
-    int oldY = 0;
-    double distance = 0;
     int bodyCheckFrames = 0;
     int slapShotFrames = 0;
     boolean bodyCheckFlag = false;
@@ -33,9 +29,7 @@ public class Player extends MovingObject {
     int stealFrames = 0;
     boolean stealFlag = false;
     int slideLimit = 9;
-    double oldAngle = 0;
     int buttonInputLimitFrames;
-    int preventHoldingButtons;
     int stickInputLimitFrames = 0;
     double tempSpeed;
     double tempAngle;
@@ -56,9 +50,19 @@ public class Player extends MovingObject {
     static boolean moved = false;
     Image img;
 
+    int xNeutral = 49;
+    int yNeutral = 49;
+    double distance;
+    double controllerX;
+    double controllerY;
+
+
     double slapShotSpeed = Math.round(GameDriver.rinkWidth/100 );
     double wristShotSpeed = Math.round(GameDriver.rinkWidth/156);
     double playerSpeed = Math.round(GameDriver.rinkWidth/260);
+    double driftAngle;
+
+
 
 
 
@@ -92,10 +96,6 @@ public class Player extends MovingObject {
     }
 
 
-
-
-
-
     public void setPuck(Puck pk){
         puck = pk;
     }
@@ -120,7 +120,7 @@ public class Player extends MovingObject {
     }
 
     public void gamepad(){
-        System.out.println(previousButton);
+        //System.out.println(previousButton);
         boolean set = false;
         // Currently selected controller.
         //int selectedControllerIndex = window.getSelectedControllerName();
@@ -157,21 +157,14 @@ public class Player extends MovingObject {
                         buttonActions();
                         previousButton = buttonIndex;
                     }
-
-
-                    //System.out.println(buttonIndex);
-
                 }
                 continue;
             }
-
 
             if (component.isAnalog()) {
                 float axisValue = component.getPollData();
                 //System.out.println(axisValue);
                 int axisValueInPercentage = getAxisValueInPercentage(axisValue);
-
-
                 // X axis
                 if (componentIdentifier == net.java.games.input.Component.Identifier.Axis.X) {
                     xAxisPercentage = axisValueInPercentage;
@@ -184,7 +177,6 @@ public class Player extends MovingObject {
                     // System.out.println("Y " + yAxisPercentage);
                     continue; // Go to next component.
                 }
-
             }
             //if button index is not null, wait a half a second il next input
         }
@@ -196,12 +188,10 @@ public class Player extends MovingObject {
 
     public void buttonActions(){
 
-
-
         if(buttonInputLimitFrames >40) {
 
             if (buttonIndex.equals("0")) {
-                System.out.println("steal");
+                //System.out.println("steal");
                 pressZeroButton();
 
             } else if (buttonIndex.equals("1") || buttonIndex.equals("3")) {
@@ -316,7 +306,6 @@ public class Player extends MovingObject {
         }
         else if(location.x < GameDriver.leftGoalBack && location.y > GameDriver.topGoalPost &&//left goal back
                 location.y < GameDriver.bottomGoalPost){
-
             if(location.x >= GameDriver.leftGoalBack - dummy_radius - smallBuffer)
                 hitWall = 7;
         }
@@ -341,7 +330,7 @@ public class Player extends MovingObject {
             }
         }
 
-        else if(location.x > GameDriver.leftGoalLine && location.y > GameDriver.topGoalPost &&//left goal front
+        else if(location.x > GameDriver.leftGoalLine && location.y > GameDriver.topGoalPost &&//front of gials
                 location.y < GameDriver.bottomGoalPost  && location.x < GameDriver.rightGoalLine){
             if(location.x <= GameDriver.leftGoalLine + radius)
                 hitWall = 9;
@@ -369,29 +358,25 @@ public class Player extends MovingObject {
                 hitWall = 14;
             }
         }
-        else if (location.y < GameDriver.topGoalPost && location.x > GameDriver.leftGoalLine) {//left goal top front corner
+        else if (location.y < GameDriver.topGoalPost && location.x > GameDriver.leftGoalLine && location.x < GameDriver.verticalCenter) {//left goal top front corner
             if (location.y + dummy_radius  >= GameDriver.topGoalPost && location.x - dummy_radius <= GameDriver.leftGoalLine) {
                 hitWall = 15;
             }
         }
-        else if (location.y > GameDriver.bottomGoalPost && location.x > GameDriver.leftGoalLine) {//left goal bottom corner
+        else if (location.y > GameDriver.bottomGoalPost && location.x > GameDriver.leftGoalLine && location.x < GameDriver.verticalCenter) {//left goal bottom corner
             if (location.y - dummy_radius  <= GameDriver.bottomGoalPost && location.x - dummy_radius <= GameDriver.leftGoalLine) {
                 hitWall = 15;
             }
         }
 
-        else if (location.y < GameDriver.topGoalPost && location.x < GameDriver.rightGoalLine) {//left goal top back
+        else if (location.y < GameDriver.topGoalPost && location.x < GameDriver.rightGoalLine && location.x > GameDriver.verticalCenter) {//left goal top back
 
             if (location.y + dummy_radius >= GameDriver.topGoalPost && location.x + dummy_radius >= GameDriver.rightGoalLine) {
                 hitWall = 16;
             }
         }
-        else if (location.y < GameDriver.topGoalPost && location.x < GameDriver.leftGoalBack) {//left goal top back corner
-            if (location.y + dummy_radius >= GameDriver.topGoalPost && location.x + dummy_radius >= GameDriver.leftGoalBack) {
-                hitWall = 11;
-            }
-        }
-        else if (location.y > GameDriver.bottomGoalPost && location.x < GameDriver.rightGoalLine) {//left goal bottom  corner
+
+        else if (location.y > GameDriver.bottomGoalPost && location.x < GameDriver.rightGoalLine && location.x > GameDriver.verticalCenter) {//left goal bottom  corner
             if (location.y - dummy_radius <= GameDriver.bottomGoalPost && location.x + dummy_radius >= GameDriver.rightGoalLine) {
                 hitWall = 16;
             }
@@ -479,34 +464,32 @@ public class Player extends MovingObject {
         }
     }
 
+    public double playerAngle(double xAxisPercentage, double yAxisPercentage){
+        distance = getDistance(xNeutral, xAxisPercentage, yNeutral, yAxisPercentage);
+        controllerX = xAxisPercentage - xNeutral;
+        controllerY = yAxisPercentage - yNeutral;
+        return Math.atan2(controllerY, controllerX);
+    }
+
 
     public void updateLocationController(double xAxisPercentage, double yAxisPercentage){
-        //System.out.println("x " + xAxisPercentage + "y " +yAxisPercentage);
-        int xNeutral = 49;
-        int yNeutral = 49;
 
-        double distance = getDistance(xNeutral, xAxisPercentage, yNeutral, yAxisPercentage);
-        double controllerX = xAxisPercentage - xNeutral;
-        double controllerY = yAxisPercentage - yNeutral;
-
-        double newAngle = Math.atan2(controllerY, controllerX);
+        double newAngle = playerAngle(xAxisPercentage, yAxisPercentage);
 
         stick.updateLocation();
         slideList(newAngle);
 
-        //oldAngle = slideList.getLast();
-
-
         if( distance > 24 && distance < 38){// controller grace area. allows you to turn without moving
             //System.out.println(start);
             setAngle(newAngle);
-            tempAngle = angle;
+            driftAngle = angle;
             if (start == 0) {
                 start = 1;
                 slideList.clear();
             }
         }
         else if(distance >= 38) {
+            pointList.clear();
             setAngle(newAngle);
             setSpeed(playerSpeed);
             if(start == 1) { //if was stopped before, dont use the slide angle to calculate position
@@ -519,14 +502,27 @@ public class Player extends MovingObject {
                 tempSpeed = speed;
             }
         }
-        else if (distance < 9 ) {
-            if (tempSpeed != 0) {
-                setAngle(tempAngle);
-                positionCalculation(tempAngle);
-                if (Rink.i % 10  == 0) {//call friction method every 10 bodyCheckFrames
+        else if (distance <= 24 ) {
+            //if (tempSpeed > .1) {
+                /*
+                setAngle(driftAngle);
+                positionCalculation(driftAngle);
+                if (Rink.i % 15  == 0) {//call friction method every 10 bodyCheckFrames
                     speed = setSpeedFriction(frictionCoefficient);
+                }*/
 
+                if(pointList.size()==0) {
+                    interpolationLine(driftAngle);
                 }
+                stopObject();
+
+            //}
+            if(speed <= .1 ){
+                speed = 0;
+                if(pointList.size() != 0)
+                    pointList.clear();
+
+                //positionCalculation(driftAngle);
             }
         }
     }
@@ -639,9 +635,21 @@ public class Player extends MovingObject {
 
     public void slapShot(){
         //Rink.possession = 0;
+        if(slapShotFrames == 0){
+            driftAngle = angle;
+        }
         slapShotFrames++;
+        double newAngle = playerAngle(xAxisPercentage, yAxisPercentage);
+        setAngle(newAngle);
 
-        if(slapShotFrames > 35) {
+        if(pointList.size()==0) {
+            interpolationLine(driftAngle);
+        }
+
+        stopObject();
+        stick.updateLocation();
+
+        if(slapShotFrames > 50) {
             release = 1;
             puck.hold = 0;
             puck.setAngle(angle);
@@ -649,6 +657,10 @@ public class Player extends MovingObject {
             puck.updateLocation();
             slapShotFrames = 0;
             slapShotFlag = false;
+
+            if(pointList.size() != 0)
+                pointList.clear();
+            updateLocation();
         }
     }
 
@@ -769,10 +781,7 @@ public class Player extends MovingObject {
             //puck.location.y = (int) (puck.location.y + puck.speed * Math.sin(puck.angle));
 
         }
-
-
     }
-
 
 
 

@@ -13,7 +13,7 @@ public class Puck extends MovingObject {
 
     int postTimer = 0;
     int hold = 0;
-    ArrayList<double[]> pointList = new ArrayList<>();
+
 
     double frictionCoefficient = .95;
     public Puck(int id, Point point, int speed, double angle, int radius, Color color) {
@@ -23,7 +23,7 @@ public class Puck extends MovingObject {
 
     }
 
-    public void slowPuckLine(){
+    public void interpolationLine(){
 
         double X = (double) location.x;
         double Y = (double) location.y;
@@ -39,7 +39,7 @@ public class Puck extends MovingObject {
     }
 
     int k = 0;
-    public void stopPuck(){
+    public void stopObject(){
         if(k < pointList.size()) {
 
             double pixelX = pointList.get(k)[0] % (int) pointList.get(k)[0];
@@ -56,7 +56,6 @@ public class Puck extends MovingObject {
             pointList.clear();
             k = 0;
         }
-
     }
 
 
@@ -78,7 +77,6 @@ public class Puck extends MovingObject {
                 && location.x + radius< GameDriver.leftGoalLine
                 && location.y - dummy_radius > GameDriver.topGoalPost
                 && location.y  + dummy_radius < GameDriver.bottomGoalPost ){
-
 
             setSpeed(0);
             return true;
