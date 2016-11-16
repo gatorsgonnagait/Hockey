@@ -1,10 +1,13 @@
 
+import com.sun.org.apache.xml.internal.security.utils.SignerOutputStream;
+import com.sun.org.apache.xpath.internal.SourceTree;
 import net.java.games.input.Controller;
 import net.java.games.input.Component;
 import net.java.games.input.Component.Identifier;
 
 
 import javax.swing.*;
+import javax.swing.plaf.synth.SynthToggleButtonUI;
 import java.awt.event.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
@@ -168,14 +171,19 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
     @Override
     public void run() {
         System.out.println("RUNNING");
+        long m = 0;
+        int frames = 0;
+        //int second= 0;
+        //long n = System.currentTimeMillis();
+        long nano = System.nanoTime();
 
         while(true) {
             i++;
             scorePanel.fps++;
 
-            //System.out.println("FPS " + scorePanel.fps);
-            //moved = false;
-            //dragged = false;
+            System.out.println("FPS " + scorePanel.fps);
+
+            /*
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
@@ -183,6 +191,33 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             }
             updateAll();
             repaint();
+            */
+
+
+            //40 fps 25000000 60 fps 16666667
+            long initTime = System.nanoTime();
+            updateAll();
+            long elapsed = (System.nanoTime() - initTime);
+            //System.out.println(elapsed);
+            int sleepTime = (int) ((12000000.0 - elapsed ) / 1000000.0);
+            //System.out.println(sleepTime);
+            if( sleepTime > 0) {
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            repaint();
+            /*
+            frames++;
+                System.out.println("frames " +frames);
+            if (frames % 60 == 0) {
+                long current = System.nanoTime();
+                    //System.out.println(current - nano);
+                nano = current;
+            }*/
+
         }
     }
 
@@ -199,6 +234,8 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
     public void updateAll(){
 
+        //int testX = puck.location.x;
+        //int testY = puck.location.y;
 
 
         possession = puck.hold;
@@ -210,39 +247,30 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         puck.hitGoals();
         goalScored();
 
-        //System.out.println(puck.speed);
-        if(puck.speed > GameDriver.rinkWidth /300 ) {
-            //isPuckSlow = true;
+        if(puck.speed > GameDriver.rinkWidth /200 ) {
+
             if (i % 15 == 0) {
                 puck.speed = puck.setSpeedFriction(puck.frictionCoefficient);
-
             }
-
             puck.updateLocation();
-
         }
-        else if ( puck.speed < GameDriver.rinkWidth/300 && puck.speed > 0.1 ){
-            if(Puck.pointList.size()==0) {
-                System.out.println(" slow puck");
+        else if ( puck.speed < GameDriver.rinkWidth/200 && puck.speed > 0.1 && puck.hold == 0){
+
+            if(puck.pointList.size()==0) {
                 puck.slowPuckLine();//run this once
-                //isPuckSlow = false;
             }
-            //if (i % 15 == 0) {
-                System.out.println(" stop puck");
-                puck.stopPuck();
-
-            //}
 
 
+            puck.stopPuck();
         }
-        else if(puck.speed <= .1){
+        else if(puck.speed <= .1 && puck.hold == 0){
             puck.speed = 0;
-            if(Puck.pointList.size() != 0)
-                Puck.pointList.clear();
+            if(puck.pointList.size() != 0)
+                puck.pointList.clear();
             puck.updateLocation();
         }
 
-
+        //int tester =  Math.abs(puck.location.x) - Math.abs(testX);
 
 
 
@@ -274,6 +302,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
                 if (puck.hold != 0) {
                     //System.out.println(Player.hold);
                     players[puck.hold].holdPuck();
+                    puck.pointList.clear();
 
                     //when goalie gets the puck
                     if (puck.hold == 5 || puck.hold == 6) {
@@ -302,6 +331,10 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
         if(mo.stealFlag){
             mo.steal();
+        }
+
+        if(mo.slapShotFlag){
+            mo.slapShot();
         }
 
         if(mo.bodyCheckFlag){
@@ -720,6 +753,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         getActionMap().put("button1", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("PRESS Jjjjjjjjjjjj");
                 selectedPlayer4.pressZeroButton();
 
 

@@ -13,9 +13,9 @@ public class Puck extends MovingObject {
 
     int postTimer = 0;
     int hold = 0;
-    static ArrayList<double[]> pointList = new ArrayList<>();
+    ArrayList<double[]> pointList = new ArrayList<>();
 
-    double frictionCoefficient = .9;
+    double frictionCoefficient = .95;
     public Puck(int id, Point point, int speed, double angle, int radius, Color color) {
         super(id, point, speed, angle, radius, color);
         adjustment = radius/2;
@@ -24,56 +24,37 @@ public class Puck extends MovingObject {
     }
 
     public void slowPuckLine(){
+
         double X = (double) location.x;
         double Y = (double) location.y;
-        //double speed2 = speed;
-        int counter = 0;
 
-        //while(speed > .01){
-        for(int i = 0; i < 3; i++){
-            //distance = speed + distance;
-            speed = speed * .9;
-
+        for(int i = 0; i < 6; i++){
+            speed = speed * .95;
             X = X + speed * Math.cos(angle);
             Y = Y + speed * Math.sin(angle);
 
             double[] arr = new double[]{X, Y};
             pointList.add(arr);
-
-            //System.out.println(pointList.get(counter)[0] + " " + pointList.get(counter)[1]);
-            //System.out.println(Math.round(pointList.get(counter)[0]) + " " + Math.round(pointList.get(counter)[1]));
-            counter++;
-
         }
-
-        System.out.println(pointList.size() + " point list size");
     }
 
     int k = 0;
     public void stopPuck(){
-        /*
-        for (double[] doublePoint : pointList) {
-            location.x = (int) Math.round(doublePoint[0]);
-            location.y = (int) Math.round(doublePoint[1]);
-        }*/
-
         if(k < pointList.size()) {
 
-            //(Rink.i % 15 == 0) {if
+            double pixelX = pointList.get(k)[0] % (int) pointList.get(k)[0];
+            double pixelY = pointList.get(k)[1] % (int) pointList.get(k)[1];
+
+            if( (pixelX < .4 || pixelX > .6) && (pixelY < .4 || pixelY > .6) ) {
+
                 location.x = (int) Math.round(pointList.get(k)[0]);
                 location.y = (int) Math.round(pointList.get(k)[1]);
-                k++;
-            //}
+            }
+            k++;
         }
         else{
-
-            System.out.println("its should stop");
             pointList.clear();
             k = 0;
-
-            //speed = 0;
-            //updateLocation();
-            //System.out.println(speed );
         }
 
     }

@@ -92,7 +92,7 @@ public class ScorePanel extends JPanel implements Runnable{
             this.minute.setText(""+dec.format(min));
             this.second.setText(""+dec.format(sec));
             //updateAll();
-            repaint();
+            //repaint();
 
             fps = 0;
             try {

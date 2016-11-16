@@ -27,7 +27,9 @@ public class Player extends MovingObject {
     int oldY = 0;
     double distance = 0;
     int bodyCheckFrames = 0;
+    int slapShotFrames = 0;
     boolean bodyCheckFlag = false;
+    boolean slapShotFlag = false;
     int stealFrames = 0;
     boolean stealFlag = false;
     int slideLimit = 9;
@@ -54,8 +56,8 @@ public class Player extends MovingObject {
     static boolean moved = false;
     Image img;
 
-    double slapShotSpeed = Math.round(GameDriver.rinkWidth/65 );
-    double wristShotSpeed = Math.round(GameDriver.rinkWidth/140);
+    double slapShotSpeed = Math.round(GameDriver.rinkWidth/100 );
+    double wristShotSpeed = Math.round(GameDriver.rinkWidth/156);
     double playerSpeed = Math.round(GameDriver.rinkWidth/260);
 
 
@@ -268,6 +270,12 @@ public class Player extends MovingObject {
                 //location.y = GameDriver.bottomGoalPost + dummy_radius;
                 break;
 
+            case 15://left goal front corners
+                location.x = GameDriver.leftGoalLine + dummy_radius;
+                break;
+            case 16:
+                location.x = GameDriver.rightGoalLine - dummy_radius;
+                break;
         }
 
 
@@ -300,15 +308,7 @@ public class Player extends MovingObject {
                 hitWall = 5;
             }
         }
-        /*else if( location.x < GameDriver.leftGoalBack && location.y < GameDriver.topGoalPost){
-            System.out.println("upper back corner of the left net");
 
-            if(location.x >= GameDriver.leftGoalBack - dummy_radius && location.y >= GameDriver.topGoalPost - dummy_radius){
-                System.out.println("reflect off top left corner");
-                location.x = GameDriver.leftGoalBack - dummy_radius;
-                location.y = GameDriver.topGoalPost - dummy_radius;
-            }
-        }*/
         else if(location.x < GameDriver.leftGoalLine  && location.x > GameDriver.leftGoalBack && location.y > GameDriver.bottomGoalPost){//left goal bottom
             if(location.y <= GameDriver.bottomGoalPost + dummy_radius + smallBuffer){
                 hitWall = 6;
@@ -349,33 +349,56 @@ public class Player extends MovingObject {
                 hitWall = 10;
         }
 
-        else if (location.y < GameDriver.topGoalPost && location.x < GameDriver.leftGoalBack) {//left goal top corner
-            if (location.y + dummy_radius  > GameDriver.topGoalPost && location.x + dummy_radius > GameDriver.leftGoalBack) {
+        else if (location.y < GameDriver.topGoalPost && location.x < GameDriver.leftGoalBack) {//left goal top back corner
+            if (location.y + dummy_radius >= GameDriver.topGoalPost && location.x + dummy_radius >= GameDriver.leftGoalBack) {
                 hitWall = 11;
-                System.out.println("upper left corner");
             }
-            /*Line topLeftGoalCorner = new Line(GameDriver.leftGoalBack-smallBuffer, GameDriver.topGoalPost + smallBuffer, GameDriver.leftGoalBack + smallBuffer, GameDriver.topGoalPost - smallBuffer);
-            if(topLeftGoalCorner.distanceFrom(location.x, location.y) < dummy_radius){
-                int yPoint = topLeftGoalCorner.slope +
-                topLeftGoalCorner.calculateY1Y2();
-            }*/
         }
-
         else if (location.y > GameDriver.bottomGoalPost && location.x < GameDriver.leftGoalBack) {//left goal bottom  corner
-            if (location.y - dummy_radius - getSpeed() <= GameDriver.bottomGoalPost && location.x + dummy_radius + getSpeed()>= GameDriver.leftGoalBack) {
+            if (location.y - dummy_radius <= GameDriver.bottomGoalPost && location.x + dummy_radius >= GameDriver.leftGoalBack) {
                 hitWall = 12;
             }
         }
-        else if (location.y < GameDriver.topGoalPost && location.x > GameDriver.rightGoalBack) {//right goal top  corner
-            if (location.y + dummy_radius + getSpeed() >= GameDriver.topGoalPost && location.x - dummy_radius - getSpeed()<= GameDriver.rightGoalBack) {
+        else if (location.y < GameDriver.topGoalPost && location.x > GameDriver.rightGoalBack) {//right goal top back corner
+            if (location.y + dummy_radius >= GameDriver.topGoalPost && location.x - dummy_radius <= GameDriver.rightGoalBack) {
                 hitWall = 13;
             }
         }
-        else if (location.y > GameDriver.bottomGoalPost && location.x > GameDriver.rightGoalBack) {//right goal bottom  corner
-            if (location.y - dummy_radius - getSpeed() <= GameDriver.bottomGoalPost && location.x - dummy_radius - getSpeed()<= GameDriver.rightGoalBack) {
+        else if (location.y > GameDriver.bottomGoalPost && location.x > GameDriver.rightGoalBack) {//right goal bottom back corner
+            if (location.y - dummy_radius  <= GameDriver.bottomGoalPost && location.x - dummy_radius <= GameDriver.rightGoalBack) {
                 hitWall = 14;
             }
         }
+        else if (location.y < GameDriver.topGoalPost && location.x > GameDriver.leftGoalLine) {//left goal top front corner
+            if (location.y + dummy_radius  >= GameDriver.topGoalPost && location.x - dummy_radius <= GameDriver.leftGoalLine) {
+                hitWall = 15;
+            }
+        }
+        else if (location.y > GameDriver.bottomGoalPost && location.x > GameDriver.leftGoalLine) {//left goal bottom corner
+            if (location.y - dummy_radius  <= GameDriver.bottomGoalPost && location.x - dummy_radius <= GameDriver.leftGoalLine) {
+                hitWall = 15;
+            }
+        }
+
+        else if (location.y < GameDriver.topGoalPost && location.x < GameDriver.rightGoalLine) {//left goal top back
+
+            if (location.y + dummy_radius >= GameDriver.topGoalPost && location.x + dummy_radius >= GameDriver.rightGoalLine) {
+                hitWall = 16;
+            }
+        }
+        else if (location.y < GameDriver.topGoalPost && location.x < GameDriver.leftGoalBack) {//left goal top back corner
+            if (location.y + dummy_radius >= GameDriver.topGoalPost && location.x + dummy_radius >= GameDriver.leftGoalBack) {
+                hitWall = 11;
+            }
+        }
+        else if (location.y > GameDriver.bottomGoalPost && location.x < GameDriver.rightGoalLine) {//left goal bottom  corner
+            if (location.y - dummy_radius <= GameDriver.bottomGoalPost && location.x + dummy_radius >= GameDriver.rightGoalLine) {
+                hitWall = 16;
+            }
+        }
+
+
+
 
 
         if(location.x >= GameDriver.rightBoundary - GameDriver.rinkWidth/8 &&
@@ -616,11 +639,17 @@ public class Player extends MovingObject {
 
     public void slapShot(){
         //Rink.possession = 0;
-        release = 1;
-        puck.hold = 0;
-        puck.setAngle(angle);
-        puck.setSpeed(slapShotSpeed);
-        puck.updateLocation();
+        slapShotFrames++;
+
+        if(slapShotFrames > 35) {
+            release = 1;
+            puck.hold = 0;
+            puck.setAngle(angle);
+            puck.setSpeed(slapShotSpeed);
+            puck.updateLocation();
+            slapShotFrames = 0;
+            slapShotFlag = false;
+        }
     }
 
 
@@ -645,7 +674,7 @@ public class Player extends MovingObject {
         if (bodyCheckFrames > 2 && bodyCheckFrames < 80) {//activate it between frame 2 and frame 80
 
             if(bodyCheckFrames < 10){ //only make it move forward for 10 bodyCheckFrames at this speed
-                speed = 5;
+                speed = GameDriver.rinkWidth/160;
             }
             else if (bodyCheckFrames >= 10) {//after 10 bodyCheckFrames, it has to rest for an amount
                 setSpeed(0);
@@ -692,7 +721,8 @@ public class Player extends MovingObject {
 
     public void pressTwoButton(){
         if (puck.hold == id) {
-            slapShot();
+            slapShotFlag = true;
+            //slapShot();
         }
         else {
             bodyCheckStart();
