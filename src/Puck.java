@@ -13,50 +13,17 @@ public class Puck extends MovingObject {
 
     int postTimer = 0;
     int hold = 0;
+    boolean backOfNet = false;
 
 
-    double frictionCoefficient = .95;
+
     public Puck(int id, Point point, int speed, double angle, int radius, Color color) {
         super(id, point, speed, angle, radius, color);
         adjustment = radius/2;
         dummy_radius = radius + adjustment;
-
+        frictionCoefficient = .96;
     }
 
-    public void interpolationLine(){
-
-        double X = (double) location.x;
-        double Y = (double) location.y;
-
-        for(int i = 0; i < 6; i++){
-            speed = speed * .95;
-            X = X + speed * Math.cos(angle);
-            Y = Y + speed * Math.sin(angle);
-
-            double[] arr = new double[]{X, Y};
-            pointList.add(arr);
-        }
-    }
-
-    int k = 0;
-    public void stopObject(){
-        if(k < pointList.size()) {
-
-            double pixelX = pointList.get(k)[0] % (int) pointList.get(k)[0];
-            double pixelY = pointList.get(k)[1] % (int) pointList.get(k)[1];
-
-            if( (pixelX < .4 || pixelX > .6) && (pixelY < .4 || pixelY > .6) ) {
-
-                location.x = (int) Math.round(pointList.get(k)[0]);
-                location.y = (int) Math.round(pointList.get(k)[1]);
-            }
-            k++;
-        }
-        else{
-            pointList.clear();
-            k = 0;
-        }
-    }
 
 
 
@@ -87,11 +54,36 @@ public class Puck extends MovingObject {
     public boolean goalScoredRight(){
         if(location.x < GameDriver.rightGoalBack
                 && location.x - radius > GameDriver.rightGoalLine
-                && location.y - dummy_radius > GameDriver.topGoalPost
-                && location.y + dummy_radius < GameDriver.bottomGoalPost ){
+                && location.y  > GameDriver.topGoalPost
+                && location.y  < GameDriver.bottomGoalPost ){
 
-            setSpeed(0);
-            return true;
+
+            if (location.x >= GameDriver.rightGoalBack - radius && !backOfNet) {
+                location.x = GameDriver.rightGoalBack - radius;
+                reflection(angle, 1);
+                System.out.println(" hit the back");
+                backOfNet = true;
+            }
+            else if ( location.y <= GameDriver.topGoalPost + radius){
+                location.y = GameDriver.topGoalPost + radius;
+                reflection(angle, 2);
+            }
+            else if ( location.y >=GameDriver.bottomGoalPost - radius){
+                location.y = GameDriver.bottomGoalPost - radius;
+                reflection(angle, 2);
+            }
+
+            if(backOfNet){
+                //System.out.println(hold + " hold");
+                //System.out.println(speed + " speed");
+                //System.out.println(GameDriver.goalWidth + " goal width");
+                setSpeed(speed * .3);
+                if(speed < .5){
+                    speed = 0;
+                    backOfNet = false;
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -261,7 +253,7 @@ public class Puck extends MovingObject {
         else if( location.x > GameDriver.rightGoalBack && location.y > GameDriver.bottomGoalPost){
             //System.out.println("lower back corner of the right net");
 
-            if(location.x <= GameDriver.rightGoalBack - dummy_radius && location.y <= GameDriver.bottomGoalPost + dummy_radius){
+            if(location.x <= GameDriver.rightGoalBack + dummy_radius && location.y <= GameDriver.bottomGoalPost + dummy_radius){
                 //System.out.println("reflect off bottom right corner");
                 location.x = GameDriver.rightGoalBack + dummy_radius;
                 location.y = GameDriver.bottomGoalPost + dummy_radius;
@@ -273,12 +265,12 @@ public class Puck extends MovingObject {
 
         //inside the goals
         else if(location.y > GameDriver.topGoalPost  && location.y < GameDriver.bottomGoalPost ) {
-
+            /*
             if( (location.x  < GameDriver.leftGoalLine && location.x > GameDriver.leftGoalBack ) || ( location.x > GameDriver.rightGoalLine && location.x < GameDriver.rightGoalBack) ) {
 
-                if(location.y <= GameDriver.topGoalPost + bigBuffer) {
+                if(location.y <= GameDriver.topGoalPost + smallBuffer) {
                     //System.out.println("noooo");
-                    location.y = GameDriver.topGoalPost + bigBuffer;
+                    location.y = GameDriver.topGoalPost + smallBuffer;
                     reflection(angle, 2);
                     //speed = speed/2;
 
@@ -291,7 +283,9 @@ public class Puck extends MovingObject {
                 }
 
             }
-            else if(location.x < GameDriver.leftGoalBack ){//back of left goal
+            */
+
+            if(location.x < GameDriver.leftGoalBack ){//back of left goal
                     //System.out.println("back");
                 if(location.x >= GameDriver.leftGoalBack - bigBuffer) {
                     location.x = GameDriver.leftGoalBack - bigBuffer;
@@ -322,21 +316,21 @@ public class Puck extends MovingObject {
 
     public void hitPosts(){
         double distanceFromLeftTopPost = Math.sqrt(Math.pow((GameDriver.leftGoalLine - location.x), 2)
-                + Math.pow((GameDriver.topGoalPost  - (location.y + adjustment)), 2));
+                + Math.pow((GameDriver.topGoalPost  - location.y), 2));
         double distanceFromLeftBottomPost = Math.sqrt(Math.pow((GameDriver.leftGoalLine - location.x), 2)
                 + Math.pow((GameDriver.bottomGoalPost - location.y), 2));
 
         double distanceFromRightTopPost = Math.sqrt(Math.pow((GameDriver.rightGoalLine - location.x), 2)
-                + Math.pow((GameDriver.topGoalPost + adjustment - location.y), 2));
+                + Math.pow((GameDriver.topGoalPost - location.y), 2));
         double distanceFromRightBottomPost = Math.sqrt(Math.pow((GameDriver.rightGoalLine - location.x), 2)
-                + Math.pow((GameDriver.bottomGoalPost - adjustment - location.y), 2));
+                + Math.pow((GameDriver.bottomGoalPost - location.y), 2));
 
         // hit the post
         if((distanceFromLeftBottomPost < radius
                 || distanceFromLeftTopPost < radius
                 || distanceFromRightBottomPost < radius
-                || distanceFromRightTopPost < radius )
-                && (location.x - dummy_radius > GameDriver.leftGoalLine || location.x + dummy_radius < GameDriver.rightGoalLine ) && postTimer > 5){
+                || distanceFromRightTopPost < radius)
+                && (location.x - radius > GameDriver.leftGoalLine || location.x + radius < GameDriver.rightGoalLine ) && postTimer > 5){
 
             reflection(angle, 1);
             // vertical reflection

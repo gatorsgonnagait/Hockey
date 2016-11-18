@@ -33,7 +33,6 @@ public class Player extends MovingObject {
     int stickInputLimitFrames = 0;
     double tempSpeed;
     double tempAngle;
-    double frictionCoefficient = .8;
     int startX;
     int startY;
     static int i = 0;
@@ -56,11 +55,19 @@ public class Player extends MovingObject {
     double controllerX;
     double controllerY;
 
+    boolean stopped = true;
+    int accelerationFrames = 0;
+    int accelerationFramesMouse = 0;
 
     double slapShotSpeed = Math.round(GameDriver.rinkWidth/100 );
     double wristShotSpeed = Math.round(GameDriver.rinkWidth/156);
-    double playerSpeed = Math.round(GameDriver.rinkWidth/260);
+    double startingSpeed = 1.0;
+    double playerSpeed;
+    double playerSpeedMouse = Math.round(GameDriver.rinkWidth/260) ;
+    double playerSpeedLimit = Math.round(GameDriver.rinkWidth/250);
     double driftAngle;
+    double prevAngle;
+
 
 
 
@@ -79,6 +86,7 @@ public class Player extends MovingObject {
         buttonInputLimitFrames = 0;
         stickInputLimitFrames = 0;
         this.img = img;
+        frictionCoefficient = .95;
     }
 
 
@@ -93,6 +101,7 @@ public class Player extends MovingObject {
         initAngle = angle;
         buttonInputLimitFrames = 0;
         stickInputLimitFrames = 0;
+
     }
 
 
@@ -464,20 +473,29 @@ public class Player extends MovingObject {
         }
     }
 
-    public double playerAngle(double xAxisPercentage, double yAxisPercentage){
-        distance = getDistance(xNeutral, xAxisPercentage, yNeutral, yAxisPercentage);
+    public double controlAngle(double xAxisPercentage, double yAxisPercentage){
         controllerX = xAxisPercentage - xNeutral;
         controllerY = yAxisPercentage - yNeutral;
         return Math.atan2(controllerY, controllerX);
     }
 
+    public double mouseAngle(double mouseX, double mouseY){
+        double Y = mouseY - location.y;
+        double X = mouseX - location.x;
+        return  Math.atan2(Y, X);
+    }
+
 
     public void updateLocationController(double xAxisPercentage, double yAxisPercentage){
 
-        double newAngle = playerAngle(xAxisPercentage, yAxisPercentage);
-
+        double newAngle = controlAngle(xAxisPercentage, yAxisPercentage);
+        distance = getDistance(xNeutral, xAxisPercentage, yNeutral, yAxisPercentage);
         stick.updateLocation();
         slideList(newAngle);
+
+
+
+
 
         if( distance > 24 && distance < 38){// controller grace area. allows you to turn without moving
             //System.out.println(start);
@@ -489,9 +507,25 @@ public class Player extends MovingObject {
             }
         }
         else if(distance >= 38) {
+            if(speed == 0){
+                System.out.println(startingSpeed +" starting speed");
+                setSpeed(startingSpeed);
+            }
+            accelerationFrames++;
+            if(accelerationFrames % 10 == 0){
+                speed = speed * 1.15;
+                //prevAngle = angle;
+                //System.out.println(startingSpeed);
+            }
+
+            if(speed > playerSpeedLimit){
+                speed = playerSpeedLimit;
+            }
+
             pointList.clear();
             setAngle(newAngle);
-            setSpeed(playerSpeed);
+            setSpeed(speed);
+
             if(start == 1) { //if was stopped before, dont use the slide angle to calculate position
                 positionCalculation(newAngle);
                 start = 0;
@@ -510,15 +544,15 @@ public class Player extends MovingObject {
                 if (Rink.i % 15  == 0) {//call friction method every 10 bodyCheckFrames
                     speed = setSpeedFriction(frictionCoefficient);
                 }*/
-
-                if(pointList.size()==0) {
-                    interpolationLine(driftAngle);
-                }
-                stopObject();
+            if(pointList.size()==0) {
+                interpolationLine(driftAngle);
+            }
+            stopObject();
 
             //}
             if(speed <= .1 ){
                 speed = 0;
+                accelerationFrames = 0;
                 if(pointList.size() != 0)
                     pointList.clear();
 
@@ -527,14 +561,13 @@ public class Player extends MovingObject {
         }
     }
 
-    public void updateLocation(double x, double y){
+    public void updateLocation(double mouseX, double mouseY){
 
-        distance = Math.sqrt(Math.pow((location.x - x), 2)
-                + Math.pow((location.y - y), 2));
+        double newAngle = mouseAngle(mouseX, mouseY);
 
-        double Y = y - location.y;
-        double X = x - location.x;
-        double newAngle = Math.atan2(Y, X);
+        distance = Math.sqrt(Math.pow((location.x - mouseX), 2)
+                + Math.pow((location.y - mouseY), 2));
+
         setAngle(newAngle);
         stick.updateLocation();
 
@@ -545,17 +578,17 @@ public class Player extends MovingObject {
         else{
             slideList.addLast(newAngle);
             slideAngle = newAngle;
-
         }
+
         if( distance < 80){// controller grace area. allows you to turn without moving
             start = 1;
             slideList.clear();
-            if(Rink.i%10 == 0){//call friction method every 10 bodyCheckFrames
-                speed = setSpeedFriction(frictionCoefficient);
-            }
         }
         else {
-            setSpeed(playerSpeed);
+
+            pointList.clear();
+            setAngle(newAngle);
+            setSpeed(playerSpeedMouse);
             if(start == 1) {
                 positionCalculation(newAngle);
                 start = 0;
@@ -639,7 +672,8 @@ public class Player extends MovingObject {
             driftAngle = angle;
         }
         slapShotFrames++;
-        double newAngle = playerAngle(xAxisPercentage, yAxisPercentage);
+
+        double newAngle = controlAngle(xAxisPercentage, yAxisPercentage);
         setAngle(newAngle);
 
         if(pointList.size()==0) {
@@ -662,6 +696,15 @@ public class Player extends MovingObject {
                 pointList.clear();
             updateLocation();
         }
+    }
+
+    public void mouseSlapShot(){
+        release = 1;
+        puck.hold = 0;
+        //Rink.possession = 0;
+        puck.setAngle(angle);
+        puck.setSpeed(slapShotSpeed);
+        puck.updateLocation();
     }
 
 
@@ -740,6 +783,15 @@ public class Player extends MovingObject {
             bodyCheckStart();
         }
     }
+    public void pressTwoButtonKeyBoard(){
+        if (puck.hold == id) {
+            mouseSlapShot();
+        }
+        else {
+            bodyCheckStart();
+        }
+    }
+
 
 
     public void afterGoal() {

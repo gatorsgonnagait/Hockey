@@ -26,6 +26,8 @@ public abstract class MovingObject extends JComponent {
     int bigBuffer = Math.round(GameDriver.rinkWidth/80);
     int smallBuffer = Math.round(GameDriver.rinkWidth/160);
     ArrayList<double[]> pointList = new ArrayList<>();
+
+    double frictionCoefficient;
     /*
 
     //static int topBoundary = 100;
@@ -141,7 +143,7 @@ public abstract class MovingObject extends JComponent {
         double Y = (double) location.y;
 
         for(int i = 0; i < 6; i++){
-            speed = speed * .95;
+            speed = speed * frictionCoefficient;
             X = X + speed * Math.cos(driftAngle);
             Y = Y + speed * Math.sin(driftAngle);
 

@@ -233,10 +233,8 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         else if ( puck.speed < GameDriver.rinkWidth/200 && puck.speed > 0.1 && puck.hold == 0){
 
             if(puck.pointList.size()==0) {
-                puck.interpolationLine();//run this once
+                puck.interpolationLine(puck.angle);//run this once
             }
-
-
             puck.stopObject();
         }
         else if(puck.speed <= .1 && puck.hold == 0){
@@ -290,7 +288,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
 
 
-        /*
+
         Collision collision = new Collision(players.length+1);
         for(int i = 1; i < players.length; i++){
             for (int j = i+1; j < players.length; j++){
@@ -298,7 +296,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
                 if(collision.objectsCollide(players[i], players[j]))
                     collision.calculateCollisions(players[i], players[j]);
             }
-        }*/
+        }
 
     }
 
@@ -312,21 +310,8 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         if(mo.slapShotFlag){
             mo.slapShot();
         }
-
         else if(mo.bodyCheckFlag){
             mo.bodyCheck();
-        }
-        else if (mo == selectedPlayer4){
-        //else if(mo.controller.getType().equals( Controller.Type.MOUSE)){
-            //if player.gamepadtype = pad, call updateLocationController();
-            //if player.gamepadtype == kb call updateLocation
-
-            if (mo.colliding) {
-                mo.updateLocationCol();
-            }
-            if (dragged || moved) {
-                mo.updateLocation(e.getX(), e.getY());
-            }
         }
         else if (mo.controller != null) {
             //System.out.println("move");
@@ -336,12 +321,24 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
             mo.updateLocationController(mo.xAxisPercentage, mo.yAxisPercentage);
         }
-
         else {
             if (mo.colliding) {
                 mo.updateLocationCol();
             } else {// for goalies
                 mo.updateLocation();
+            }
+        }
+
+        if (mo == selectedPlayer4){
+            //else if(mo.controller.getType().equals( Controller.Type.MOUSE)){
+            //if player.gamepadtype = pad, call updateLocationController();
+            //if player.gamepadtype == kb call updateLocation
+
+            if (mo.colliding) {
+                mo.updateLocationCol();
+            }
+            if (dragged || moved) {
+                mo.updateLocation(e.getX(), e.getY());
             }
         }
     }
@@ -566,9 +563,10 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             double Y = players[i].startY - players[i].location.y;
             double X = players[i].startX - players[i].location.x;
             players[i].setAngle(Math.atan2(Y, X));
-            players[i].location.x = (int) (players[i].location.x + players[i].playerSpeed*2 * Math.cos(players[i].angle));
-            players[i].location.y = (int) (players[i].location.y + players[i].playerSpeed*2 * Math.sin(players[i].angle));
+            players[i].location.x = (int) (players[i].location.x + players[i].playerSpeedLimit * Math.cos(players[i].angle));
+            players[i].location.y = (int) (players[i].location.y + players[i].playerSpeedLimit * Math.sin(players[i].angle));
             players[i].stick.updateLocation();
+
 
 
             if(players[i].location.y > players[i].startY - GameDriver.rinkWidth/100
@@ -580,7 +578,9 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
                 players[i].location.y = players[i].startY;
                 players[i].angle = players[i].initAngle;
                 players[i].stick.updateLocation();
-                players[i].slideList.clear();
+                players[i].setSpeed(0);
+                players[i].pointList.clear();
+
 
             }
         }
@@ -744,7 +744,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         getActionMap().put("button3", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectedPlayer4.pressTwoButton();
+                selectedPlayer4.pressTwoButtonKeyBoard();
 
             }
         });

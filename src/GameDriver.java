@@ -142,7 +142,6 @@ public class GameDriver {
         rinkWidth = 6 * width/8;
         rinkHeight = 3 * height/5;
 
-        System.out.println();
 
         leftGoalLine = leftBoundary + rinkWidth/9;
         rightGoalLine = leftBoundary + rinkWidth * 8/9;
@@ -206,7 +205,7 @@ public class GameDriver {
         rink.addKeys();
 
         // ADDING OBJECTS TO THE RINK
-        System.out.println("test2");
+
         rink.add(p1);
         rink.add(p2);
         rink.add(p3);
