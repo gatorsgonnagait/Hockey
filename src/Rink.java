@@ -322,7 +322,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             mo.slapShot();
         }
 
-        if(mo.bodyCheckFlag){
+        else if(mo.bodyCheckFlag){
             mo.bodyCheck();
         }
         else if (mo.controller != null) {

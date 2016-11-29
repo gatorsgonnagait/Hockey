@@ -106,7 +106,7 @@ public class Player extends MovingObject {
         buttonInputLimitFrames = 0;
         stickInputLimitFrames = 0;
 
-        frictionCoefficient = .95;
+        frictionCoefficient = .85;
         puckGrabArea = stick.length * 3/4;
         angleFacing = angle;
 
@@ -546,24 +546,26 @@ public class Player extends MovingObject {
         }
         else if (distance <= 24 ) {
             //if (tempSpeed > .1) {
-                /*
-                setAngle(driftAngle);
+
+                //setAngle(driftAngle);
                 positionCalculation(driftAngle);
-                if (Rink.i % 15  == 0) {//call friction method every 10 bodyCheckFrames
+                if (Rink.i % 1  == 0) {//call friction method every 10 bodyCheckFrames
                     speed = setSpeedFriction(frictionCoefficient);
-                }*/
+                }
+                /*
             if(pointList.size()==0) {
                 interpolationLine(driftAngle);
             }
             stopObject();
-
+               */
             //}
             if(speed <= .1 ){
                 speed = 0;
                 accelerationFrames = 0;
+                /*
                 if(pointList.size() != 0)
                     pointList.clear();
-
+                   */
                 //positionCalculation(driftAngle);
             }
         }
@@ -679,14 +681,21 @@ public class Player extends MovingObject {
         if(slapShotFrames == 0){
             driftAngle = angleFacing;
         }
+
+        positionCalculation(driftAngle);
+        if (Rink.i % 3  == 0) {//call friction method every 10 bodyCheckFrames
+            speed = setSpeedFriction(frictionCoefficient);
+        }
+
         slapShotFrames++;
 
         double newAngle = controlAngle(xAxisPercentage, yAxisPercentage);
         angleFacing = newAngle;
 
+        /*
         if(pointList.size()==0) {
             interpolationLine(driftAngle);
-        }
+        }*/
 
         stopObject();
         stick.updateLocation();
@@ -700,9 +709,9 @@ public class Player extends MovingObject {
             slapShotFrames = 0;
             slapShotFlag = false;
 
-            if(pointList.size() != 0)
+            /*if(pointList.size() != 0)
                 pointList.clear();
-            updateLocation();
+            updateLocation();*/
         }
     }
 
@@ -732,7 +741,7 @@ public class Player extends MovingObject {
     public void bodyCheck(){
 
         bodyCheckFrames++;
-        positionCalculation(angle);
+        positionCalculation(angleFacing);
         stick.updateLocation();
         if (bodyCheckFrames > 2 && bodyCheckFrames < 80) {//activate it between frame 2 and frame 80
 

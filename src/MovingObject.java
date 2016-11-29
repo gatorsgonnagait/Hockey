@@ -156,6 +156,7 @@ public abstract class MovingObject extends JComponent {
     public void stopObject(){
         if(k < pointList.size()) {
 
+            /*
             double pixelX = pointList.get(k)[0] % (int) pointList.get(k)[0];
             double pixelY = pointList.get(k)[1] % (int) pointList.get(k)[1];
 
@@ -163,7 +164,10 @@ public abstract class MovingObject extends JComponent {
 
                 location.x = (int) Math.round(pointList.get(k)[0]);
                 location.y = (int) Math.round(pointList.get(k)[1]);
-            }
+            }*/
+            System.out.println("drifting" + k);
+            location.x = pointList.get(k)[0];
+            location.y = pointList.get(k)[1];
             k++;
         }
         else{
