@@ -102,9 +102,9 @@ public class GameDriver {
             if (controller.getType() == Controller.Type.GAMEPAD ) {
                 // Add new controller to the list of all controllers.
                 foundControllers.add(controller);
-                System.out.println(controller);
-                System.out.println(controller.getPortNumber());
-                System.out.println("controller is plugged in ");
+                //System.out.println(controller);
+                //System.out.println(controller.getPortNumber());
+                //System.out.println("controller is plugged in ");
                 // Add new controller to the list on the window.
                 //window.addControllerName(controller.getName() + " - " + controller.getType().toString() + " type");
             }
@@ -156,24 +156,24 @@ public class GameDriver {
 
         ui = new UI("Hockey");
 
-        puck = new Puck(0,new Point(verticalCenter, horizontalMiddle), 0, 0, rinkWidth/100, Color.BLACK);
+        puck = new Puck(0,new PointDouble(verticalCenter, horizontalMiddle), 0, 0, rinkWidth/100, Color.BLACK);
 
-        Point point1 = new Point(verticalCenter, horizontalFifths);
-        Point point2 = new Point(verticalCenter, horizontalTwoFifths);
-        Point point3 = new Point(verticalCenter, horizontalThreeFifths);
-        Point point4 = new Point(verticalCenter, horizontalFourFifths);
+        PointDouble point1 = new PointDouble(verticalCenter, horizontalFifths);
+        PointDouble point2 = new PointDouble(verticalCenter, horizontalTwoFifths);
+        PointDouble point3 = new PointDouble(verticalCenter, horizontalThreeFifths);
+        PointDouble point4 = new PointDouble(verticalCenter, horizontalFourFifths);
         //Point[] startingPoints = new Point[4]{p1, p2, p3, p4};
 
         //480, 275
         //530, 275
         int playerRadius = (int) Math.round(rinkWidth * 0.015);
         int goalieRadius = (int) Math.round(rinkWidth * 0.0125);
-        p1   = new Player(1,new Point(verticalCenter - 3*playerRadius, horizontalMiddle), 0, 0, playerRadius, Color.RED, puck, num1);
-        p2   = new Player(2,new Point(leftGoalLine + 10*playerRadius, horizontalMiddle - 8*playerRadius), 0, 0, playerRadius, Color.BLUE, puck, num2);
-        p3   = new Player(3,new Point(verticalCenter + 3*playerRadius, horizontalMiddle), 0, Math.PI, playerRadius, Color.YELLOW, puck, num3);
-        p4   = new Player(4,new Point(rightGoalLine - 10*playerRadius, horizontalMiddle + 8*playerRadius), 0, Math.PI, playerRadius, Color.GREEN, puck, num4);
-        g1   = new Goalie1(5,new Point(leftGoalLine + goalieRadius, horizontalMiddle), 3, 0, goalieRadius, Color.LIGHT_GRAY, puck);
-        g2   = new Goalie2(6,new Point(rightGoalLine - goalieRadius, horizontalMiddle), 3, Math.PI, goalieRadius, Color.LIGHT_GRAY, puck);
+        p1   = new Player(1,new PointDouble(verticalCenter - 3*playerRadius, horizontalMiddle), 0, 0, playerRadius, Color.RED, puck, num1);
+        p2   = new Player(2,new PointDouble(leftGoalLine + 10*playerRadius, horizontalMiddle - 8*playerRadius), 0, 0, playerRadius, Color.BLUE, puck, num2);
+        p3   = new Player(3,new PointDouble(verticalCenter + 3*playerRadius, horizontalMiddle), 0, Math.PI, playerRadius, Color.YELLOW, puck, num3);
+        p4   = new Player(4,new PointDouble(rightGoalLine - 10*playerRadius, horizontalMiddle + 8*playerRadius), 0, Math.PI, playerRadius, Color.GREEN, puck, num4);
+        g1   = new Goalie1(5,new PointDouble(leftGoalLine  + goalieRadius, horizontalMiddle), 3, 0, goalieRadius, Color.LIGHT_GRAY, puck);
+        g2   = new Goalie2(6,new PointDouble(rightGoalLine - goalieRadius, horizontalMiddle), 3, Math.PI, goalieRadius, Color.LIGHT_GRAY, puck);
 
         Rink.selectedPlayer = p1;
         Rink.selectedPlayer2 = p2;
@@ -205,7 +205,7 @@ public class GameDriver {
         rink.addKeys();
 
         // ADDING OBJECTS TO THE RINK
-
+        rink.add(puck);
         rink.add(p1);
         rink.add(p2);
         rink.add(p3);
@@ -213,7 +213,7 @@ public class GameDriver {
 
         rink.add(g1);
         rink.add(g2);
-        rink.add(puck);
+
         // added moving objects
 
 

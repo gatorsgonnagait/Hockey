@@ -25,17 +25,66 @@ public class Collision {
         }
     }
 
+    public double collisonAngle(MovingObject object1, MovingObject object2){
+        double Y;
+        double X;
+        if(object1.location.y >= object2.location.y){
+            Y = object1.location.y - object2.location.y;
+            X = object1.location.x - object2.location.x;
+        }
+        else{
+            Y = object2.location.y - object1.location.y;
+            X = object2.location.x - object1.location.x;
+        }
+
+
+
+        double A = Math.atan2(Y, X);
+        //A = adjustAngle(A);
+        return A;
+    }
+
+    public double adjustAngle(double A){
+
+        if(A < 0)
+            A = A + 2*Math.PI;
+
+        if(A >=  3*Math.PI/2){
+            A = 3*Math.PI/2;
+        }
+        return A % Math.PI;
+    }
+
+
+
+
     public boolean objectsCollide(MovingObject object1, MovingObject object2){
 
         double distance = Math.hypot(object2.location.x - object1.location.x,
                 object2.location.y - object1.location.y);
+
 
         if(distance < 0)
             distance = distance * (-1);
 
         double distance1 = object1.radius + object2.radius;
 
+
         if( distance <= distance1) {
+
+
+
+
+            //double midX = (object1.location.x + object2.location.x)/2;
+            //double midY = (object1.location.y + object2.location.y)/2;
+            //double perpendicularX1 =  Math.round((midX + 50 * Math.cos(perpendicularAngle)));
+            //double perpendicularY1 =  Math.round((midY + 50 * Math.cos(perpendicularAngle)));
+            //double perpendicularX2 =  Math.round((midX - 50 * Math.cos(perpendicularAngle)));
+            //double perpendicularY2 =  Math.round((midY - 50 * Math.cos(perpendicularAngle)));
+            //Line reflectLine = new Line(perpendicularX1, perpendicularY1, perpendicularX2, perpendicularY2);
+
+            //System.out.println(adjustAngle(reflectLine.slopeAngle) + " slope angle");
+
             //System.out.println(object1.id + " and " + object2.id + " are colliding");
             adjList[object1.id].add(object2.id);
             adjList[object2.id].add(object1.id);
@@ -50,6 +99,66 @@ public class Collision {
         }
         return false;
     }
+
+    public void calculateCollisions(MovingObject ob1, MovingObject ob2){
+
+
+
+
+        //System.out.println("Calculating for " + ob1.color + " and " + ob2.color);
+        double ob1VelocityX = ob1.speed * Math.cos(ob1.angle);
+        double ob1VelocityY = ob1.speed * Math.sin(ob1.angle);
+
+        double ob2VelocityX = ob2.speed * Math.cos(ob2.angle);
+        double ob2VelocityY = ob2.speed * Math.sin(ob2.angle);
+
+        double ob1FinalXVelocity = (ob1VelocityX * (ob1.mass - ob2.mass) +
+                2 * ob2.mass * ob2VelocityX) / (ob1.mass + ob2.mass);
+        double ob1FinalYVelocity = (ob1VelocityY * (ob1.mass - ob2.mass) +
+                2 * ob2.mass * ob2VelocityY) / (ob1.mass + ob2.mass);
+        double ob2FinalXVelocity = (ob2VelocityX * (ob2.mass - ob1.mass) +
+                2 * ob1.mass * ob1VelocityX) / (ob1.mass + ob2.mass);
+        double ob2FinalYVelocity = (ob2VelocityY * (ob2.mass - ob1.mass) +
+                2 * ob1.mass * ob1VelocityY) / (ob1.mass + ob2.mass);
+
+        double ob1Angle = Math.atan2(ob1FinalYVelocity, ob1FinalXVelocity);
+        double ob2Angle = Math.atan2(ob2FinalYVelocity, ob2FinalXVelocity);
+
+        double ob1TotalVelocity = (ob1FinalXVelocity / Math.cos(ob1Angle));
+        double ob2TotalVelocity = (ob2FinalXVelocity / Math.cos(ob2Angle));
+
+        ob1.setSpeed(ob1TotalVelocity);
+        ob2.setSpeed(ob2TotalVelocity);
+
+
+        //System.out.println(object1.angle*180/Math.PI + " angle before");
+        double collisionAngle = collisonAngle(ob1, ob2);
+        //System.out.println(collisionAngle*180/Math.PI);
+        double perpendicularAngle = (collisionAngle + Math.PI/2) ;
+        //System.out.println(perpendicularAngle * 180/Math.PI);
+
+        double adjustment = Math.PI - perpendicularAngle;
+
+        ob1Angle = ob1.angle + adjustment;
+        ob2Angle = ob2.angle + adjustment;
+
+        //System.out.println(ob1Angle*180/Math.PI + " before");
+        //System.out.println( (object1.reflection(ob1Angle, 2)) *180/Math.PI + " after");
+
+        ob1.angle = ob1.reflection(ob1Angle, 2) - adjustment;
+        ob2.angle = ob2.reflection(ob2Angle, 2) - adjustment;
+        //System.out.println(object1.angle*180/Math.PI + " angle after");
+
+
+        //System.out.println(ob1.id+" speed " + ob1.speed);
+        //System.out.println(ob2.id+" speed " + ob2.speed);
+        //ob1.setAngle(ob1Angle);
+        //ob2.setAngle(ob2Angle);//TE
+        //System.out.println(ob1.id+" angle " + ob1.angle);
+        //System.out.println(ob2.id+" angle " + ob2.angle);
+    }
+
+    /*UNUSED
 
     public void BFS(int source){
 
@@ -93,7 +202,9 @@ public class Collision {
             }
             System.out.println();
         }
-    }
+    }*/
+
+
     /*
     //commented
     public void calculateCollisions(MovingObject ob1, MovingObject ob2){
@@ -177,37 +288,6 @@ public class Collision {
     }
     // commented*/
 
-    public void calculateCollisions(MovingObject ob1, MovingObject ob2){
-        System.out.println("Calculating for " + ob1.color + " and " + ob2.color);
-        double ob1VelocityX = ob1.speed * Math.cos(ob1.angle);
-        double ob1VelocityY = ob1.speed * Math.sin(ob1.angle);
 
-        double ob2VelocityX = ob2.speed * Math.cos(ob2.angle);
-        double ob2VelocityY = ob2.speed * Math.sin(ob2.angle);
-
-        double ob1FinalXVelocity = (ob1VelocityX * (ob1.mass - ob2.mass) +
-                2 * ob2.mass * ob2VelocityX) / (ob1.mass + ob2.mass);
-        double ob1FinalYVelocity = (ob1VelocityY * (ob1.mass - ob2.mass) +
-                2 * ob2.mass * ob2VelocityY) / (ob1.mass + ob2.mass);
-        double ob2FinalXVelocity = (ob2VelocityX * (ob2.mass - ob1.mass) +
-                2 * ob1.mass * ob1VelocityX) / (ob1.mass + ob2.mass);
-        double ob2FinalYVelocity = (ob2VelocityY * (ob2.mass - ob1.mass) +
-                2 * ob1.mass * ob1VelocityY) / (ob1.mass + ob2.mass);
-
-        double ob1Angle = Math.atan2(ob1FinalYVelocity, ob1FinalXVelocity);
-        double ob2Angle = Math.atan2(ob2FinalYVelocity, ob2FinalXVelocity);
-
-        int ob1TotalVelocity = (int) (ob1FinalXVelocity / Math.cos(ob1Angle));
-        int ob2TotalVelocity = (int) (ob2FinalXVelocity / Math.cos(ob2Angle));
-
-        ob1.setSpeed(ob1TotalVelocity);
-        ob2.setSpeed(ob2TotalVelocity);
-        System.out.println(ob1.id+" speed " + ob1.speed);
-        System.out.println(ob2.id+" speed " + ob2.speed);
-        ob1.setAngle(ob1Angle);
-        ob2.setAngle(ob2Angle);//TE
-        System.out.println(ob1.id+" angle " + ob1.angle);
-        System.out.println(ob2.id+" angle " + ob2.angle);
-    }
 
 }

@@ -5,7 +5,7 @@ public class Goalie1 extends Player {
 
 
     int count = 0;
-    public Goalie1(int id, Point point, int speed, double angle, int radius, Color color, Puck puck) {
+    public Goalie1(int id, PointDouble point, int speed, double angle, int radius, Color color, Puck puck) {
         super(id, point, speed, angle, radius, color, puck);
 
     }
@@ -37,7 +37,7 @@ public class Goalie1 extends Player {
     @Override
     public void updateLocation() {
         stick.updateLocation();
-        location.x = GameDriver.leftGoalLine + 15;
+        location.x = GameDriver.leftGoalLine + GameDriver.goalWidth/2;
         //double slope = (double) (horizontalMiddle - puck.location.y) / (leftGoalLine - puck.location.x);
         //double saveSpot = (horizontalMiddle + (210- leftGoalLine)*slope);
         double Y = puck.location.y - location.y;//makes it face puck
@@ -52,21 +52,22 @@ public class Goalie1 extends Player {
 
             if(puck.location.y < location.y){
                 moveGoalieUp();
-                setAngle(angle - 2*Math.PI/180);
-                if(angle <= -Math.PI/2){
-                    setAngle( -Math.PI/2);
+                angleFacing = angleFacing - 2*Math.PI/180;
+                if(angleFacing <= -Math.PI/2){
+                    angleFacing = -Math.PI/2;
                 }
             }
             else if(puck.location.y > location.y){
                 moveGoalieDown();
-                setAngle(angle + 2*Math.PI/180);
-                if(angle >= Math.PI/2){
-                    setAngle( Math.PI/2);
+                angleFacing = angleFacing + 2*Math.PI/180;
+                if(angleFacing >= Math.PI/2){
+                    angleFacing = Math.PI/2;
                 }
             }
         }
         else {
-            setAngle(Math.atan2(Y, X));
+            angleFacing = puckAngle;
+            //setAngle(Math.atan2(Y, X));
             if(location.y < puck.location.y){
                 moveGoalieDown();
             }

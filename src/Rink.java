@@ -209,6 +209,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
     public void add(Puck puck){
         this.puck = puck;
+        //players[0] = puck;
         super.add(puck);
     }
 
@@ -289,12 +290,22 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
 
 
-        Collision collision = new Collision(players.length+1);
+        Collision collision = new Collision(players.length);
+        if(puck.hold == 0) {
+            for (int j = 1; j < players.length; j++) {
+                //collision.objectsCollide(players[i], players[j]);
+                if (collision.objectsCollide(puck, players[j])) {
+                    collision.calculateCollisions(puck, players[j]);
+                }
+            }
+        }
+
         for(int i = 1; i < players.length; i++){
             for (int j = i+1; j < players.length; j++){
-
-                if(collision.objectsCollide(players[i], players[j]))
+                //collision.objectsCollide(players[i], players[j]);
+                if(collision.objectsCollide(players[i], players[j])) {
                     collision.calculateCollisions(players[i], players[j]);
+                }
             }
         }
 
@@ -310,20 +321,24 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         if(mo.slapShotFlag){
             mo.slapShot();
         }
-        else if(mo.bodyCheckFlag){
+
+        if(mo.bodyCheckFlag){
             mo.bodyCheck();
         }
         else if (mo.controller != null) {
             //System.out.println("move");
             if (mo.colliding) {
                 mo.updateLocationCol();
+                mo.colliding = false;
             }
-
-            mo.updateLocationController(mo.xAxisPercentage, mo.yAxisPercentage);
+            else {
+                mo.updateLocationController(mo.xAxisPercentage, mo.yAxisPercentage);
+            }
         }
         else {
             if (mo.colliding) {
                 mo.updateLocationCol();
+                mo.colliding = false;
             } else {// for goalies
                 mo.updateLocation();
             }
@@ -336,15 +351,16 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
             if (mo.colliding) {
                 mo.updateLocationCol();
+                mo.colliding = false;
             }
-            if (dragged || moved) {
+            else if (dragged || moved) {
                 mo.updateLocation(e.getX(), e.getY());
             }
         }
     }
 
     private void switchStartPositions(){
-        int tempX, tempY;
+        double tempX, tempY;
         double tempA;
         tempX = players[1].startX;
         tempY = players[1].startY;
@@ -418,16 +434,19 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
                 if (players[1].location.x > GameDriver.leftGoalLine ||
                         players[2].location.x > GameDriver.leftGoalLine) {
                     goaliePassToTeammates1();
-                } else {
+                }
+                else {
                     players[puck.hold].wristShot();
                 }
                 goalieTimer = 0;
-            } else if (puck.hold == 6) {
+            }
+            else if (puck.hold == 6) {
 
                 if (players[3].location.x < GameDriver.rightGoalLine ||
                         players[4].location.x < GameDriver.rightGoalLine) {
                     goaliePassToTeammates2();
-                } else {
+                }
+                else {
                     players[puck.hold].wristShot();
                 }
 
@@ -457,11 +476,11 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
         if (toPlayer1 < toPlayer3 && toPlayer1 < toPlayer4 && toPlayer1 < toPlayer2) {// if player one is closest
             System.out.println("pass back to player 1");
-            players[5].setAngle(Math.atan2(Y1, X1));
+            players[5].angleFacing = Math.atan2(Y1, X1);
         }
         else if (toPlayer2 < toPlayer3 && toPlayer2 < toPlayer4 && toPlayer2 < toPlayer1) {// if player 2 is closest
             System.out.println("pass back to player 2");
-            players[5].setAngle(Math.atan2(Y2, X2));
+            players[5].angleFacing = Math.atan2(Y2, X2);
         }
         else if( (toPlayer3 < toPlayer1 || toPlayer3 < toPlayer2 || toPlayer4 < toPlayer1 || toPlayer4 < toPlayer2)){
 
@@ -472,7 +491,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
             double[] distance = new double[4];
             distance[0] = line1.distanceFrom(players[3].location.x, players[3].location.y);
-            distance[1]= line1.distanceFrom(players[4].location.x, players[4].location.y);
+            distance[1] = line1.distanceFrom(players[4].location.x, players[4].location.y);
 
             distance[2] = line2.distanceFrom(players[3].location.x, players[3].location.y);
             distance[3] = line2.distanceFrom(players[4].location.x, players[4].location.y);
@@ -484,10 +503,10 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             }
 
             if(max == distance[0] || max == distance[1]){// if the defenders are farthest from the player 1 passing lane, pass to p1
-                players[5].setAngle(Math.atan2(Y1, X1));
+                players[5].angleFacing = Math.atan2(Y1, X1);
             }
             if(max == distance[2] || max == distance[3]){// if the defenders are farthest from the player 2 passing lane, pass to p2
-                players[5].setAngle(Math.atan2(Y2, X2));
+                players[5].angleFacing = Math.atan2(Y2, X2);
             }
         }
 
@@ -562,9 +581,9 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         for(int i = 1; i < players.length-2; i++){
             double Y = players[i].startY - players[i].location.y;
             double X = players[i].startX - players[i].location.x;
-            players[i].setAngle(Math.atan2(Y, X));
-            players[i].location.x = (int) (players[i].location.x + players[i].playerSpeedLimit * Math.cos(players[i].angle));
-            players[i].location.y = (int) (players[i].location.y + players[i].playerSpeedLimit * Math.sin(players[i].angle));
+            players[i].angleFacing = Math.atan2(Y, X);
+            players[i].location.x = (players[i].location.x + players[i].playerSpeedLimit * Math.cos(players[i].angleFacing));
+            players[i].location.y = (players[i].location.y + players[i].playerSpeedLimit * Math.sin(players[i].angleFacing));
             players[i].stick.updateLocation();
 
 
@@ -576,7 +595,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
                 players[i].location.x = players[i].startX;
                 players[i].location.y = players[i].startY;
-                players[i].angle = players[i].initAngle;
+                players[i].angleFacing = players[i].initAngle;
                 players[i].stick.updateLocation();
                 players[i].setSpeed(0);
                 players[i].pointList.clear();

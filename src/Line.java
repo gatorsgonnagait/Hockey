@@ -9,6 +9,7 @@ public class Line {
     int x2;
     int y1;
     int y2;
+
     int slopeX;
     int slopeY;
     double slope;
@@ -16,6 +17,17 @@ public class Line {
     int A;
     int B;
     int C;
+
+    double xD1;
+    double yD1;
+    double xD2;
+    double yD2;
+
+    double slopeDX;
+    double slopeDY;
+    double AD;
+    double BD;
+    double CD;
 
 
     public Line(int x1, int y1, int x2, int y2){
@@ -36,6 +48,35 @@ public class Line {
         A = (-1)*slopeY;
         B = slopeX;
         slopeAngle = Math.atan2(slopeY, slopeX);
+    }
+    public Line(double xD1, double yD1, double xD2, double yD2){
+        this.xD1 = xD1;
+        this.xD2 = xD2;
+        this.yD1 = yD1;
+        this.yD2 = yD2;
+        slopeDX = xD2 - xD1;
+        slopeDY = yD2 - yD1;
+        slope = slopeDY/slopeDX;
+
+        CD = slopeDY*xD1 - slopeDX*yD1;
+        AD = (-1)*slopeDY;
+        BD = slopeDX;
+        slopeAngle = Math.atan2(slopeDY, slopeDX);
+    }
+
+    public Line(PointDouble dp1, PointDouble dp2){
+        xD1 = dp1.x;
+        xD2 = dp2.x;
+        yD1 = dp1.y;
+        yD2 = dp2.y;
+        slopeDX = xD2 - xD1;
+        slopeDY = yD2 - yD1;
+        slope = slopeDY/slopeDX;
+
+        CD = slopeDY*xD1 - slopeDX*yD1;
+        AD = (-1)*slopeDY;
+        BD = slopeDX;
+        slopeAngle = Math.atan2(slopeDY, slopeDX);
     }
 
     public Line(int a, int b, int c){
@@ -63,10 +104,9 @@ public class Line {
         B = slopeX;
         slopeAngle = Math.atan2(slopeY, slopeX);
 
-
     }
 
-    public double distanceFrom(int m, int n){
+    public double distanceFrom(double m, double n){
         //d = |Am+Bn+C| / sqrt(A^2+B^2)
         double distance = Math.abs(A*m + B*n + C) / Math.sqrt(Math.pow(A,2)+Math.pow(B,2));
         return distance;

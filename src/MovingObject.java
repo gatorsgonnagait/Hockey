@@ -11,20 +11,20 @@ import java.util.ArrayList;
 
 public abstract class MovingObject extends JComponent {
 
-    Point   location;
-    double     speed;
+    PointDouble   location;
+    double  speed;
     double  angle;
-    int     radius;
-    int     adjustment;
+    double     radius;
+    double     adjustment;
     Color   color;
     int     id;
     int     mass = 10;
     boolean colliding = false;
-    int     dummy_radius;
+    double     dummy_radius;
     int     collisionFrames = 0;
     int     collisionDuration = 10;
-    int bigBuffer = Math.round(GameDriver.rinkWidth/80);
-    int smallBuffer = Math.round(GameDriver.rinkWidth/160);
+    double bigBuffer = Math.round(GameDriver.rinkWidth/80);
+    double smallBuffer = Math.round(GameDriver.rinkWidth/160);
     ArrayList<double[]> pointList = new ArrayList<>();
 
     double frictionCoefficient;
@@ -50,17 +50,17 @@ public abstract class MovingObject extends JComponent {
     Point arcCenter3 = new Point(leftBoundary+100,bottomBoundary-100);
     Point arcCenter4 = new Point(rightBoundary - 100, bottomBoundary - 100);
     */
-    Point arcCenter1 = new Point(GameDriver.leftBoundary + GameDriver.rinkWidth/8, GameDriver.topBoundary + GameDriver.rinkWidth/8);
-    Point arcCenter2 = new Point(GameDriver.rightBoundary - GameDriver.rinkWidth/8, GameDriver.topBoundary + GameDriver.rinkWidth/8);
-    Point arcCenter3 = new Point(GameDriver.leftBoundary + GameDriver.rinkWidth/8, GameDriver.bottomBoundary - GameDriver.rinkWidth/8);
-    Point arcCenter4 = new Point(GameDriver.rightBoundary - GameDriver.rinkWidth/8, GameDriver.bottomBoundary - GameDriver.rinkWidth/8);
+    PointDouble arcCenter1 = new PointDouble(GameDriver.leftBoundary + GameDriver.rinkWidth/8, GameDriver.topBoundary + GameDriver.rinkWidth/8);
+    PointDouble arcCenter2 = new PointDouble(GameDriver.rightBoundary - GameDriver.rinkWidth/8, GameDriver.topBoundary + GameDriver.rinkWidth/8);
+    PointDouble arcCenter3 = new PointDouble(GameDriver.leftBoundary + GameDriver.rinkWidth/8, GameDriver.bottomBoundary - GameDriver.rinkWidth/8);
+    PointDouble arcCenter4 = new PointDouble(GameDriver.rightBoundary - GameDriver.rinkWidth/8, GameDriver.bottomBoundary - GameDriver.rinkWidth/8);
 
 
     int hitWall = 0;
     boolean hitWalls = false;
 
 
-    public MovingObject(int id, Point point, double speed, double angle, int radius, Color color) {
+    public MovingObject(int id, PointDouble point, double speed, double angle, double radius, Color color) {
         this.id       = id;
         this.location = point;
         this.speed    = speed;
@@ -72,11 +72,11 @@ public abstract class MovingObject extends JComponent {
         //this.mass     = mass;
     }
     //test
-    public Point getPoint() {
+    public PointDouble getPoint() {
         return location;
     }
 
-    public void setLocation(Point point) {
+    public void setLocation(PointDouble point) {
         this.location = point;
     }
 
@@ -114,12 +114,12 @@ public abstract class MovingObject extends JComponent {
 
     public void draw(Graphics2D g2d){
         g2d.setColor(color);
-        g2d.fillOval(location.x-radius, location.y-radius, radius*2, radius*2);
+        g2d.fillOval( (int)Math.round(location.x-radius), (int)Math.round(location.y-radius), (int)Math.round(radius*2), (int)Math.round(radius*2));
     }
 
     public void positionCalculation(double angle){
-        location.x = (int) Math.round((location.x + speed * Math.cos(angle)));
-        location.y = (int) Math.round((location.y + speed * Math.sin(angle)));
+        location.x = location.x + speed * Math.cos(angle);
+        location.y = location.y + speed * Math.sin(angle);
     }
     /* fiz weird movement when the  objects slow down, interpolation
     when the speed gets under 1.0, calculate the line that the object would be going through
@@ -129,18 +129,18 @@ public abstract class MovingObject extends JComponent {
 
 
 
-    public double getDistance(int x1, double x2, int y1, double y2){
+    public double getDistance(double x1, double x2, double y1, double y2){
         return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
     }
 
-    public static double getDistance(int x1, int x2, int y1, int y2){
+    /*public static double getDistance(int x1, int x2, int y1, int y2){
         return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
-    }
+    }*/
 
     public void interpolationLine(double driftAngle){
 
-        double X = (double) location.x;
-        double Y = (double) location.y;
+        double X = location.x;
+        double Y = location.y;
 
         for(int i = 0; i < 6; i++){
             speed = speed * frictionCoefficient;
@@ -171,6 +171,21 @@ public abstract class MovingObject extends JComponent {
             k = 0;
         }
     }
+
+    public double reflection(double angle, int n){
+
+        double reflectAngle =0;
+        if(n == 1){
+            reflectAngle = (-1) * angle + Math.PI; //vertical walls
+        }
+        else if(n == 2){
+            reflectAngle = (-1)*angle;//horizontal walls
+        }
+        return reflectAngle;
+    }
+
+
+
 
 
 }

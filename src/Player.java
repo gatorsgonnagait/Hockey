@@ -18,7 +18,7 @@ public class Player extends MovingObject {
     Stick stick;
     int release = 0;
 
-    int puckGrabArea = 16;
+    double puckGrabArea;
     double slideAngle= 0;
     int start = 0;
     LinkedList <Double> slideList = new LinkedList<>();
@@ -33,8 +33,8 @@ public class Player extends MovingObject {
     int stickInputLimitFrames = 0;
     double tempSpeed;
     double tempAngle;
-    int startX;
-    int startY;
+    double startX;
+    double startY;
     static int i = 0;
 
     Controller controller;
@@ -67,17 +67,18 @@ public class Player extends MovingObject {
     double playerSpeedLimit = Math.round(GameDriver.rinkWidth/250);
     double driftAngle;
     double prevAngle;
+    double angleFacing;
 
 
 
 
 
 
-    public Player(int id, Point point, int speed, double angle, int radius, Color color, Puck puck, Image img) {
+    public Player(int id, PointDouble point, double speed, double angle, double radius, Color color, Puck puck, Image img) {
         super(id, point, speed, angle, radius, color);
         this.teamColor = color;
         this.puck = puck;
-        this.stick = new Stick(radius * 5/3);
+        this.stick = new Stick(radius * 3/2);
         dummy_radius = stick.length + adjustment;
         //System.out.println(dummy_radius);
         startX = point.x;
@@ -85,22 +86,29 @@ public class Player extends MovingObject {
         initAngle = angle;
         buttonInputLimitFrames = 0;
         stickInputLimitFrames = 0;
+
         this.img = img;
         frictionCoefficient = .95;
+        puckGrabArea = stick.length * 3/4;
+        angleFacing = angle;
     }
 
 
-    public Player(int id, Point point, int speed, double angle, int radius, Color color, Puck puck) {
+    public Player(int id, PointDouble point, int speed, double angle, int radius, Color color, Puck puck) {
         super(id, point, speed, angle, radius, color);
         this.teamColor = color;
         this.puck = puck;
-        this.stick = new Stick(radius * 5/3);
+        this.stick = new Stick(radius * 3/2);
         dummy_radius = stick.length + adjustment;
         startX = point.x;
         startY = point.y;
         initAngle = angle;
         buttonInputLimitFrames = 0;
         stickInputLimitFrames = 0;
+
+        frictionCoefficient = .95;
+        puckGrabArea = stick.length * 3/4;
+        angleFacing = angle;
 
     }
 
@@ -112,9 +120,9 @@ public class Player extends MovingObject {
     public void draw(Graphics2D g2d){
         stick.draw(g2d);
         g2d.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 60));
-        g2d.fillOval(location.x-dummy_radius, location.y-dummy_radius, dummy_radius*2, dummy_radius*2);
+        g2d.fillOval((int)Math.round(location.x-dummy_radius), (int)Math.round(location.y-dummy_radius), (int)Math.round(dummy_radius*2), (int)Math.round(dummy_radius*2));
         g2d.setColor(color);
-        g2d.fillOval(location.x - radius, location.y - radius, radius*2, radius*2); // i think this is right
+        g2d.fillOval((int)Math.round(location.x - radius), (int)Math.round(location.y - radius), (int)Math.round(radius*2), (int)Math.round(radius*2)); // i think this is right
     }
 
 
@@ -302,7 +310,7 @@ public class Player extends MovingObject {
         }
 
         else if(location.x < GameDriver.leftGoalLine && location.x > GameDriver.leftGoalBack && location.y < GameDriver.topGoalPost){//left goal top
-            System.out.println("player above goal");
+
             if(location.y >= GameDriver.topGoalPost - dummy_radius - smallBuffer){
                 hitWall = 5;
             }
@@ -499,8 +507,8 @@ public class Player extends MovingObject {
 
         if( distance > 24 && distance < 38){// controller grace area. allows you to turn without moving
             //System.out.println(start);
-            setAngle(newAngle);
-            driftAngle = angle;
+            angleFacing = newAngle;
+            driftAngle = newAngle;
             if (start == 0) {
                 start = 1;
                 slideList.clear();
@@ -508,12 +516,12 @@ public class Player extends MovingObject {
         }
         else if(distance >= 38) {
             if(speed == 0){
-                System.out.println(startingSpeed +" starting speed");
+                //System.out.println(startingSpeed +" starting speed");
                 setSpeed(startingSpeed);
             }
             accelerationFrames++;
             if(accelerationFrames % 10 == 0){
-                speed = speed * 1.15;
+                speed = speed * 1.25;
                 //prevAngle = angle;
                 //System.out.println(startingSpeed);
             }
@@ -523,7 +531,7 @@ public class Player extends MovingObject {
             }
 
             pointList.clear();
-            setAngle(newAngle);
+            angleFacing = newAngle;
             setSpeed(speed);
 
             if(start == 1) { //if was stopped before, dont use the slide angle to calculate position
@@ -568,7 +576,7 @@ public class Player extends MovingObject {
         distance = Math.sqrt(Math.pow((location.x - mouseX), 2)
                 + Math.pow((location.y - mouseY), 2));
 
-        setAngle(newAngle);
+        angleFacing = newAngle;
         stick.updateLocation();
 
         if(slideList.size() > slideLimit){
@@ -618,8 +626,8 @@ public class Player extends MovingObject {
     public void stickHandling() {// of its close itll turn on the hold method
 
         //Puck puck = player.puck;
-        int stickHoldingPointX = (int) Math.round((location.x + (radius ) * Math.cos(angle)));
-        int stickHoldingPointY = (int) Math.round((location.y + (radius ) * Math.sin(angle)));
+        double stickHoldingPointX = (int) Math.round((location.x + (5/3 * radius ) * Math.cos(angleFacing)));
+        double stickHoldingPointY = (int) Math.round((location.y + (5/3 * radius ) * Math.sin(angleFacing)));
 
         double distance = getDistance(puck.location.x, stickHoldingPointX, puck.location.y, stickHoldingPointY);//distance from puck
 
@@ -647,8 +655,8 @@ public class Player extends MovingObject {
 
     public void holdPuck() {
         //possession = id;
-        int stickHoldingPointX = (int) Math.round((location.x + (radius ) * Math.cos(angle)));
-        int stickHoldingPointY = (int) Math.round((location.y + (radius ) * Math.sin(angle)));
+        int stickHoldingPointX = (int) Math.round((location.x + (radius ) * Math.cos(angleFacing)));
+        int stickHoldingPointY = (int) Math.round((location.y + (radius ) * Math.sin(angleFacing)));
 
         puck.location.x = stickHoldingPointX;
         puck.location.y = stickHoldingPointY;
@@ -661,7 +669,7 @@ public class Player extends MovingObject {
         release = 1;
         puck.hold = 0;
         //Rink.possession = 0;
-        puck.setAngle(angle);
+        puck.setAngle(angleFacing);
         puck.setSpeed(wristShotSpeed);
         puck.updateLocation();
     }
@@ -669,12 +677,12 @@ public class Player extends MovingObject {
     public void slapShot(){
         //Rink.possession = 0;
         if(slapShotFrames == 0){
-            driftAngle = angle;
+            driftAngle = angleFacing;
         }
         slapShotFrames++;
 
         double newAngle = controlAngle(xAxisPercentage, yAxisPercentage);
-        setAngle(newAngle);
+        angleFacing = newAngle;
 
         if(pointList.size()==0) {
             interpolationLine(driftAngle);
@@ -686,7 +694,7 @@ public class Player extends MovingObject {
         if(slapShotFrames > 50) {
             release = 1;
             puck.hold = 0;
-            puck.setAngle(angle);
+            puck.setAngle(angleFacing);
             puck.setSpeed(slapShotSpeed);
             puck.updateLocation();
             slapShotFrames = 0;
@@ -702,7 +710,7 @@ public class Player extends MovingObject {
         release = 1;
         puck.hold = 0;
         //Rink.possession = 0;
-        puck.setAngle(angle);
+        puck.setAngle(angleFacing);
         puck.setSpeed(slapShotSpeed);
         puck.updateLocation();
     }
@@ -809,16 +817,16 @@ public class Player extends MovingObject {
 
             Y = puck.location.y - location.y;
             X = puck.location.x - location.x;
-            setAngle(Math.atan2(Y, X));
+            angleFacing = Math.atan2(Y, X);
             setSpeed(wristShotSpeed);
             //goalie frozen on its track
-            positionCalculation(angle);
+            positionCalculation(angleFacing);
         }
         else if(puck.hold == 5 || puck.hold == 6){
 
             Y = GameDriver.horizontalMiddle - location.y;
             X = GameDriver.verticalCenter - location.x;
-            setAngle(Math.atan2(Y, X));
+            angleFacing = Math.atan2(Y, X);
             stick.updateLocation();
 
             double puckY = GameDriver.horizontalMiddle - puck.location.y;
@@ -842,31 +850,31 @@ public class Player extends MovingObject {
     protected class Stick {
 
         //Player player;
-        int x;
-        int y;
-        int a;
-        int b;
-        int length;
+        double x;
+        double y;
+        double a;
+        double b;
+        double length;
 
-        public Stick(int length) {
+        public Stick(double length) {
             x = location.x;
             y = location.y;
             this.length = length;
-            a = (int) (x + length * Math.cos(getAngle()));
-            b = (int) (y + length * Math.sin(getAngle()));
+            a = x + length * Math.cos(getAngle());
+            b = y + length * Math.sin(getAngle());
         }
 
         public void updateLocation() {
             x = location.x;
             y = location.y;
-            a = (int)(x + length * Math.cos(angle));
-            b = (int)(y + length * Math.sin(angle));
+            a = x + length * Math.cos(angleFacing);
+            b = y + length * Math.sin(angleFacing);
         }
 
         public void draw(Graphics2D g2d) {
             g2d.setStroke(new BasicStroke(5));
             g2d.setColor(Color.black);
-            g2d.drawLine(x, y, a, b);//from center of player cicle to edge of stick
+            g2d.drawLine((int)Math.round(x), (int)Math.round(y), (int)Math.round(a), (int)Math.round(b));//from center of player cicle to edge of stick
         }
     }
 }

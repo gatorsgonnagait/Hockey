@@ -17,7 +17,7 @@ public class Puck extends MovingObject {
 
 
 
-    public Puck(int id, Point point, int speed, double angle, int radius, Color color) {
+    public Puck(int id, PointDouble point, int speed, double angle, int radius, Color color) {
         super(id, point, speed, angle, radius, color);
         adjustment = radius/2;
         dummy_radius = radius + adjustment;
@@ -60,17 +60,17 @@ public class Puck extends MovingObject {
 
             if (location.x >= GameDriver.rightGoalBack - radius && !backOfNet) {
                 location.x = GameDriver.rightGoalBack - radius;
-                reflection(angle, 1);
-                System.out.println(" hit the back");
+                angle = reflection(angle, 1);
+                //System.out.println(" hit the back");
                 backOfNet = true;
             }
             else if ( location.y <= GameDriver.topGoalPost + radius){
                 location.y = GameDriver.topGoalPost + radius;
-                reflection(angle, 2);
+                angle = reflection(angle, 2);
             }
             else if ( location.y >=GameDriver.bottomGoalPost - radius){
                 location.y = GameDriver.bottomGoalPost - radius;
-                reflection(angle, 2);
+                angle = reflection(angle, 2);
             }
 
             if(backOfNet){
@@ -89,37 +89,26 @@ public class Puck extends MovingObject {
     }
 
 
-    public void reflection(double angle, int n){
 
-        double reflectAngle =0;
-        if(n == 1){
-            reflectAngle = (-1) * angle + Math.PI; //verstical walls
-        }
-        else if(n == 2){
-            reflectAngle = (-1)*angle;//horizontal angle
-        }
-        setAngle(reflectAngle);
-    }
-
-    double reflectionAngleWithTangent(Point center){
+    double reflectionAngleWithTangent(PointDouble center){
         double angle = angleWithArcCenter(center.x, center.y);
-        Point end = new Point();
-        end.x = center.x + (int) Math.round((GameDriver.rinkWidth/8 * Math.cos(angle)));
-        end.y = center.y + (int) Math.round((GameDriver.rinkWidth/8 * Math.sin(angle)));
+        PointDouble end = new PointDouble();
+        end.x = center.x + (GameDriver.rinkWidth/8 * Math.cos(angle));
+        end.y = center.y + (GameDriver.rinkWidth/8 * Math.sin(angle));
         Line incident = new Line(center, end);
-        Point tangentStart = new Point(end);
-        Point tangentEnd = new Point();
+        PointDouble tangentStart = new PointDouble(end);
+        PointDouble tangentEnd = new PointDouble();
         double angle1 = angle + ((Math.PI/180)*1);
-        tangentEnd.x = center.x + (int) Math.round((GameDriver.rinkWidth/8 * Math.cos(angle1)));
-        tangentEnd.y = center.y + (int) Math.round((GameDriver.rinkWidth/8 * Math.sin(angle1)));
+        tangentEnd.x = center.x + GameDriver.rinkWidth/8 * Math.cos(angle1);
+        tangentEnd.y = center.y + GameDriver.rinkWidth/8 * Math.sin(angle1);
         Line tangent = new Line(tangentStart, tangentEnd);
-        double tangentTheta = Math.atan2(tangent.slopeY, tangent.slopeX);
-        double lineTheta = Math.atan2(incident.slopeY, incident.slopeX);
+        double tangentTheta = Math.atan2(tangent.slopeDY, tangent.slopeDX);
+        double lineTheta = Math.atan2(incident.slopeDY, incident.slopeDX);
         double incidenceAngle = (Math.PI/180)*90 - (lineTheta - tangentTheta);
         return ((Math.PI/180)*90) + (incidenceAngle*2);
     }
 
-    double angleWithArcCenter(int cx, int cy){
+    double angleWithArcCenter(double cx, double cy){
         double theta = Math.atan2((location.y-cy), (location.x-cx));
         return theta;
     }
@@ -132,59 +121,59 @@ public class Puck extends MovingObject {
 
         if(location.x <= GameDriver.leftBoundary + dummy_radius) {
             location.x = GameDriver.leftBoundary + dummy_radius;
-            reflection(angle, 1);
+            angle = reflection(angle, 1);
         }
         else if ( location.x >= GameDriver.rightBoundary -  dummy_radius ){
             location.x = GameDriver.rightBoundary - dummy_radius;
-            reflection(angle, 1);
+            angle = reflection(angle, 1);
         }
         else if(location.y <= GameDriver.topBoundary + dummy_radius ){
             location.y = GameDriver.topBoundary + dummy_radius;
-            reflection(angle, 2);
+            angle = reflection(angle, 2);
         }
         else if (location.y >= GameDriver.bottomBoundary -  dummy_radius ){
             location.y = GameDriver.bottomBoundary - dummy_radius;
-            reflection(angle, 2);
+            angle = reflection(angle, 2);
         }
 
 
 
         // Arcs and tangents
-        if(location.x >= GameDriver.rightBoundary - GameDriver.rinkWidth/8 &&
+        if(location.x >= GameDriver.rightBoundary - GameDriver.rinkWidth/8 &&// bottom right
                 location.y >= GameDriver.bottomBoundary - GameDriver.rinkWidth/8){    // 4th corner
             double distance = Math.hypot(location.x-arcCenter4.x,
                     location.y-arcCenter4.y);
             if (distance >= GameDriver.rinkWidth/8 - dummy_radius){
                 double refAngle = reflectionAngleWithTangent(arcCenter4);
-                reflection(refAngle,2);
+                angle = reflection(refAngle,2);
             }
         }
-        else if(location.y <= GameDriver.topBoundary + GameDriver.rinkWidth/8  &&
+        else if(location.y <= GameDriver.topBoundary + GameDriver.rinkWidth/8  &&// top left
                 location.x <= GameDriver.leftBoundary + GameDriver.rinkWidth/8){    // 1st corner
             double distance = Math.hypot(location.x-arcCenter1.x,
                     location.y-arcCenter1.y);
             if (distance >= GameDriver.rinkWidth/8 - dummy_radius){
                 double refAngle = reflectionAngleWithTangent(arcCenter1);
-                reflection(refAngle,1);
+                angle = reflection(refAngle,1);
             }
         }
-        else if(location.x <= GameDriver.leftBoundary + GameDriver.rinkWidth/8 &&
+        else if(location.x <= GameDriver.leftBoundary + GameDriver.rinkWidth/8 &&//bottom left
                 location.y >= GameDriver.bottomBoundary - GameDriver.rinkWidth/8){    // 3rd corner
             double distance = Math.hypot(location.x-arcCenter3.x,
                     location.y-arcCenter3.y);
             if (distance >=  GameDriver.rinkWidth/8 - dummy_radius){
                 double refAngle = reflectionAngleWithTangent(arcCenter3);
-                reflection(refAngle,2);
+                angle = reflection(refAngle,2);
             }
         }
-        else if(location.y <= GameDriver.topBoundary + GameDriver.rinkWidth/8 &&
+        else if(location.y <= GameDriver.topBoundary + GameDriver.rinkWidth/8 &&//top right
                 location.x >= GameDriver.rightBoundary - GameDriver.rinkWidth/8){     // 2nd Corner
             Point center = new Point(GameDriver.rightBoundary - GameDriver.rinkWidth/8,GameDriver.topBoundary + GameDriver.rinkWidth/8);
             double distance = Math.hypot(location.x-center.x, location.y-center.y);
             if (distance >= GameDriver.rinkWidth/8- dummy_radius){
                 double refAngle = reflectionAngleWithTangent(arcCenter2);
                 //setAngle(refAngle);
-                reflection(refAngle,1);
+                angle = reflection(refAngle,1);
             }
         }
 
@@ -206,7 +195,7 @@ public class Puck extends MovingObject {
             if(location.y >= GameDriver.topGoalPost - dummy_radius){
                 location.y = GameDriver.topGoalPost - dummy_radius;
                 //System.out.println("top");
-                reflection(angle, 2);
+                angle = reflection(angle, 2);
             }
         }
         else if( location.x < GameDriver.leftGoalBack && location.y < GameDriver.topGoalPost){
@@ -216,7 +205,7 @@ public class Puck extends MovingObject {
                 //System.out.println("reflect off top left corner");
                 location.x = GameDriver.leftGoalBack - dummy_radius;
                 location.y = GameDriver.topGoalPost - dummy_radius;
-                reflection(angle, 2);
+                angle = reflection(angle, 2);
             }
         }
         else if( location.x > GameDriver.rightGoalBack && location.y < GameDriver.topGoalPost){
@@ -226,7 +215,7 @@ public class Puck extends MovingObject {
                 //System.out.println("reflect off top right back corner");
                 location.x = GameDriver.rightGoalBack + dummy_radius;
                 location.y = GameDriver.topGoalPost - dummy_radius;
-                reflection(angle, 2);
+                angle = reflection(angle, 2);
             }
         }
 
@@ -237,7 +226,7 @@ public class Puck extends MovingObject {
             if(location.y <= GameDriver.bottomGoalPost + dummy_radius ){
 
                 location.y = GameDriver.bottomGoalPost + dummy_radius;
-                reflection(angle, 2);
+                angle = reflection(angle, 2);
             }
         }
         else if( location.x < GameDriver.leftGoalBack && location.y > GameDriver.bottomGoalPost){
@@ -247,7 +236,7 @@ public class Puck extends MovingObject {
                 //System.out.println("reflect off bottom left corner");
                 location.x = GameDriver.leftGoalBack - dummy_radius;
                 location.y = GameDriver.bottomGoalPost + dummy_radius;
-                reflection(angle, 2);
+                angle = reflection(angle, 2);
             }
         }
         else if( location.x > GameDriver.rightGoalBack && location.y > GameDriver.bottomGoalPost){
@@ -257,7 +246,7 @@ public class Puck extends MovingObject {
                 //System.out.println("reflect off bottom right corner");
                 location.x = GameDriver.rightGoalBack + dummy_radius;
                 location.y = GameDriver.bottomGoalPost + dummy_radius;
-                reflection(angle, 2);
+                angle = reflection(angle, 2);
             }
         }
 
@@ -289,7 +278,7 @@ public class Puck extends MovingObject {
                     //System.out.println("back");
                 if(location.x >= GameDriver.leftGoalBack - bigBuffer) {
                     location.x = GameDriver.leftGoalBack - bigBuffer;
-                    reflection(angle, 1);
+                    angle = reflection(angle, 1);
                 }
             }
             else if(location.x > GameDriver.rightGoalBack ){//back of right goal
@@ -297,7 +286,7 @@ public class Puck extends MovingObject {
                 if(location.x <= GameDriver.rightGoalBack + bigBuffer) {
 
                     location.x = GameDriver.rightGoalBack + bigBuffer;
-                    reflection(angle, 1);
+                    angle = reflection(angle, 1);
                 }
             }
 
@@ -332,7 +321,7 @@ public class Puck extends MovingObject {
                 || distanceFromRightTopPost < radius)
                 && (location.x - radius > GameDriver.leftGoalLine || location.x + radius < GameDriver.rightGoalLine ) && postTimer > 5){
 
-            reflection(angle, 1);
+            angle = reflection(angle, 1);
             // vertical reflection
             postTimer = 0;
 

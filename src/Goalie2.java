@@ -5,7 +5,7 @@ public class Goalie2 extends Player {
 
     int count = 0;
 
-    public Goalie2(int id, Point point, int speed, double angle, int radius, Color color, Puck puck) {
+    public Goalie2(int id, PointDouble point, int speed, double angle, int radius, Color color, Puck puck) {
         super(id, point, speed, angle, radius, color, puck);
     }
 
@@ -48,29 +48,30 @@ public class Goalie2 extends Player {
 
             if(puck.location.y < location.y){
                 moveGoalieUp();
-                double A = angle + 4*Math.PI/180;
+                double A = angleFacing + 4*Math.PI/180;
                 if(A < 0)
                     A = A + 2*Math.PI;
 
                 if(A >= 3*Math.PI/2){
-                    setAngle( 3*Math.PI/2);
+                    angleFacing = 3*Math.PI/2;
                 }
                 else
-                    setAngle(A);
+                    angleFacing = A;
             }
             else if(puck.location.y > location.y){
                 moveGoalieDown();
-                double A = angle - 4*Math.PI/180;
+                double A = angleFacing - 4*Math.PI/180;
 
                 if(A <= Math.PI/2){
-                    setAngle( -3*Math.PI/2);// i dont know how this works
+                    angleFacing = -3*Math.PI/2;// i dont know how this works
                 }else
-                    setAngle(A);
+                    angleFacing = A;
+
 
             }
         }
         else {
-            setAngle(Math.atan2(Y, X));
+            angleFacing = Math.atan2(Y, X);
             if(location.y < puck.location.y){
                 moveGoalieDown();
             }
