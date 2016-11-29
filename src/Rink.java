@@ -35,6 +35,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
     int resetTimer = 0;
     int afterGoalTimer = 0;
 
+
     boolean flag = false;
     static int reset = 0;
     static int score = 0;
@@ -43,7 +44,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
     ScorePanel scorePanel = new ScorePanel();
     boolean setScore1 = false;
     boolean setScore2 = false;
-    static boolean isPuckSlow = true;
+
 
     static int i = 0;
 
@@ -329,20 +330,20 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             //System.out.println("move");
             if (mo.colliding) {
                 mo.updateLocationCol();
-                mo.colliding = false;
+                //mo.colliding = false;
             }
             else {
                 mo.updateLocationController(mo.xAxisPercentage, mo.yAxisPercentage);
             }
         }
-        else {
-            if (mo.colliding) {
-                mo.updateLocationCol();
-                mo.colliding = false;
-            } else {// for goalies
-                mo.updateLocation();
-            }
+
+        if (mo.colliding) {
+            mo.updateLocationCol();
+            //mo.colliding = false;
+        } else {// for goalies
+            mo.updateLocation();
         }
+
 
         if (mo == selectedPlayer4){
             //else if(mo.controller.getType().equals( Controller.Type.MOUSE)){

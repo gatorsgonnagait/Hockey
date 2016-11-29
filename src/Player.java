@@ -453,7 +453,10 @@ public class Player extends MovingObject {
             collisionFrames = 0;
             colliding = false;
         }
-        positionCalculation(angle);
+        else {
+            positionCalculation(angle);
+
+        }
         stick.updateLocation();
     }
 

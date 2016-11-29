@@ -12,7 +12,7 @@ public class Goalie2 extends Player {
     public void moveGoalieDown(){
         count++;
         if(count == 4) {
-            location.y = location.y + 1; // moves down one pixel per frame
+            location.y = location.y + radius/10; // moves down one pixel per frame
             count = 0;
         }
         if(location.y >= GameDriver.bottomGoalPost) {
@@ -24,7 +24,7 @@ public class Goalie2 extends Player {
     public void moveGoalieUp(){
         count++;
         if(count == 4) {
-            location.y = location.y - 1;
+            location.y = location.y - radius/10;
             count = 0;
         }
         if(location.y <= GameDriver.topGoalPost) {
@@ -36,7 +36,7 @@ public class Goalie2 extends Player {
     @Override
     public void updateLocation() {
         stick.updateLocation();
-        location.x = GameDriver.rightGoalLine - 15;
+        location.x = GameDriver.rightGoalLine - GameDriver.goalWidth/2;
 
         double Y = puck.location.y - location.y;//makes it face puck
         double X = puck.location.x - location.x;

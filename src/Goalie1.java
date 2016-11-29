@@ -13,8 +13,7 @@ public class Goalie1 extends Player {
     public void moveGoalieDown(){
         count++;
         if(count == 4) {
-            location.y = location.y + 1; // moves down one pixel per frame
-            count = 0;
+            location.y = location.y + radius/10;
         }
         if(location.y >= GameDriver.bottomGoalPost) {
             location.y = GameDriver.bottomGoalPost;
@@ -25,7 +24,7 @@ public class Goalie1 extends Player {
     public void moveGoalieUp(){
         count++;
         if(count == 4) {
-            location.y = location.y - 1;
+            location.y = location.y - radius/10;
             count = 0;
         }
         if(location.y <= GameDriver.topGoalPost) {
