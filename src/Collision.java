@@ -72,9 +72,6 @@ public class Collision {
 
         if( distance <= distance1) {
 
-
-
-
             //double midX = (object1.location.x + object2.location.x)/2;
             //double midY = (object1.location.y + object2.location.y)/2;
             //double perpendicularX1 =  Math.round((midX + 50 * Math.cos(perpendicularAngle)));
@@ -144,18 +141,34 @@ public class Collision {
 
         //System.out.println(ob1Angle*180/Math.PI + " before");
         //System.out.println( (object1.reflection(ob1Angle, 2)) *180/Math.PI + " after");
+        if(ob1.speed == 0){
+            ob1.angle = collisionAngle;
+        }
+        else{
+            ob1.angle = ob1.reflection(ob1Angle, 2) - adjustment;
+        }
+        if(ob2.speed == 0){
+            ob2.speed = collisionAngle;
+        }
+        else{
+            ob2.angle = ob2.reflection(ob2Angle, 2) - adjustment;
+        }
 
-        ob1.angle = ob1.reflection(ob1Angle, 2) - adjustment;
-        ob2.angle = ob2.reflection(ob2Angle, 2) - adjustment;
         //System.out.println(object1.angle*180/Math.PI + " angle after");
+        ob1.location.x = ob1.location.x + 1 * Math.cos(ob1.angle);
+        ob1.location.y = ob1.location.y + 1 * Math.sin(ob1.angle);
+
+        ob2.location.x = ob2.location.x + 1 * Math.cos(ob2.angle);
+        ob2.location.y = ob2.location.y + 1 * Math.sin(ob2.angle);
 
 
         //System.out.println(ob1.id+" speed " + ob1.speed);
         //System.out.println(ob2.id+" speed " + ob2.speed);
         //ob1.setAngle(ob1Angle);
         //ob2.setAngle(ob2Angle);//TE
-        //System.out.println(ob1.id+" angle " + ob1.angle);
-        //System.out.println(ob2.id+" angle " + ob2.angle);
+        System.out.println();
+        System.out.println(ob1.id+" angle 1 " + ob1.angle);
+        System.out.println(ob2.id+" angle 2 " + ob2.angle);
     }
 
     /*UNUSED

@@ -34,6 +34,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
     int goalieTimer = 0;
     int resetTimer = 0;
     int afterGoalTimer = 0;
+    int collisionLimit = 0;
 
 
     boolean flag = false;
@@ -225,6 +226,8 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         puck.hitGoals();
         goalScored();
 
+        /*
+
         if(puck.speed > GameDriver.rinkWidth /200 ) {
 
             if (i % 15 == 0) {
@@ -238,11 +241,15 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
                 puck.interpolationLine(puck.angle);//run this once
             }
             puck.stopObject();
+        }*/
+        if (i % 10 == 0) {
+            puck.speed = puck.setSpeedFriction(puck.frictionCoefficient);
         }
-        else if(puck.speed <= .1 && puck.hold == 0){
+        puck.updateLocation();
+        if(puck.speed <= .1 && puck.hold == 0){
             puck.speed = 0;
-            if(puck.pointList.size() != 0)
-                puck.pointList.clear();
+            //if(puck.pointList.size() != 0)
+              //  puck.pointList.clear();
             puck.updateLocation();
         }
 
@@ -327,21 +334,26 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             mo.bodyCheck();
         }
         else if (mo.controller != null) {
+            System.out.println(mo.colliding);
             //System.out.println("move");
-            if (mo.colliding) {
+            if (mo.colliding ) {
+                //if(MovingObject instanceof Puck )
                 mo.updateLocationCol();
                 //mo.colliding = false;
-            }
+            }//push something away right here
             else {
                 mo.updateLocationController(mo.xAxisPercentage, mo.yAxisPercentage);
             }
         }
+        else {
+            if (mo.colliding) {
+                mo.updateLocationCol();
+                //mo.colliding = false;
+                collisionLimit = 0;
+            } else {// for goalies
+                mo.updateLocation();
+            }
 
-        if (mo.colliding) {
-            mo.updateLocationCol();
-            //mo.colliding = false;
-        } else {// for goalies
-            mo.updateLocation();
         }
 
 
@@ -352,7 +364,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
             if (mo.colliding) {
                 mo.updateLocationCol();
-                mo.colliding = false;
+                //mo.colliding = false;
             }
             else if (dragged || moved) {
                 mo.updateLocation(e.getX(), e.getY());
@@ -599,7 +611,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
                 players[i].angleFacing = players[i].initAngle;
                 players[i].stick.updateLocation();
                 players[i].setSpeed(0);
-                players[i].pointList.clear();
+                //players[i].pointList.clear();
 
 
             }

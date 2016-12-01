@@ -454,6 +454,7 @@ public class Player extends MovingObject {
             colliding = false;
         }
         else {
+
             positionCalculation(angle);
 
         }
@@ -552,9 +553,9 @@ public class Player extends MovingObject {
 
                 //setAngle(driftAngle);
                 positionCalculation(driftAngle);
-                if (Rink.i % 1  == 0) {//call friction method every 10 bodyCheckFrames
-                    speed = setSpeedFriction(frictionCoefficient);
-                }
+                //if (Rink.i % 1  == 0) {//call friction method every 10 bodyCheckFrames
+                speed = setSpeedFriction(frictionCoefficient);
+                //}
                 /*
             if(pointList.size()==0) {
                 interpolationLine(driftAngle);
@@ -631,8 +632,8 @@ public class Player extends MovingObject {
     public void stickHandling() {// of its close itll turn on the hold method
 
         //Puck puck = player.puck;
-        double stickHoldingPointX = (int) Math.round((location.x + (5/3 * radius ) * Math.cos(angleFacing)));
-        double stickHoldingPointY = (int) Math.round((location.y + (5/3 * radius ) * Math.sin(angleFacing)));
+        double stickHoldingPointX = (location.x + (5/3 * radius ) * Math.cos(angleFacing));
+        double stickHoldingPointY = (location.y + (5/3 * radius ) * Math.sin(angleFacing));
 
         double distance = getDistance(puck.location.x, stickHoldingPointX, puck.location.y, stickHoldingPointY);//distance from puck
 
@@ -840,10 +841,9 @@ public class Player extends MovingObject {
             X = GameDriver.verticalCenter - location.x;
             angleFacing = Math.atan2(Y, X);
             stick.updateLocation();
-
             double puckY = GameDriver.horizontalMiddle - puck.location.y;
             double puckX = GameDriver.verticalCenter - puck.location.x;
-
+            speed = 0;
 
             puck.setAngle(Math.atan2(puckY, puckX));
             puck.setSpeed(wristShotSpeed);

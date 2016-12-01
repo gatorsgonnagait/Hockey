@@ -22,7 +22,7 @@ public abstract class MovingObject extends JComponent {
     boolean colliding = false;
     double     dummy_radius;
     int     collisionFrames = 0;
-    int     collisionDuration = 30;
+    int     collisionDuration = 5;
     double bigBuffer = Math.round(GameDriver.rinkWidth/80);
     double smallBuffer = Math.round(GameDriver.rinkWidth/160);
     ArrayList<double[]> pointList = new ArrayList<>();
@@ -186,6 +186,19 @@ public abstract class MovingObject extends JComponent {
             reflectAngle = (-1)*angle;//horizontal walls
         }
         return reflectAngle;
+    }
+
+    public void updateLocationCol() {
+        collisionFrames++;
+        if(collisionFrames >= collisionDuration){
+            collisionFrames = 0;
+            colliding = false;
+        }
+        else {
+
+            positionCalculation(angle);
+
+        }
     }
 
 
