@@ -148,18 +148,24 @@ public class Collision {
             ob1.angle = ob1.reflection(ob1Angle, 2) - adjustment;
         }
         if(ob2.speed == 0){
-            ob2.speed = collisionAngle;
+            ob2.angle = collisionAngle;
         }
         else{
             ob2.angle = ob2.reflection(ob2Angle, 2) - adjustment;
         }
 
         //System.out.println(object1.angle*180/Math.PI + " angle after");
-        ob1.location.x = ob1.location.x + 1 * Math.cos(ob1.angle);
+        /*ob1.location.x = ob1.location.x + 1 * Math.cos(ob1.angle);
         ob1.location.y = ob1.location.y + 1 * Math.sin(ob1.angle);
 
         ob2.location.x = ob2.location.x + 1 * Math.cos(ob2.angle);
         ob2.location.y = ob2.location.y + 1 * Math.sin(ob2.angle);
+        */
+        ob1.location.x = ob1.location.prevX;
+        ob1.location.y = ob1.location.prevY;
+
+        ob2.location.x = ob2.location.prevX;
+        ob2.location.y = ob2.location.prevY;
 
 
         //System.out.println(ob1.id+" speed " + ob1.speed);

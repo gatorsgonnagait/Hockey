@@ -217,9 +217,6 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
     public void updateAll(){
 
-        //int testX = puck.location.x;
-        //int testY = puck.location.y;
-
         possession = puck.hold;
 
         puck.hitWalls();
@@ -245,6 +242,8 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         if (i % 10 == 0) {
             puck.speed = puck.setSpeedFriction(puck.frictionCoefficient);
         }
+        puck.location.prevX = puck.location.x;
+        puck.location.prevY = puck.location.y;
         puck.updateLocation();
         if(puck.speed <= .1 && puck.hold == 0){
             puck.speed = 0;
@@ -252,9 +251,6 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
               //  puck.pointList.clear();
             puck.updateLocation();
         }
-
-        //int tester =  Math.abs(puck.location.x) - Math.abs(testX);
-
 
 
         for(int i = 1; i < players.length; i++){
@@ -268,6 +264,9 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
             Player mo = players[i];
             if(reset == 0) {// if its in reset mode it will skip everything
+
+                mo.location.prevX = mo.location.x;
+                mo.location.prevY = mo.location.y;
 
                 movement(mo);
 
@@ -293,6 +292,8 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
                     }
                 }
             }
+
+
         }
 
 
@@ -334,7 +335,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             mo.bodyCheck();
         }
         else if (mo.controller != null) {
-            System.out.println(mo.colliding);
+            //System.out.println(mo.colliding);
             //System.out.println("move");
             if (mo.colliding ) {
                 //if(MovingObject instanceof Puck )
@@ -344,6 +345,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             else {
                 mo.updateLocationController(mo.xAxisPercentage, mo.yAxisPercentage);
             }
+
         }
         else {
             if (mo.colliding) {

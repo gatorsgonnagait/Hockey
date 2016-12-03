@@ -72,8 +72,6 @@ public class Player extends MovingObject {
 
 
 
-
-
     public Player(int id, PointDouble point, double speed, double angle, double radius, Color color, Puck puck, Image img) {
         super(id, point, speed, angle, radius, color);
         this.teamColor = color;
@@ -115,6 +113,11 @@ public class Player extends MovingObject {
 
     public void setPuck(Puck pk){
         puck = pk;
+    }
+
+    public void setAngle(double angle){
+        this.angle = angle;
+        angleFacing = angle;
     }
 
     public void draw(Graphics2D g2d){
@@ -497,6 +500,128 @@ public class Player extends MovingObject {
         return  Math.atan2(Y, X);
     }
 
+    public double angularMomentum(double angle, double angleFacing){
+
+
+        /*
+        double A = angleFacing + 4*Math.PI/180;
+        if(A < 0)
+            A = A + 2*Math.PI;
+
+        if(A >= 3*Math.PI/2){
+            angleFacing = 3*Math.PI/2;
+        }
+        else
+            angleFacing = A;*/
+
+        //double clockWise = Math.abs(angleFacing - angle);
+        //double counterClockWise = Math.abs(angle - angleFacing);
+        //System.out.println(clockWise + " clockwise");
+        //System.out.println(counterClockWise + " counter");
+        double angleFacingTemp = angleFacing;
+        double angleTemp = angle;
+        //System.out.println(angleFacing + " angleFacing");
+        //System.out.println(angle + " angle");
+        //System.out.println();
+        if(Math.abs(angle) > 2*Math.PI ){
+            angleTemp = angle % 2*Math.PI;
+        }
+
+        if(Math.abs(angleFacing) > 2*Math.PI ){
+            //angleFacingTemp = angleFacing % 2*Math.PI;
+        }
+
+        if(angleTemp < 0){
+            angleTemp = angleTemp + 2* Math.PI;
+        }
+        if(angleFacingTemp < 0){
+            angleFacingTemp = angleFacingTemp+ 2* Math.PI;
+        }
+
+
+        /*
+        boolean clockwise = true;
+        double diff = 0;
+        if(angleFacingTemp > angleTemp){
+            diff = angleFacingTemp - angleTemp;
+            if(diff > Math.PI){
+                clockwise = false;
+            }
+            else {
+                clockwise= true;
+            }
+
+        }
+        else{
+            diff = angleTemp - angleFacingTemp;
+            if(diff > Math.PI){
+                clockwise = true;
+            }
+            else{
+                clockwise = false;
+            }
+        }
+
+        if(angleFacingTemp != angleTemp) {
+            if(clockwise){
+                if(Math.abs(angleFacingTemp - angleTemp) < Math.PI/30){
+                    angleTemp = angleTemp + Math.abs(angleFacingTemp - angleTemp);
+                }else {
+                    angleTemp = angleTemp + Math.PI / 30;
+                }
+                angleTemp = angleTemp + Math.PI / 30;
+            }
+            else{
+                if(Math.abs(angleFacingTemp - angleTemp) < Math.PI/30){
+                    angleTemp = angleTemp - Math.abs(angleFacingTemp - angleTemp);
+                }else {
+                    angleTemp = angleTemp - Math.PI / 30;
+                }
+                angleTemp = angleTemp - Math.PI / 30;
+            }
+        }
+        */
+
+        angleFacing = angleFacingTemp;
+        angle = angleTemp;
+
+        if (  angleFacingTemp < angleTemp - Math.PI && angleFacingTemp > 0 ){
+            angleFacingTemp = angleFacingTemp + 2 * Math.PI;
+        }
+        else if( angleFacingTemp > angleTemp + Math.PI && angleFacingTemp < 2*Math.PI ){
+            angleFacingTemp = angleFacingTemp - 2 * Math.PI;
+        }
+
+
+
+
+
+        if(angleFacingTemp != angleTemp) {
+            if (angleFacingTemp > angleTemp) {
+                System.out.println("clockwise");
+                //if(angleFacingTemp - angleTemp < Math.PI / 30){
+                  //  angle = angle + (angleFacingTemp-angleTemp);
+                //}
+                //else {
+                    angle = angle + Math.PI / 30;
+                //}
+            } else if (angleFacingTemp < angleTemp) {
+                System.out.println("counter");
+                //if(angleTemp - angleFacingTemp  < Math.PI / 30) {
+                  //  angle = angle - (angleTemp - angleFacingTemp);
+                //}
+                //else{
+                    angle = angle - Math.PI / 30;
+                //}
+            }
+        }
+        System.out.println(angleFacing + " angleFacing");
+        System.out.println(angle + " angle");
+        System.out.println();
+
+        return angle;
+    }
+
 
     public void updateLocationController(double xAxisPercentage, double yAxisPercentage){
 
@@ -505,20 +630,18 @@ public class Player extends MovingObject {
         stick.updateLocation();
         slideList(newAngle);
 
-
-
-
-
         if( distance > 24 && distance < 38){// controller grace area. allows you to turn without moving
-            //System.out.println(start);
+
             angleFacing = newAngle;
-            driftAngle = newAngle;
+
             if (start == 0) {
                 start = 1;
                 slideList.clear();
             }
         }
         else if(distance >= 38) {
+
+
             if(speed == 0){
                 //System.out.println(startingSpeed +" starting speed");
                 setSpeed(startingSpeed);
@@ -526,8 +649,7 @@ public class Player extends MovingObject {
             accelerationFrames++;
             if(accelerationFrames % 10 == 0){
                 speed = speed * 1.25;
-                //prevAngle = angle;
-                //System.out.println(startingSpeed);
+
             }
 
             if(speed > playerSpeedLimit){
@@ -536,6 +658,8 @@ public class Player extends MovingObject {
 
             pointList.clear();
             angleFacing = newAngle;
+            //angle = angleFacing;
+
             setSpeed(speed);
 
             if(start == 1) { //if was stopped before, dont use the slide angle to calculate position
@@ -548,33 +672,20 @@ public class Player extends MovingObject {
                 tempSpeed = speed;
             }
         }
-        else if (distance <= 24 ) {
-            //if (tempSpeed > .1) {
+        else if (distance <= 24  ) {
 
-                //setAngle(driftAngle);
-                positionCalculation(driftAngle);
-                //if (Rink.i % 1  == 0) {//call friction method every 10 bodyCheckFrames
+            positionCalculation(angleFacing);
+            //if (Rink.i % 1  == 0) {//call friction method every 10 bodyCheckFrames
                 speed = setSpeedFriction(frictionCoefficient);
-                //}
-                /*
-            if(pointList.size()==0) {
-                interpolationLine(driftAngle);
-            }
-            stopObject();
-               */
             //}
+
             if(speed <= .1 ){
                 speed = 0;
                 accelerationFrames = 0;
-                /*
-                if(pointList.size() != 0)
-                    pointList.clear();
-                   */
-                //positionCalculation(driftAngle);
             }
         }
     }
-
+    /*
     public void updateLocation(double mouseX, double mouseY){
 
         double newAngle = mouseAngle(mouseX, mouseY);
@@ -611,6 +722,47 @@ public class Player extends MovingObject {
             else{
                 positionCalculation(slideAngle);
             }
+        }
+    }*/
+
+    public void updateLocation(double mouseX, double mouseY){
+
+        double newAngle = mouseAngle(mouseX, mouseY);
+        System.out.println(newAngle + " new Angle");
+        System.out.println();
+
+        distance = Math.sqrt(Math.pow((location.x - mouseX), 2)
+                + Math.pow((location.y - mouseY), 2));
+
+        //angleFacing = newAngle;
+        stick.updateLocation();
+
+        /*
+        if(slideList.size() > slideLimit){
+            slideList.addLast(newAngle);
+            slideAngle = slideList.pollFirst();
+        }
+        else{
+            slideList.addLast(newAngle);
+            slideAngle = newAngle;
+        }*/
+        angleFacing = newAngle;//angle = newAngle;
+        //driftAngle = newAngle;
+
+
+
+        if (distance >= 80){
+
+            //pointList.clear();
+            //setAngle(newAngle);
+            setSpeed(playerSpeedMouse);
+
+
+            //positionCalculation(angle);
+            angle = angularMomentum(angle, angleFacing);
+            positionCalculation(angle);
+
+
         }
     }
 

@@ -4,10 +4,14 @@
 public class PointDouble {
     double x;
     double y;
+    double prevX;
+    double prevY;
 
     public PointDouble(){
         x=0;
         y=0;
+        prevX = 0;
+        prevY = 0;
     }
 
     public PointDouble(double x, double y){
@@ -35,5 +39,7 @@ public class PointDouble {
     public void setY(double y){
         this.y = y;
     }
+
+
 
 }

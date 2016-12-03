@@ -22,7 +22,7 @@ public abstract class MovingObject extends JComponent {
     boolean colliding = false;
     double     dummy_radius;
     int     collisionFrames = 0;
-    int     collisionDuration = 5;
+    int     collisionDuration = 2;
     double bigBuffer = Math.round(GameDriver.rinkWidth/80);
     double smallBuffer = Math.round(GameDriver.rinkWidth/160);
     ArrayList<double[]> pointList = new ArrayList<>();

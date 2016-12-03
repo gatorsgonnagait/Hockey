@@ -48,7 +48,7 @@ public class Goalie2 extends Player {
 
             if(puck.location.y < location.y){
                 moveGoalieUp();
-                double A = angleFacing + 4*Math.PI/180;
+                double A = angleFacing + 4*Math.PI/180;//makes it turn clockwise
                 if(A < 0)
                     A = A + 2*Math.PI;
 
@@ -60,10 +60,10 @@ public class Goalie2 extends Player {
             }
             else if(puck.location.y > location.y){
                 moveGoalieDown();
-                double A = angleFacing - 4*Math.PI/180;
+                double A = angleFacing - 4*Math.PI/180;//counter clockwise
 
                 if(A <= Math.PI/2){
-                    angleFacing = -3*Math.PI/2;// i dont know how this works
+                    angleFacing = -3*Math.PI/2;
                 }else
                     angleFacing = A;
 
