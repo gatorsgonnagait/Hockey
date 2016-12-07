@@ -26,8 +26,10 @@ public abstract class MovingObject extends JComponent {
     double bigBuffer = Math.round(GameDriver.rinkWidth/80);
     double smallBuffer = Math.round(GameDriver.rinkWidth/160);
     ArrayList<double[]> pointList = new ArrayList<>();
-
+    int hitWall = 0;
+    boolean hitWalls = false;
     double frictionCoefficient;
+    MovingObject collidesWith = null;
     /*
 
     //static int topBoundary = 100;
@@ -56,8 +58,6 @@ public abstract class MovingObject extends JComponent {
     PointDouble arcCenter4 = new PointDouble(GameDriver.rightBoundary - GameDriver.rinkWidth/8, GameDriver.bottomBoundary - GameDriver.rinkWidth/8);
 
 
-    int hitWall = 0;
-    boolean hitWalls = false;
 
 
     public MovingObject(int id, PointDouble point, double speed, double angle, double radius, Color color) {
@@ -121,13 +121,6 @@ public abstract class MovingObject extends JComponent {
         location.x = location.x + speed * Math.cos(angle);
         location.y = location.y + speed * Math.sin(angle);
     }
-    /* fiz weird movement when the  objects slow down, interpolation
-    when the speed gets under 1.0, calculate the line that the object would be going through
-    find out end point on the line that would be the moving objects path until the speed hit zero
-    calculate a few points on the line and move the object alone that line til it hits zero
-     */
-
-
 
     public double getDistance(double x1, double x2, double y1, double y2){
         return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
@@ -188,6 +181,20 @@ public abstract class MovingObject extends JComponent {
         return reflectAngle;
     }
 
+    public void updateLocationCol(){
+        double distance = Math.hypot(location.x - collidesWith.location.x,
+                location.y - collidesWith.location.y);
+
+        if(distance > speed || distance > collidesWith.speed){
+            colliding = false;
+            collidesWith = null;
+        }
+        else{
+            positionCalculation(angle);
+        }
+    }
+
+    /*
     public void updateLocationCol() {
         collisionFrames++;
         if(collisionFrames >= collisionDuration){
@@ -197,9 +204,12 @@ public abstract class MovingObject extends JComponent {
         else {
 
             positionCalculation(angle);
-
         }
-    }
+    }*/
+
+
+
+
 
 
 

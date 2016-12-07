@@ -14,6 +14,7 @@ public class Goalie1 extends Player {
         count++;
         if(count == 4) {
             location.y = location.y + radius/10;
+            count = 0;
         }
         if(location.y >= GameDriver.bottomGoalPost) {
             location.y = GameDriver.bottomGoalPost;

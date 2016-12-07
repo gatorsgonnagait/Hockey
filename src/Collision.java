@@ -36,12 +36,7 @@ public class Collision {
             Y = object2.location.y - object1.location.y;
             X = object2.location.x - object1.location.x;
         }
-
-
-
-        double A = Math.atan2(Y, X);
-        //A = adjustAngle(A);
-        return A;
+        return Math.atan2(Y, X);
     }
 
     public double adjustAngle(double A){
@@ -91,6 +86,9 @@ public class Collision {
                 movingObjects[object1.id] = object1;
             if(movingObjects[object2.id] == null)
                 movingObjects[object2.id] = object2;
+
+            object1.collidesWith = object2;
+            object2.collidesWith = object1;
 
             return true;
         }
@@ -142,12 +140,14 @@ public class Collision {
         //System.out.println(ob1Angle*180/Math.PI + " before");
         //System.out.println( (object1.reflection(ob1Angle, 2)) *180/Math.PI + " after");
         if(ob1.speed == 0){
+            System.out.println(" still object one hit");
             ob1.angle = collisionAngle;
         }
         else{
             ob1.angle = ob1.reflection(ob1Angle, 2) - adjustment;
         }
         if(ob2.speed == 0){
+            System.out.println(" still object two hit");
             ob2.angle = collisionAngle;
         }
         else{
@@ -172,9 +172,11 @@ public class Collision {
         //System.out.println(ob2.id+" speed " + ob2.speed);
         //ob1.setAngle(ob1Angle);
         //ob2.setAngle(ob2Angle);//TE
+        /*
         System.out.println();
         System.out.println(ob1.id+" angle 1 " + ob1.angle);
         System.out.println(ob2.id+" angle 2 " + ob2.angle);
+        */
     }
 
     /*UNUSED

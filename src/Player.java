@@ -49,8 +49,8 @@ public class Player extends MovingObject {
     static boolean moved = false;
     Image img;
 
-    int xNeutral = 49;
-    int yNeutral = 49;
+    double xNeutral = 49;
+    double yNeutral = 49;
     double distance;
     double controllerX;
     double controllerY;
@@ -61,13 +61,14 @@ public class Player extends MovingObject {
 
     double slapShotSpeed = Math.round(GameDriver.rinkWidth/100 );
     double wristShotSpeed = Math.round(GameDriver.rinkWidth/156);
-    double startingSpeed = 1.0;
+    double startingSpeed = 1.5;
     double playerSpeed;
     double playerSpeedMouse = Math.round(GameDriver.rinkWidth/260) ;
-    double playerSpeedLimit = Math.round(GameDriver.rinkWidth/250);
+    double playerSpeedLimit = GameDriver.rinkWidth/250;
     double driftAngle;
     double prevAngle;
     double angleFacing;
+    double newAngle;
 
 
 
@@ -107,7 +108,7 @@ public class Player extends MovingObject {
         frictionCoefficient = .85;
         puckGrabArea = stick.length * 3/4;
         angleFacing = angle;
-
+        prevAngle = angleFacing;
     }
 
 
@@ -449,7 +450,20 @@ public class Player extends MovingObject {
         }
     }
 
+    public void updateLocationCol(MovingObject object1, MovingObject object2){
+        double distance = Math.hypot(object2.location.x - object1.location.x,
+                object2.location.y - object1.location.y);
 
+        if(distance > object1.speed || distance > object2.speed){
+            colliding = false;
+        }
+        else{
+            positionCalculation(angle);
+        }
+        stick.updateLocation();
+    }
+
+    /*
     public void updateLocationCol() {
         collisionFrames++;
         if(collisionFrames >= collisionDuration){
@@ -462,7 +476,7 @@ public class Player extends MovingObject {
 
         }
         stick.updateLocation();
-    }
+    }*/
 
     @Override
     public void updateLocation() {/*
@@ -500,29 +514,10 @@ public class Player extends MovingObject {
         return  Math.atan2(Y, X);
     }
 
-    public double angularMomentum(double angle, double angleFacing){
-
-
-        /*
-        double A = angleFacing + 4*Math.PI/180;
-        if(A < 0)
-            A = A + 2*Math.PI;
-
-        if(A >= 3*Math.PI/2){
-            angleFacing = 3*Math.PI/2;
-        }
-        else
-            angleFacing = A;*/
-
-        //double clockWise = Math.abs(angleFacing - angle);
-        //double counterClockWise = Math.abs(angle - angleFacing);
-        //System.out.println(clockWise + " clockwise");
-        //System.out.println(counterClockWise + " counter");
+    public double angularMomentum2(double angle, double angleFacing){
         double angleFacingTemp = angleFacing;
         double angleTemp = angle;
-        //System.out.println(angleFacing + " angleFacing");
-        //System.out.println(angle + " angle");
-        //System.out.println();
+
         if(Math.abs(angle) > 2*Math.PI ){
             angleTemp = angle % 2*Math.PI;
         }
@@ -539,7 +534,7 @@ public class Player extends MovingObject {
         }
 
 
-        /*
+
         boolean clockwise = true;
         double diff = 0;
         if(angleFacingTemp > angleTemp){
@@ -580,12 +575,51 @@ public class Player extends MovingObject {
                 angleTemp = angleTemp - Math.PI / 30;
             }
         }
-        */
 
-        angleFacing = angleFacingTemp;
-        angle = angleTemp;
+        if(angleFacingTemp != angleTemp) {
+            if (angleFacingTemp > angleTemp) {
+                //System.out.println("clockwise");
+                //if(angleFacingTemp - angleTemp < Math.PI / 30){
+                //  angle = angle + (angleFacingTemp-angleTemp);
+                //}
+                //else {
+                angle = angle + Math.PI / 30;
+                //}
+            } else if (angleFacingTemp < angleTemp) {
+                //System.out.println("counter");
+                //if(angleTemp - angleFacingTemp  < Math.PI / 30) {
+                //  angle = angle - (angleTemp - angleFacingTemp);
+                //}
+                //else{
+                angle = angle - Math.PI / 30;
+                //}
+            }
+        }
+        return angle;
 
-        if (  angleFacingTemp < angleTemp - Math.PI && angleFacingTemp > 0 ){
+    }
+
+    public double angularMomentum(double angle, double angleFacing){
+
+        double angleFacingTemp = angleFacing;
+        double angleTemp = angle;
+
+        if(Math.abs(angle) > 2*Math.PI ){
+            angleTemp = angle % 2*Math.PI;
+        }
+
+        if(Math.abs(angleFacing) > 2*Math.PI ){
+            //angleFacingTemp = angleFacing % 2*Math.PI;
+        }
+
+        if(angleTemp < 0){
+            angleTemp = angleTemp + 2* Math.PI;
+        }
+        if(angleFacingTemp < 0){
+            angleFacingTemp = angleFacingTemp+ 2* Math.PI;
+        }
+
+        if (  angleFacingTemp < angleTemp - Math.PI  ){
             angleFacingTemp = angleFacingTemp + 2 * Math.PI;
         }
         else if( angleFacingTemp > angleTemp + Math.PI && angleFacingTemp < 2*Math.PI ){
@@ -593,32 +627,30 @@ public class Player extends MovingObject {
         }
 
 
-
-
-
         if(angleFacingTemp != angleTemp) {
             if (angleFacingTemp > angleTemp) {
-                System.out.println("clockwise");
-                //if(angleFacingTemp - angleTemp < Math.PI / 30){
-                  //  angle = angle + (angleFacingTemp-angleTemp);
-                //}
-                //else {
-                    angle = angle + Math.PI / 30;
-                //}
+                //System.out.println("clockwise");
+                if(angleFacingTemp - angleTemp < Math.PI / 30){
+                    angle = angle + (angleFacingTemp-angleTemp);
+                }
+                else {
+                    angle = angleTemp + Math.PI / 30;
+                }
             } else if (angleFacingTemp < angleTemp) {
-                System.out.println("counter");
-                //if(angleTemp - angleFacingTemp  < Math.PI / 30) {
-                  //  angle = angle - (angleTemp - angleFacingTemp);
-                //}
-                //else{
-                    angle = angle - Math.PI / 30;
-                //}
+                //System.out.println("counter");
+                if(angleTemp - angleFacingTemp  < Math.PI / 30) {
+                    angle = angle - (angleTemp - angleFacingTemp);
+                }
+                else{
+                    angle = angleTemp - Math.PI / 30;
+                }
             }
         }
+        /*
         System.out.println(angleFacing + " angleFacing");
         System.out.println(angle + " angle");
         System.out.println();
-
+        */
         return angle;
     }
 
@@ -628,40 +660,72 @@ public class Player extends MovingObject {
         double newAngle = controlAngle(xAxisPercentage, yAxisPercentage);
         distance = getDistance(xNeutral, xAxisPercentage, yNeutral, yAxisPercentage);
         stick.updateLocation();
-        slideList(newAngle);
+        angleFacing = newAngle;
+        System.out.println(distance + " distance");
+        //if( distance > 24 && distance < 38){// controller grace area. allows you to turn without moving
+        //if( distance > 10 && distance < 20){
 
-        if( distance > 24 && distance < 38){// controller grace area. allows you to turn without moving
 
-            angleFacing = newAngle;
-
+            /*
             if (start == 0) {
                 start = 1;
                 slideList.clear();
+            }*/
+        //}
+        if(distance >= 10) {
+
+            if(distance < 20){
+                playerSpeedLimit = GameDriver.rinkWidth/600;
+                System.out.println("speed 0");
             }
-        }
-        else if(distance >= 38) {
+            else if(distance >= 20 && distance < 30){
+                playerSpeedLimit = GameDriver.rinkWidth/525;
+                System.out.println("speed 1");
+            }
+            else if(distance >= 30 && distance < 40){
+                playerSpeedLimit = GameDriver.rinkWidth/450;
+                System.out.println("speed 2");
+            }
+            else if(distance >= 40 && distance < 48){
+                playerSpeedLimit = GameDriver.rinkWidth/375;
+                System.out.println("speed 3");
+            }
+            else if(distance >= 48){
+                playerSpeedLimit = GameDriver.rinkWidth/250;
+                System.out.println("speed 4");
+            }
 
-
+            //angleFacing = newAngle;
             if(speed == 0){
                 //System.out.println(startingSpeed +" starting speed");
                 setSpeed(startingSpeed);
             }
             accelerationFrames++;
-            if(accelerationFrames % 10 == 0){
-                speed = speed * 1.25;
 
+
+            //pointList.clear();
+            double tempAngle = angle;
+            angle = angularMomentum(angle, angleFacing);
+            positionCalculation(angle);
+            if(angle == tempAngle){
+                if(accelerationFrames % 10 == 0){
+                    speed = speed * 1.25;
+                    System.out.println("faster");
+                }
+            }
+            else{
+                if(accelerationFrames % 10 == 0){
+                    speed = speed * .85;
+                    System.out.println("slower");
+                }
             }
 
             if(speed > playerSpeedLimit){
                 speed = playerSpeedLimit;
             }
 
-            pointList.clear();
-            angleFacing = newAngle;
-            //angle = angleFacing;
-
-            setSpeed(speed);
-
+            //setSpeed(speed);
+            /*
             if(start == 1) { //if was stopped before, dont use the slide angle to calculate position
                 positionCalculation(newAngle);
                 start = 0;
@@ -670,14 +734,14 @@ public class Player extends MovingObject {
             else{
                 positionCalculation(slideAngle);
                 tempSpeed = speed;
-            }
+            }*/
         }
-        else if (distance <= 24  ) {
+        else if (distance < 10  ) {
 
-            positionCalculation(angleFacing);
-            //if (Rink.i % 1  == 0) {//call friction method every 10 bodyCheckFrames
+            positionCalculation(angle);
+            if (Rink.i % 10 == 0) {//call friction method every 10 bodyCheckFrames
                 speed = setSpeedFriction(frictionCoefficient);
-            //}
+            }
 
             if(speed <= .1 ){
                 speed = 0;
@@ -723,46 +787,78 @@ public class Player extends MovingObject {
                 positionCalculation(slideAngle);
             }
         }
-    }*/
+    }
+    */
 
     public void updateLocation(double mouseX, double mouseY){
 
-        double newAngle = mouseAngle(mouseX, mouseY);
-        System.out.println(newAngle + " new Angle");
-        System.out.println();
+        //double angleFacingLast = newAngle;
+        newAngle = mouseAngle(mouseX, mouseY);
+        distance = Math.sqrt(Math.pow((location.x - mouseX), 2) + Math.pow((location.y - mouseY), 2));
 
-        distance = Math.sqrt(Math.pow((location.x - mouseX), 2)
-                + Math.pow((location.y - mouseY), 2));
-
-        //angleFacing = newAngle;
+        angleFacing = newAngle;
         stick.updateLocation();
-
-        /*
-        if(slideList.size() > slideLimit){
-            slideList.addLast(newAngle);
-            slideAngle = slideList.pollFirst();
-        }
-        else{
-            slideList.addLast(newAngle);
-            slideAngle = newAngle;
-        }*/
-        angleFacing = newAngle;//angle = newAngle;
-        //driftAngle = newAngle;
-
-
 
         if (distance >= 80){
 
-            //pointList.clear();
-            //setAngle(newAngle);
-            setSpeed(playerSpeedMouse);
+            angleFacing = newAngle;
+            if(speed == 0){
+                //System.out.println(startingSpeed +" starting speed");
+                setSpeed(startingSpeed);
+            }
+            accelerationFrames++;
 
-
-            //positionCalculation(angle);
             angle = angularMomentum(angle, angleFacing);
             positionCalculation(angle);
 
+            //* 180/Math.PI;
+            //if(diff > 1) {
+                //System.out.println(diff + " diff");
+                //System.out.println();
+            //}
+            //
+            if(accelerationFrames % 10 == 0) {
+                double diff = Math.abs(prevAngle - angleFacing) * 180/Math.PI;
+                int steps = (int)diff / 36;
+                //System.out.println("steps " + steps);
+                //if (diff <= Math.PI / 4) {
+                if(steps <= 3 ){// 45 degree difference
 
+                    //if (accelerationFrames % 10 == 0) {
+                        speed = speed * (1 + .15 - .03 * steps);
+                        //System.out.println("faster " + speed);
+                    //}
+                }
+
+                else if (steps > 3) {
+                    System.out.println(" should get slower");
+                    //diff = diff / 5;
+                    //if (accelerationFrames % 10 == 0) {
+                        speed = speed * 1 - .03 * steps;
+                        //System.out.println("slower");
+                    //}
+                }
+
+                prevAngle = angleFacing;
+            }
+
+            if(speed > playerSpeedLimit){
+                speed = playerSpeedLimit;
+            }
+
+
+        }
+        else if (distance <= 80  ) {
+
+            positionCalculation(angle);
+            //if (Rink.i % 1  == 0) {//call friction method every 10 bodyCheckFrames
+            speed = setSpeedFriction(frictionCoefficient);
+            //}
+
+            if(speed <= .1 ){
+                speed = 0;
+                accelerationFrames = 0;
+            }
         }
     }
 
