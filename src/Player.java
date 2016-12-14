@@ -17,6 +17,7 @@ public class Player extends MovingObject {
     Puck puck;
     Stick stick;
     int release = 0;
+    double possessPuck = 0;
 
     double puckGrabArea;
     double slideAngle= 0;
@@ -56,19 +57,20 @@ public class Player extends MovingObject {
     double controllerY;
 
     boolean stopped = true;
-    int accelerationFrames = 0;
+
     int accelerationFramesMouse = 0;
 
     double slapShotSpeed = Math.round(GameDriver.rinkWidth/100 );
     double wristShotSpeed = Math.round(GameDriver.rinkWidth/156);
     double startingSpeed = 1.5;
     double playerSpeed;
-    double playerSpeedMouse = Math.round(GameDriver.rinkWidth/260) ;
-    double playerSpeedLimit = GameDriver.rinkWidth/250;
+    double playerSpeedMouse = Math.round(GameDriver.rinkWidth/270) ;
+    double playerSpeedLimit;
     double driftAngle;
     double prevAngle;
     double angleFacing;
     double newAngle;
+
 
 
 
@@ -87,9 +89,11 @@ public class Player extends MovingObject {
         stickInputLimitFrames = 0;
 
         this.img = img;
-        frictionCoefficient = .95;
+        frictionCoefficient = .9;
         puckGrabArea = stick.length * 3/4;
         angleFacing = angle;
+        prevAngle = angleFacing;
+        acceleration = 0;
     }
 
 
@@ -105,10 +109,11 @@ public class Player extends MovingObject {
         buttonInputLimitFrames = 0;
         stickInputLimitFrames = 0;
 
-        frictionCoefficient = .85;
+        frictionCoefficient = .9;
         puckGrabArea = stick.length * 3/4;
         angleFacing = angle;
         prevAngle = angleFacing;
+        acceleration = 0;
     }
 
 
@@ -475,7 +480,7 @@ public class Player extends MovingObject {
             positionCalculation(angle);
 
         }
-        stick.updateLocation();
+        stick.updateLocationMouse();
     }*/
 
     @Override
@@ -488,7 +493,7 @@ public class Player extends MovingObject {
 
         location.x = (int) (location.x + getSpeed() * Math.cos(angle));
         location.y = (int) (location.y + getSpeed() * Math.sin(angle));
-        stick.updateLocation();*/
+        stick.updateLocationMouse();*/
     }
 
     public void slideList(double newAngle){
@@ -654,14 +659,22 @@ public class Player extends MovingObject {
         return angle;
     }
 
+    public void angularMomentum3(double xAxisPercentage, double yAxisPercentage){
+        distance = getDistance(xNeutral, xAxisPercentage, yNeutral, yAxisPercentage);
+        double AM = mass * distance * speed;
+        double theta = (AM/ (distance * distance * mass));
+        //System.out.println( theta + " anglular velocity test");
+        //System.out.println((theta * distance * distance) + " displacement");
+    }
+
 
     public void updateLocationController(double xAxisPercentage, double yAxisPercentage){
 
-        double newAngle = controlAngle(xAxisPercentage, yAxisPercentage);
+        angleFacing = controlAngle(xAxisPercentage, yAxisPercentage);
         distance = getDistance(xNeutral, xAxisPercentage, yNeutral, yAxisPercentage);
         stick.updateLocation();
-        angleFacing = newAngle;
-        System.out.println(distance + " distance");
+        //angleFacing = newAngle;
+        //System.out.println(distance + " distance");
         //if( distance > 24 && distance < 38){// controller grace area. allows you to turn without moving
         //if( distance > 10 && distance < 20){
 
@@ -672,27 +685,40 @@ public class Player extends MovingObject {
                 slideList.clear();
             }*/
         //}
+
+        double tether;
+
         if(distance >= 10) {
 
             if(distance < 20){
                 playerSpeedLimit = GameDriver.rinkWidth/600;
-                System.out.println("speed 0");
+                acceleration = .18;
+                tether = radius * 5/4;
+                //System.out.println("speed 0");
             }
             else if(distance >= 20 && distance < 30){
                 playerSpeedLimit = GameDriver.rinkWidth/525;
-                System.out.println("speed 1");
+                acceleration = .21;
+                tether = radius * 6/4;
+                //System.out.println("speed 1");
             }
             else if(distance >= 30 && distance < 40){
                 playerSpeedLimit = GameDriver.rinkWidth/450;
-                System.out.println("speed 2");
+                acceleration = .24;
+                tether = radius * 6/4;
+                //System.out.println("speed 2");
             }
             else if(distance >= 40 && distance < 48){
                 playerSpeedLimit = GameDriver.rinkWidth/375;
-                System.out.println("speed 3");
+                acceleration = .27;
+                tether = radius * 7/4;
+                //System.out.println("speed 3");
             }
             else if(distance >= 48){
-                playerSpeedLimit = GameDriver.rinkWidth/250;
-                System.out.println("speed 4");
+                playerSpeedLimit = GameDriver.rinkWidth/270;
+                acceleration = .3;
+                tether = radius * 2;
+                //System.out.println("speed 4");
             }
 
             //angleFacing = newAngle;
@@ -700,29 +726,36 @@ public class Player extends MovingObject {
                 //System.out.println(startingSpeed +" starting speed");
                 setSpeed(startingSpeed);
             }
-            accelerationFrames++;
+
 
 
             //pointList.clear();
             double tempAngle = angle;
             angle = angularMomentum(angle, angleFacing);
-            positionCalculation(angle);
-            if(angle == tempAngle){
+
+
+
+            if(angle != tempAngle){
                 if(accelerationFrames % 10 == 0){
-                    speed = speed * 1.25;
-                    System.out.println("faster");
+                    acceleration = 0;
+                    //angle = drifttAngle;
+                    //System.out.println("faster");
                 }
-            }
+            }/*
             else{
                 if(accelerationFrames % 10 == 0){
+                    //angle = drifttAngle;
                     speed = speed * .85;
-                    System.out.println("slower");
+                    //System.out.println("slower");
                 }
-            }
+            }*/
+
+
 
             if(speed > playerSpeedLimit){
                 speed = playerSpeedLimit;
             }
+
 
             //setSpeed(speed);
             /*
@@ -737,8 +770,9 @@ public class Player extends MovingObject {
             }*/
         }
         else if (distance < 10  ) {
-
-            positionCalculation(angle);
+            acceleration = 0;
+            //positionCalculation(angle);
+            /*
             if (Rink.i % 10 == 0) {//call friction method every 10 bodyCheckFrames
                 speed = setSpeedFriction(frictionCoefficient);
             }
@@ -746,11 +780,14 @@ public class Player extends MovingObject {
             if(speed <= .1 ){
                 speed = 0;
                 accelerationFrames = 0;
-            }
+            }*/
         }
+        positionCalculation(angle);
+
+
     }
     /*
-    public void updateLocation(double mouseX, double mouseY){
+    public void updateLocationMouse(double mouseX, double mouseY){
 
         double newAngle = mouseAngle(mouseX, mouseY);
 
@@ -758,7 +795,7 @@ public class Player extends MovingObject {
                 + Math.pow((location.y - mouseY), 2));
 
         angleFacing = newAngle;
-        stick.updateLocation();
+        stick.updateLocationMouse();
 
         if(slideList.size() > slideLimit){
             slideList.addLast(newAngle);
@@ -790,26 +827,30 @@ public class Player extends MovingObject {
     }
     */
 
-    public void updateLocation(double mouseX, double mouseY){
+    public void updateLocationMouse(double mouseX, double mouseY){
 
         //double angleFacingLast = newAngle;
-        newAngle = mouseAngle(mouseX, mouseY);
+        angleFacing = mouseAngle(mouseX, mouseY);
         distance = Math.sqrt(Math.pow((location.x - mouseX), 2) + Math.pow((location.y - mouseY), 2));
 
-        angleFacing = newAngle;
+        //angleFacing = newAngle;
         stick.updateLocation();
+        //accelerationFrames++;
 
         if (distance >= 80){
 
-            angleFacing = newAngle;
+            acceleration = .3;
+
+            //angleFacing = newAngle;
             if(speed == 0){
                 //System.out.println(startingSpeed +" starting speed");
                 setSpeed(startingSpeed);
             }
-            accelerationFrames++;
+
 
             angle = angularMomentum(angle, angleFacing);
-            positionCalculation(angle);
+
+
 
             //* 180/Math.PI;
             //if(diff > 1) {
@@ -817,6 +858,10 @@ public class Player extends MovingObject {
                 //System.out.println();
             //}
             //
+
+            //angularMomentum3(mouseX, mouseY);
+
+            /*
             if(accelerationFrames % 10 == 0) {
                 double diff = Math.abs(prevAngle - angleFacing) * 180/Math.PI;
                 int steps = (int)diff / 36;
@@ -840,26 +885,28 @@ public class Player extends MovingObject {
                 }
 
                 prevAngle = angleFacing;
-            }
+            }*/
 
-            if(speed > playerSpeedLimit){
-                speed = playerSpeedLimit;
+            if(speed >  playerSpeedMouse){
+                speed =  playerSpeedMouse;
             }
 
 
         }
-        else if (distance <= 80  ) {
+        else if (distance < 80  ) {
+            acceleration = 0;
 
-            positionCalculation(angle);
             //if (Rink.i % 1  == 0) {//call friction method every 10 bodyCheckFrames
+            /*
             speed = setSpeedFriction(frictionCoefficient);
             //}
 
             if(speed <= .1 ){
                 speed = 0;
                 accelerationFrames = 0;
-            }
+            }*/
         }
+        positionCalculation(angle);
     }
 
 
@@ -884,11 +931,10 @@ public class Player extends MovingObject {
         double stickHoldingPointY = (location.y + (5/3 * radius ) * Math.sin(angleFacing));
 
         double distance = getDistance(puck.location.x, stickHoldingPointX, puck.location.y, stickHoldingPointY);//distance from puck
-
-        if (distance <= puckGrabArea && release != 1) {//of your
+        possessPuck = distance - puckGrabArea;
+        if (distance <= puckGrabArea && release != 1) {//
 
             if(puck.hold == 0){
-
                 puck.hold = id;
             }
             else if (stealFlag){
@@ -909,8 +955,8 @@ public class Player extends MovingObject {
 
     public void holdPuck() {
         //possession = id;
-        int stickHoldingPointX = (int) Math.round((location.x + (radius ) * Math.cos(angleFacing)));
-        int stickHoldingPointY = (int) Math.round((location.y + (radius ) * Math.sin(angleFacing)));
+        double stickHoldingPointX = Math.round((location.x + (radius ) * Math.cos(angleFacing)));
+        double stickHoldingPointY = Math.round((location.y + (radius ) * Math.sin(angleFacing)));
 
         puck.location.x = stickHoldingPointX;
         puck.location.y = stickHoldingPointY;
@@ -963,7 +1009,7 @@ public class Player extends MovingObject {
 
             /*if(pointList.size() != 0)
                 pointList.clear();
-            updateLocation();*/
+            updateLocationMouse();*/
         }
     }
 

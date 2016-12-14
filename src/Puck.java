@@ -14,6 +14,7 @@ public class Puck extends MovingObject {
     int postTimer = 0;
     int hold = 0;
     boolean backOfNet = false;
+    boolean release = true;
 
 
 
@@ -22,6 +23,7 @@ public class Puck extends MovingObject {
         adjustment = radius/2;
         dummy_radius = radius + adjustment;
         frictionCoefficient = .96;
+        acceleration = 0;
     }
 
 
@@ -98,7 +100,7 @@ public class Puck extends MovingObject {
         Line incident = new Line(center, end);
         PointDouble tangentStart = new PointDouble(end);
         PointDouble tangentEnd = new PointDouble();
-        double angle1 = angle + ((Math.PI/180)*1);
+        double angle1 = angle + (Math.PI/180);
         tangentEnd.x = center.x + GameDriver.rinkWidth/8 * Math.cos(angle1);
         tangentEnd.y = center.y + GameDriver.rinkWidth/8 * Math.sin(angle1);
         Line tangent = new Line(tangentStart, tangentEnd);

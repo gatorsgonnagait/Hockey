@@ -28,6 +28,8 @@ public abstract class MovingObject extends JComponent {
     ArrayList<double[]> pointList = new ArrayList<>();
     int hitWall = 0;
     boolean hitWalls = false;
+    double acceleration = 0;
+    int accelerationFrames = 0;
     double frictionCoefficient;
     MovingObject collidesWith = null;
     /*
@@ -206,6 +208,18 @@ public abstract class MovingObject extends JComponent {
             positionCalculation(angle);
         }
     }*/
+
+    public void friction(){
+        double tempAcc = 1 +  acceleration - (1 - frictionCoefficient) ;
+        speed = speed * tempAcc;
+
+        if(speed <= .1 ){
+            speed = 0;
+        }
+
+    }
+
+
 
 
 

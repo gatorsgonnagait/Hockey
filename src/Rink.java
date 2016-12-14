@@ -230,7 +230,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             if (i % 15 == 0) {
                 puck.speed = puck.setSpeedFriction(puck.frictionCoefficient);
             }
-            puck.updateLocation();
+            puck.updateLocationMouse();
         }
         else if ( puck.speed < GameDriver.rinkWidth/200 && puck.speed > 0.1 && puck.hold == 0){
 
@@ -239,18 +239,22 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             }
             puck.stopObject();
         }*/
+
         if (i % 10 == 0) {
-            puck.speed = puck.setSpeedFriction(puck.frictionCoefficient);
+            puck.friction();
+            //puck.speed = puck.setSpeedFriction(puck.frictionCoefficient);
         }
+
         puck.location.prevX = puck.location.x;
         puck.location.prevY = puck.location.y;
         puck.updateLocation();
+        /*
         if(puck.speed <= .1 && puck.hold == 0){
             puck.speed = 0;
             //if(puck.pointList.size() != 0)
               //  puck.pointList.clear();
-            puck.updateLocation();
-        }
+            puck.updateLocationMouse();
+        }*/
 
         if(reset == 0) {
             for (int i = 1; i < players.length; i++) {
@@ -284,7 +288,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
                 if (puck.hold != 0) {
                     //System.out.println(Player.hold);
                     players[puck.hold].holdPuck();
-                    puck.pointList.clear();
+                    //puck.pointList.clear();
 
                     //when goalie gets the puck
                     if (puck.hold == 5 || puck.hold == 6) {
@@ -292,34 +296,41 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
                     }
                 }
 
-
             }
 
 
             Collision collision = new Collision(players.length);
-            if (puck.hold == 0) {
+            //if ( puck.hold == 0) {
                 for (int j = 1; j < players.length; j++) {
-                    //collision.objectsCollide(players[i], players[j]);
-                    if (collision.objectsCollide(puck, players[j])) {
-                        collision.calculateCollisions(puck, players[j]);
+                    if(players[j].release == 0 && puck.hold == 0) {
+                        if (collision.objectsCollide(puck, players[j])) {
+                            collision.calculateCollisions(puck, players[j]);
+                        }
                     }
                 }
-            }
+            //}
 
             for (int i = 1; i < players.length; i++) {
                 for (int j = i + 1; j < players.length; j++) {
-                    //collision.objectsCollide(players[i], players[j]);
+
                     if (collision.objectsCollide(players[i], players[j])) {
                         collision.calculateCollisions(players[i], players[j]);
                     }
                 }
             }
+
         }
 
     }
 
 
     public void movement(Player mo){
+
+
+        if(i % 10 == 0){
+            //System.out.println(mo.accelerationFrames + " " + mo.id);
+            mo.friction();
+        }
 
         if(mo.stealFlag){
             mo.steal();
@@ -336,14 +347,22 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             //System.out.println(mo.colliding);
             //System.out.println("move");
             if (mo.colliding ) {
-                //if(MovingObject instanceof Puck )
                 mo.updateLocationCol();
-                //mo.colliding = false;
             }//push something away right here
             else {
+                //System.out.println("controller");
                 mo.updateLocationController(mo.xAxisPercentage, mo.yAxisPercentage);
             }
 
+        }
+        else if (mo == selectedPlayer4){
+            if (mo.colliding ) {
+                mo.updateLocationCol();
+            }
+            if (dragged || moved) {
+                //System.out.println("mouse");
+                mo.updateLocationMouse(e.getX(), e.getY());
+            }
         }
         else {
             if (mo.colliding) {
@@ -357,19 +376,9 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         }
 
 
-        if (mo == selectedPlayer4){
-            //else if(mo.controller.getType().equals( Controller.Type.MOUSE)){
-            //if player.gamepadtype = pad, call updateLocationController();
-            //if player.gamepadtype == kb call updateLocation
 
-            if (mo.colliding) {
-                mo.updateLocationCol();
-                //mo.colliding = false;
-            }
-            else if (dragged || moved) {
-                mo.updateLocation(e.getX(), e.getY());
-            }
-        }
+
+
     }
 
     private void switchStartPositions(){
@@ -396,12 +405,12 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         if(score == 0 && puck.goalScoredLeft()){
 
             score = 1;
-            players[5].release = 0;
+            puck.release = true;
             puck.hold = 0;
         }
         else if(score == 0 && puck.goalScoredRight()){
             score = 2;
-            players[6].release = 0;
+            puck.release = true;
             puck.hold = 0;
         }
 

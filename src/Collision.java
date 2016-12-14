@@ -99,7 +99,6 @@ public class Collision {
 
 
 
-
         //System.out.println("Calculating for " + ob1.color + " and " + ob2.color);
         double ob1VelocityX = ob1.speed * Math.cos(ob1.angle);
         double ob1VelocityY = ob1.speed * Math.sin(ob1.angle);
