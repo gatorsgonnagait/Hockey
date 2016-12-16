@@ -95,7 +95,7 @@ public class GameDriver {
         //mouse pad is automatically allowed
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
 
-        System.out.println(controllers.length);
+        //System.out.println(controllers.length);
         for(int i = 0; i < controllers.length; i++){
             controller = controllers[i];
 

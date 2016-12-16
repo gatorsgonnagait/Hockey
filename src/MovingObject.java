@@ -210,10 +210,11 @@ public abstract class MovingObject extends JComponent {
     }*/
 
     public void friction(){
-        double tempAcc = 1 +  acceleration - (1 - frictionCoefficient) ;
-        speed = speed * tempAcc;
+        //System.out.println(acceleration);
+        double tempAcc = acceleration - (1 - frictionCoefficient) ;
+        speed = speed + tempAcc;
 
-        if(speed <= .1 ){
+        if(speed < .01 ){
             speed = 0;
         }
 

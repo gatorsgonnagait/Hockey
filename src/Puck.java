@@ -22,7 +22,7 @@ public class Puck extends MovingObject {
         super(id, point, speed, angle, radius, color);
         adjustment = radius/2;
         dummy_radius = radius + adjustment;
-        frictionCoefficient = .96;
+        frictionCoefficient = .985;
         acceleration = 0;
     }
 

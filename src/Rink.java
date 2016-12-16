@@ -240,10 +240,10 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             puck.stopObject();
         }*/
 
-        if (i % 10 == 0) {
-            puck.friction();
+        //if (i % 1 == 0) {
+        puck.friction();
             //puck.speed = puck.setSpeedFriction(puck.frictionCoefficient);
-        }
+        //}
 
         puck.location.prevX = puck.location.x;
         puck.location.prevY = puck.location.y;
@@ -327,10 +327,10 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
     public void movement(Player mo){
 
 
-        if(i % 10 == 0){
+        //if(i % 10 == 0){
             //System.out.println(mo.accelerationFrames + " " + mo.id);
-            mo.friction();
-        }
+        mo.friction();
+        //}
 
         if(mo.stealFlag){
             mo.steal();
