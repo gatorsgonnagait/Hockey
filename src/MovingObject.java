@@ -22,7 +22,7 @@ public abstract class MovingObject extends JComponent {
     boolean colliding = false;
     double     dummy_radius;
     int     collisionFrames = 0;
-    int     collisionDuration = 2;
+    int     collisionDuration = 20;
     double bigBuffer = Math.round(GameDriver.rinkWidth/80);
     double smallBuffer = Math.round(GameDriver.rinkWidth/160);
     ArrayList<double[]> pointList = new ArrayList<>();
@@ -32,6 +32,8 @@ public abstract class MovingObject extends JComponent {
     int accelerationFrames = 0;
     double frictionCoefficient;
     MovingObject collidesWith = null;
+    double adjustedAngle;
+
     /*
 
     //static int topBoundary = 100;
@@ -71,6 +73,7 @@ public abstract class MovingObject extends JComponent {
         this.color    = color;
         adjustment    = 0;
         dummy_radius  = radius + adjustment;
+        acceleration = 0;
         //this.mass     = mass;
     }
     //test
@@ -183,16 +186,24 @@ public abstract class MovingObject extends JComponent {
         return reflectAngle;
     }
 
-    public void updateLocationCol(){
-        double distance = Math.hypot(location.x - collidesWith.location.x,
-                location.y - collidesWith.location.y);
+    public double collisonAngle(){
+        double Y = location.y - collidesWith.location.y;
+        double X = location.x - collidesWith.location.x;
+        return Math.atan2(Y, X);
+    }
 
-        if(distance > speed || distance > collidesWith.speed){
+
+    public void updateLocationCol(){
+
+        double distanceFromObjects = getDistance(location.x, collidesWith.location.x, location.y, collidesWith.location.y);
+        double collisionDistance = radius + collidesWith.radius;
+        if( distanceFromObjects <= collisionDistance  ){
+            positionCalculation(angle);
+
+        }
+        else {
             colliding = false;
             collidesWith = null;
-        }
-        else{
-            positionCalculation(angle);
         }
     }
 
@@ -204,13 +215,12 @@ public abstract class MovingObject extends JComponent {
             colliding = false;
         }
         else {
-
             positionCalculation(angle);
         }
     }*/
 
     public void friction(){
-        //System.out.println(acceleration);
+        //System.out.pr\intln(acceleration);
         double tempAcc = acceleration - (1 - frictionCoefficient) ;
         speed = speed + tempAcc;
 

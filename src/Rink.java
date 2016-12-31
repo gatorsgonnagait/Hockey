@@ -11,7 +11,7 @@ import java.awt.Graphics;
 import java.awt.Color;
 
 
-/**
+/** //race conditions
  * creates a Rink on the main panel.
  * @author Evan Mesa
  * @version 1
@@ -30,14 +30,11 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
     MouseEvent e = null;
     static int possession = 0;
     Puck puck;
-    int frames = 0;
     int goalieTimer = 0;
     int resetTimer = 0;
     int afterGoalTimer = 0;
     int collisionLimit = 0;
 
-
-    boolean flag = false;
     static int reset = 0;
     static int score = 0;
     int positionSwitch = 0;
@@ -47,7 +44,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
     boolean setScore2 = false;
 
 
-    static int i = 0;
+    static int frames = 0;
 
     Rink() {
         setPreferredSize(new Dimension(GameDriver.width, GameDriver.height));
@@ -111,7 +108,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
 
 
-
+        /*
         rink.setColor(Color.BLACK);
         //Arc2D arc1 = new Arc2D.Double(100, 100, 200, 200, 90, 90, Arc2D.OPEN);
         //Arc2D arc1 = new Arc2D.Double(GameDriver.leftBoundary, GameDriver.topBoundary, GameDriver.topBoundary*5/4, GameDriver.topBoundary*5/4, 90, 90, Arc2D.OPEN);
@@ -128,7 +125,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         //Arc2D arc4 = new Arc2D.Double(700, 250, 200, 200, 270, 90, Arc2D.OPEN);
         Arc2D arc4 = new Arc2D.Double(GameDriver.width, GameDriver.bottomBoundary - GameDriver.rinkWidth, GameDriver.rinkWidth/5, GameDriver.rinkWidth/5, 270, 90, Arc2D.OPEN);
         rink.draw(arc4);
-
+           */
 
         for(int i = 1; i < players.length; i++){
             if(players[i] == null){
@@ -158,11 +155,11 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
     public void run() {
         System.out.println("RUNNING");
         long m = 0;
-        int frames = 0;
+
         long nano = System.nanoTime();
 
         while(true) {
-            i++;
+            frames++;
             scorePanel.fps++;
 
             //System.out.println("FPS " + scorePanel.fps);
@@ -257,6 +254,41 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         }*/
 
         if(reset == 0) {
+
+            Collision collision = new Collision(players.length);
+            //if ( puck.hold == 0) {
+            for (int j = 1; j < players.length; j++) {
+                if(players[j].release == 0 && puck.hold == 0) {
+                    if (collision.objectsCollide(puck, players[j])) {
+                        collision.calculateCollisions(puck, players[j]);
+                    }
+                }
+            }
+            //}
+
+            for (int i = 1; i < players.length; i++) {
+                //System.out.println(players[i].colliding);
+                if(!players[i].colliding) {
+
+                    for (int j = i + 1; j < players.length; j++) {
+                        if(!players[j].colliding) {
+                            if (collision.objectsCollide(players[i], players[j])) {
+                                //System.out.println(players[i].colliding);
+                                //System.out.println(players[j].colliding);
+                                System.out.println(frames+ " frame");
+                                //players[i].location.x = players[i].location.prevX;
+                                //players[i].location.y = players[i].location.prevY;
+
+                                //players[j].location.x = players[j].location.prevX;
+                                //players[j].location.y = players[j].location.prevY;
+                                collision.calculateCollisions(players[i], players[j]);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             for (int i = 1; i < players.length; i++) {
 
                 if (players[i].controller != null) {
@@ -268,9 +300,9 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
                 Player mo = players[i];
                 // if its in reset mode it will skip everything
-
                 mo.location.prevX = mo.location.x;
                 mo.location.prevY = mo.location.y;
+
 
                 movement(mo);
 
@@ -299,26 +331,6 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             }
 
 
-            Collision collision = new Collision(players.length);
-            //if ( puck.hold == 0) {
-                for (int j = 1; j < players.length; j++) {
-                    if(players[j].release == 0 && puck.hold == 0) {
-                        if (collision.objectsCollide(puck, players[j])) {
-                            collision.calculateCollisions(puck, players[j]);
-                        }
-                    }
-                }
-            //}
-
-            for (int i = 1; i < players.length; i++) {
-                for (int j = i + 1; j < players.length; j++) {
-
-                    if (collision.objectsCollide(players[i], players[j])) {
-                        collision.calculateCollisions(players[i], players[j]);
-                    }
-                }
-            }
-
         }
 
     }
@@ -343,14 +355,20 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
         else if(mo.bodyCheckFlag){
             mo.bodyCheck();
         }
-        else if (mo.controller != null) {
-            //System.out.println(mo.colliding);
-            //System.out.println("move");
+        else if (mo.controller == null && mo.id != 4 && mo.id != 5 && mo.id != 6){
+            if (mo.colliding ) {
+                mo.updateLocationCol();
+            }
+            else {
+                mo.updateLocationNull();
+            }
+        }
+        else if (mo.controller != null ) {
+
             if (mo.colliding ) {
                 mo.updateLocationCol();
             }//push something away right here
             else {
-                //System.out.println("controller");
                 mo.updateLocationController(mo.xAxisPercentage, mo.yAxisPercentage);
             }
 
@@ -359,7 +377,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
             if (mo.colliding ) {
                 mo.updateLocationCol();
             }
-            if (dragged || moved) {
+            else if (dragged || moved) {
                 //System.out.println("mouse");
                 mo.updateLocationMouse(e.getX(), e.getY());
             }

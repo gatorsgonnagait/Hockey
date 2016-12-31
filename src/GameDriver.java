@@ -169,11 +169,11 @@ public class GameDriver {
         int playerRadius = (int) Math.round(rinkWidth * 0.015);
         int goalieRadius = (int) Math.round(rinkWidth * 0.0125);
         p1   = new Player(1,new PointDouble(verticalCenter - 3*playerRadius, horizontalMiddle), 0, 0, playerRadius, Color.RED, puck, num1);
-        p2   = new Player(2,new PointDouble(leftGoalLine + 10*playerRadius, horizontalMiddle - 8*playerRadius), 0, 0, playerRadius, Color.BLUE, puck, num2);
+        p2   = new Player(2,new PointDouble(leftGoalLine + 10*playerRadius, horizontalMiddle - 8*playerRadius), 0, 0, playerRadius, Color.CYAN, puck, num2);
         p3   = new Player(3,new PointDouble(verticalCenter + 3*playerRadius, horizontalMiddle), 0, Math.PI, playerRadius, Color.YELLOW, puck, num3);
         p4   = new Player(4,new PointDouble(rightGoalLine - 10*playerRadius, horizontalMiddle + 8*playerRadius), 0, Math.PI, playerRadius, Color.GREEN, puck, num4);
-        g1   = new Goalie1(5,new PointDouble(leftGoalLine  + goalieRadius, horizontalMiddle), 3, 0, goalieRadius, Color.LIGHT_GRAY, puck);
-        g2   = new Goalie2(6,new PointDouble(rightGoalLine - goalieRadius, horizontalMiddle), 3, Math.PI, goalieRadius, Color.LIGHT_GRAY, puck);
+        g1   = new Goalie1(5,new PointDouble(leftGoalLine  + goalieRadius, horizontalMiddle), 0, 0, goalieRadius, Color.LIGHT_GRAY, puck);
+        g2   = new Goalie2(6,new PointDouble(rightGoalLine - goalieRadius, horizontalMiddle), 0, Math.PI, goalieRadius, Color.LIGHT_GRAY, puck);
 
         Rink.selectedPlayer = p1;
         Rink.selectedPlayer2 = p2;
