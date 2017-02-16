@@ -5,8 +5,8 @@ public class Goalie2 extends Player {
 
     int count = 0;
 
-    public Goalie2(int id, PointDouble point, int speed, double angle, int radius, Color color, Puck puck) {
-        super(id, point, speed, angle, radius, color, puck);
+    public Goalie2(int id, PointDouble point, int speed, double angle, int radius, Color color, double mass, Puck puck) {
+        super(id, point, speed, angle, radius, color, mass, puck);
     }
 
     public void moveGoalieDown(){

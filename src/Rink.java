@@ -139,7 +139,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
     @Override
     public void addNotify() {
         super.addNotify();
-
+        System.out.println("notify");
         t = new Thread(this);
         t.start();
     }
@@ -273,16 +273,11 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
                     for (int j = i + 1; j < players.length; j++) {
                         if(!players[j].colliding) {
                             if (collision.objectsCollide(players[i], players[j])) {
-                                //System.out.println(players[i].colliding);
-                                //System.out.println(players[j].colliding);
-                                System.out.println(frames+ " frame");
-                                //players[i].location.x = players[i].location.prevX;
-                                //players[i].location.y = players[i].location.prevY;
+                                //System.out.println(players[i].speed + " speed 1");
+                                //System.out.println(players[j].speed + " speed 2");
 
-                                //players[j].location.x = players[j].location.prevX;
-                                //players[j].location.y = players[j].location.prevY;
                                 collision.calculateCollisions(players[i], players[j]);
-                                break;
+                                //break;
                             }
                         }
                     }
@@ -374,6 +369,7 @@ public class Rink extends JPanel implements Runnable , MouseMotionListener{
 
         }
         else if (mo == selectedPlayer4){
+            //System.out.println(mo.angle + " angle");
             if (mo.colliding ) {
                 mo.updateLocationCol();
             }

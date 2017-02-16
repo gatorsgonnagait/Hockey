@@ -18,8 +18,8 @@ public class Puck extends MovingObject {
 
 
 
-    public Puck(int id, PointDouble point, int speed, double angle, int radius, Color color) {
-        super(id, point, speed, angle, radius, color);
+    public Puck(int id, PointDouble point, int speed, double angle, int radius, Color color, double mass) {
+        super(id, point, speed, angle, radius, color, mass);
         adjustment = radius/2;
         dummy_radius = radius + adjustment;
         frictionCoefficient = .985;
@@ -110,6 +110,53 @@ public class Puck extends MovingObject {
         return ((Math.PI/180)*90) + (incidenceAngle*2);
     }
 
+    double cornerReflection(double theta, int num){
+        angle = angleAdjustment(angle);
+        theta = angleAdjustment(theta);
+        //System.out.println(theta + " theta");
+        int startingAngle = 0;
+        double cornerAngle = 0;
+
+        if(num == 1){
+            startingAngle = 180;
+            cornerAngle = Math.PI/2; // pi/2 to Pi
+        }
+        else if(num == 2){
+            startingAngle = 270;
+            cornerAngle = 0;// 0 to Pi/2
+        }
+        else if(num == 3){
+            startingAngle = 0;
+            cornerAngle = 0; // 0 to pi/2
+        }
+        else if(num == 4){
+            startingAngle = 90;
+            cornerAngle = Math.PI/2; // pi/2 to pi
+        }
+        int d = 0;
+        for( int i = startingAngle; i < startingAngle + 90; i += 18){
+            cornerAngle = cornerAngle + Math.PI/10;
+
+            if(theta > i * Math.PI / 180  && theta < (i + 18) * Math.PI / 180){
+                System.out.println(d + "d");
+                System.out.println(cornerAngle + " corner angle");
+                //double perpendicularAngle2 = (cornerAngle + Math.PI/2);
+                //double adjustment2 = Math.PI - perpendicularAngle2;
+                //;
+
+                //theta = theta + adjustment2;
+                //theta = reflection(theta, 2) - adjustment2;
+
+                angle =  (2 *cornerAngle) - angle;
+                break;
+            }
+            d ++;
+
+        }
+
+        return angle;
+    }
+
     double angleWithArcCenter(double cx, double cy){
         double theta = Math.atan2((location.y-cy), (location.x-cx));
         return theta;
@@ -141,31 +188,17 @@ public class Puck extends MovingObject {
 
 
         // Arcs and tangents
-        if(location.x >= GameDriver.rightBoundary - GameDriver.rinkWidth/8 &&// bottom right
-                location.y >= GameDriver.bottomBoundary - GameDriver.rinkWidth/8){    // 4th corner
-            double distance = Math.hypot(location.x-arcCenter4.x,
-                    location.y-arcCenter4.y);
-            if (distance >= GameDriver.rinkWidth/8 - dummy_radius){
-                double refAngle = reflectionAngleWithTangent(arcCenter4);
-                angle = reflection(refAngle,2);
-            }
-        }
-        else if(location.y <= GameDriver.topBoundary + GameDriver.rinkWidth/8  &&// top left
+
+        if(location.y <= GameDriver.topBoundary + GameDriver.rinkWidth/8  &&// top left
                 location.x <= GameDriver.leftBoundary + GameDriver.rinkWidth/8){    // 1st corner
             double distance = Math.hypot(location.x-arcCenter1.x,
                     location.y-arcCenter1.y);
             if (distance >= GameDriver.rinkWidth/8 - dummy_radius){
-                double refAngle = reflectionAngleWithTangent(arcCenter1);
-                angle = reflection(refAngle,1);
-            }
-        }
-        else if(location.x <= GameDriver.leftBoundary + GameDriver.rinkWidth/8 &&//bottom left
-                location.y >= GameDriver.bottomBoundary - GameDriver.rinkWidth/8){    // 3rd corner
-            double distance = Math.hypot(location.x-arcCenter3.x,
-                    location.y-arcCenter3.y);
-            if (distance >=  GameDriver.rinkWidth/8 - dummy_radius){
-                double refAngle = reflectionAngleWithTangent(arcCenter3);
-                angle = reflection(refAngle,2);
+                //double refAngle = reflectionAngleWithTangent(arcCenter1);
+                //angle = reflection(refAngle,1);
+                System.out.println(" in corner 1");
+                double theta = angleWithArcCenter(arcCenter1.x, arcCenter1.y);
+                angle = cornerReflection(theta, 1);
             }
         }
         else if(location.y <= GameDriver.topBoundary + GameDriver.rinkWidth/8 &&//top right
@@ -178,8 +211,27 @@ public class Puck extends MovingObject {
                 angle = reflection(refAngle,1);
             }
         }
+        else if(location.x <= GameDriver.leftBoundary + GameDriver.rinkWidth/8 &&//bottom left
+                location.y >= GameDriver.bottomBoundary - GameDriver.rinkWidth/8){    // 3rd corner
+            double distance = Math.hypot(location.x-arcCenter3.x,
+                    location.y-arcCenter3.y);
+            if (distance >=  GameDriver.rinkWidth/8 - dummy_radius){
+                double refAngle = reflectionAngleWithTangent(arcCenter3);
+                angle = reflection(refAngle,2);
+            }
+        }
+        else if(location.x >= GameDriver.rightBoundary - GameDriver.rinkWidth/8 &&// bottom right
+                location.y >= GameDriver.bottomBoundary - GameDriver.rinkWidth/8){    // 4th corner
+            double distance = Math.hypot(location.x-arcCenter4.x, location.y-arcCenter4.y);
+            if (distance >= GameDriver.rinkWidth/8 - dummy_radius){
+                //Line line4 = new Line(arcCenter4.x, arcCenter4.x, location.x, location.y);
+                //double slopeAngle = line4.slopeAngle;
+                double slopeAngle = angleWithArcCenter(arcCenter4.x, arcCenter4.y);
 
-
+                double refAngle = reflectionAngleWithTangent(arcCenter4);
+                angle = reflection(refAngle,2);
+            }
+        }
 
 
 

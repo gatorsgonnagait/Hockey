@@ -69,6 +69,9 @@ public class GameDriver {
     static int goalWidth;
     static int goalLength;
 
+    static ArrayList <Double> cornerAngles = new ArrayList<>();
+
+
 
 /*
     //static int topBoundary = 100;
@@ -156,7 +159,7 @@ public class GameDriver {
 
         ui = new UI("Hockey");
 
-        puck = new Puck(0,new PointDouble(verticalCenter, horizontalMiddle), 0, 0, rinkWidth/100, Color.BLACK);
+        puck = new Puck(0,new PointDouble(verticalCenter, horizontalMiddle), 0, 0, rinkWidth/100, Color.BLACK, 3);
 
         PointDouble point1 = new PointDouble(verticalCenter, horizontalFifths);
         PointDouble point2 = new PointDouble(verticalCenter, horizontalTwoFifths);
@@ -168,12 +171,12 @@ public class GameDriver {
         //530, 275
         int playerRadius = (int) Math.round(rinkWidth * 0.015);
         int goalieRadius = (int) Math.round(rinkWidth * 0.0125);
-        p1   = new Player(1,new PointDouble(verticalCenter - 3*playerRadius, horizontalMiddle), 0, 0, playerRadius, Color.RED, puck, num1);
-        p2   = new Player(2,new PointDouble(leftGoalLine + 10*playerRadius, horizontalMiddle - 8*playerRadius), 0, 0, playerRadius, Color.CYAN, puck, num2);
-        p3   = new Player(3,new PointDouble(verticalCenter + 3*playerRadius, horizontalMiddle), 0, Math.PI, playerRadius, Color.YELLOW, puck, num3);
-        p4   = new Player(4,new PointDouble(rightGoalLine - 10*playerRadius, horizontalMiddle + 8*playerRadius), 0, Math.PI, playerRadius, Color.GREEN, puck, num4);
-        g1   = new Goalie1(5,new PointDouble(leftGoalLine  + goalieRadius, horizontalMiddle), 0, 0, goalieRadius, Color.LIGHT_GRAY, puck);
-        g2   = new Goalie2(6,new PointDouble(rightGoalLine - goalieRadius, horizontalMiddle), 0, Math.PI, goalieRadius, Color.LIGHT_GRAY, puck);
+        p1   = new Player(1,new PointDouble(verticalCenter - 3*playerRadius, horizontalMiddle), 0, 0, playerRadius, Color.RED, 10, puck, num1);
+        p2   = new Player(2,new PointDouble(leftGoalLine + 10*playerRadius, horizontalMiddle - 8*playerRadius), 0, 0, playerRadius, Color.CYAN, 10, puck, num2);
+        p3   = new Player(3,new PointDouble(verticalCenter + 3*playerRadius, horizontalMiddle), 0, Math.PI, playerRadius, Color.YELLOW, 10, puck, num3);
+        p4   = new Player(4,new PointDouble(rightGoalLine - 10*playerRadius, horizontalMiddle + 8*playerRadius), 0, Math.PI, playerRadius, Color.GREEN, 10, puck, num4);
+        g1   = new Goalie1(5,new PointDouble(leftGoalLine  + goalieRadius, horizontalMiddle), 0, 0, goalieRadius, Color.LIGHT_GRAY, 10, puck);
+        g2   = new Goalie2(6,new PointDouble(rightGoalLine - goalieRadius, horizontalMiddle), 0, Math.PI, goalieRadius, Color.LIGHT_GRAY, 10, puck);
 
         Rink.selectedPlayer = p1;
         Rink.selectedPlayer2 = p2;

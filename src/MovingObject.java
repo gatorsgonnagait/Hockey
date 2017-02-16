@@ -18,7 +18,7 @@ public abstract class MovingObject extends JComponent {
     double     adjustment;
     Color   color;
     int     id;
-    int     mass = 10;
+    double     mass;
     boolean colliding = false;
     double     dummy_radius;
     int     collisionFrames = 0;
@@ -64,7 +64,7 @@ public abstract class MovingObject extends JComponent {
 
 
 
-    public MovingObject(int id, PointDouble point, double speed, double angle, double radius, Color color) {
+    public MovingObject(int id, PointDouble point, double speed, double angle, double radius, Color color, double mass) {
         this.id       = id;
         this.location = point;
         this.speed    = speed;
@@ -74,7 +74,7 @@ public abstract class MovingObject extends JComponent {
         adjustment    = 0;
         dummy_radius  = radius + adjustment;
         acceleration = 0;
-        //this.mass     = mass;
+        this.mass     = mass;
     }
     //test
     public PointDouble getPoint() {
@@ -125,6 +125,7 @@ public abstract class MovingObject extends JComponent {
     public void positionCalculation(double angle){
         location.x = location.x + speed * Math.cos(angle);
         location.y = location.y + speed * Math.sin(angle);
+
     }
 
     public double getDistance(double x1, double x2, double y1, double y2){
@@ -199,7 +200,8 @@ public abstract class MovingObject extends JComponent {
         double collisionDistance = radius + collidesWith.radius;
         if( distanceFromObjects <= collisionDistance  ){
             positionCalculation(angle);
-
+            //System.out.println( speed + " ob1 speed");
+            //System.out.println( collidesWith.speed + " ob2 speed");
         }
         else {
             colliding = false;
@@ -229,6 +231,19 @@ public abstract class MovingObject extends JComponent {
         }
 
     }
+
+    public double angleAdjustment(double angle){
+        if(Math.abs(angle) >= 2*Math.PI ){
+            angle = angle % (2*Math.PI);
+        }
+        if(angle < 0){
+            angle = angle + 2* Math.PI;
+        }
+        return angle;
+    }
+
+
+
 
 
 

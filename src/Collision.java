@@ -74,8 +74,8 @@ public class Collision {
             if(movingObjects[object2.id] == null)
                 movingObjects[object2.id] = object2;
             */
-            System.out.println(distanceFromObjects + " distanceFromObjects from objects");
-            System.out.println(collisionDistance + " two radius");
+            //System.out.println(distanceFromObjects + " distanceFromObjects from objects");
+            //System.out.println(collisionDistance + " two radius");
 
             object1.colliding = true;
             object2.colliding = true;
@@ -83,13 +83,14 @@ public class Collision {
             object1.collidesWith = object2;
             object2.collidesWith = object1;
 
+
             object1.location.x = object1.location.prevX;
             object1.location.y = object1.location.prevY;
 
             object2.location.x = object2.location.prevX;
             object2.location.y = object2.location.prevY;
 
-            System.out.println(count + " count");
+            //System.out.println(count + " count");
             return true;
         }
 
@@ -97,7 +98,7 @@ public class Collision {
 
 
     }
-
+    /*
     public void calculateCollisions(MovingObject ob1, MovingObject ob2){
 
         MovingObject top;
@@ -196,26 +197,8 @@ public class Collision {
 
         top.setSpeed(topTotalVelocity);
         bottom.setSpeed(bottomTotalVelocity);
-        //System.out.println(object1.angle*180/Math.PI + " angle after");
-        /*ob1.location.x = ob1.location.x + 1 * Math.cos(ob1.angle);
-        ob1.location.y = ob1.location.y + 1 * Math.sin(ob1.angle);
 
-        ob2.location.x = ob2.location.x + 1 * Math.cos(ob2.angle);
-        ob2.location.y = ob2.location.y + 1 * Math.sin(ob2.angle);
-        */
-
-
-
-        //System.out.println(ob1.id+" speed " + ob1.speed);
-        //System.out.println(ob2.id+" speed " + ob2.speed);
-        //ob1.setAngle(ob1Angle);
-        //ob2.setAngle(ob2Angle);//TE
-        /*
-        System.out.println();
-        System.out.println(ob1.id+" angle 1 " + ob1.angle);
-        System.out.println(ob2.id+" angle 2 " + ob2.angle);
-        */
-    }
+    }/*
 
     /*UNUSED
 
@@ -302,11 +285,13 @@ public class Collision {
         System.out.println(ob2.angle);
     }
 
-
+*/
     public void calculateCollisions(MovingObject ob1, MovingObject ob2){
         double Y = ob1.location.y - ob1.location.y;
         double X = ob1.location.x - ob2.location.x;
         //double collisionAngle = Math.atan2(Y, X);
+        ob1.angle = ob1.angleAdjustment(ob1.angle);
+        ob2.angle = ob2.angleAdjustment(ob2.angle);
 
         double collisionAngle = Math.abs(ob1.angle - ob2.angle);
 
@@ -333,17 +318,16 @@ public class Collision {
         double ob1Angle = Math.atan2(ob1FinalYVelocity, ob1FinalXVelocity);
         double ob2Angle = Math.atan2(ob2FinalYVelocity, ob2FinalXVelocity);
 
-        int ob1TotalVelocity = (int) (ob1FinalXVelocity / Math.cos(ob1Angle));
-        int ob2TotalVelocity = (int) (ob2FinalXVelocity / Math.cos(ob2Angle));
+        double ob1TotalVelocity = (ob1FinalXVelocity / Math.cos(ob1Angle));
+        double ob2TotalVelocity =  (ob2FinalXVelocity / Math.cos(ob2Angle));
 
         ob1.setSpeed(ob1TotalVelocity);
         ob2.setSpeed(ob2TotalVelocity);
-        System.out.println(ob1.speed);
-        System.out.println(ob2.speed);
-        ob1.setAngle(Math.abs(ob1Angle));
-        ob2.setAngle(Math.abs(ob2Angle));//TE
-        System.out.println(ob1.angle);
-        System.out.println(ob2.angle);//ll
+
+        ob1.setAngle(ob1Angle);
+        ob2.setAngle(ob2Angle);//TE
+        //System.out.println(ob1.angle);
+        //System.out.println(ob2.angle);//ll
     }
     // commented*/
 

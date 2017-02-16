@@ -77,8 +77,8 @@ public class Player extends MovingObject {
 
 
 
-    public Player(int id, PointDouble point, double speed, double angle, double radius, Color color, Puck puck, Image img) {
-        super(id, point, speed, angle, radius, color);
+    public Player(int id, PointDouble point, double speed, double angle, double radius, Color color, double mass, Puck puck, Image img) {
+        super(id, point, speed, angle, radius, color, mass);
         this.teamColor = color;
         this.puck = puck;
         this.stick = new Stick(radius * 3/2);
@@ -101,8 +101,8 @@ public class Player extends MovingObject {
     }
 
 
-    public Player(int id, PointDouble point, int speed, double angle, int radius, Color color, Puck puck) {
-        super(id, point, speed, angle, radius, color);
+    public Player(int id, PointDouble point, int speed, double angle, int radius, Color color, double mass, Puck puck) {
+        super(id, point, speed, angle, radius, color, mass);
         this.teamColor = color;
         this.puck = puck;
         this.stick = new Stick(radius * 3/2);
@@ -461,8 +461,8 @@ public class Player extends MovingObject {
         }
     }
 
-    public void updateLocationCol(MovingObject object1, MovingObject object2){
-        double distance = Math.hypot(object2.location.x - object1.location.x,
+    public void updateLocationCol(){
+        /*double distance = Math.hypot(object2.location.x - object1.location.x,
                 object2.location.y - object1.location.y);
 
         if(distance > object1.speed || distance > object2.speed){
@@ -470,7 +470,8 @@ public class Player extends MovingObject {
         }
         else{
             positionCalculation(angle);
-        }
+        }       */
+        super.updateLocationCol();
         stick.updateLocation();
     }
 
@@ -545,15 +546,7 @@ public class Player extends MovingObject {
 
     }
 
-    public double angleAdjustment(double angle){
-        if(Math.abs(angle) >= 2*Math.PI ){
-            angle = angle % (2*Math.PI);
-        }
-        if(angle < 0){
-            angle = angle + 2* Math.PI;
-        }
-        return angle;
-    }
+
 
     public double angularMomentum(double angle, double angleFacing){
 
@@ -663,7 +656,7 @@ public class Player extends MovingObject {
             //System.out.println();
             //System.out.println(changeInAngle + " difference");
 
-            if(changeInAngle > 2.95 && changeInAngle < 3.30){
+            if(changeInAngle > 2.64 && changeInAngle < 3.64){
                 acceleration = acceleration * (-1);
                 goingBackwards = true;
             }
@@ -686,6 +679,7 @@ public class Player extends MovingObject {
                 //System.out.println(acceleration + " actual ");
                 angleCount = 0;
                 //tempAngleFacing = angleFacing;
+                //acceleration = acceleration+acceleration2;
             }
         }
         return angle;
