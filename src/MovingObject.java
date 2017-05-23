@@ -187,7 +187,7 @@ public abstract class MovingObject extends JComponent {
         return reflectAngle;
     }
 
-    public double collisonAngle(){
+    public double collisionAngle(){
         double Y = location.y - collidesWith.location.y;
         double X = location.x - collidesWith.location.x;
         return Math.atan2(Y, X);

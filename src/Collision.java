@@ -25,7 +25,7 @@ public class Collision {
         }
     }
 
-    /*public double collisonAngle(MovingObject object1, MovingObject object2){
+    /*public double collisionAngle(MovingObject object1, MovingObject object2){
         double Y;
         double X;
         if(object1.location.y >= object2.location.y){
@@ -134,8 +134,8 @@ public class Collision {
 
 
         //System.out.println(object1.angle*180/Math.PI + " angle before");
-        double collisionAngleTop = top.collisonAngle();
-        double collisionAngleBottom = bottom.collisonAngle();
+        double collisionAngleTop = top.collisionAngle();
+        double collisionAngleBottom = bottom.collisionAngle();
         //System.out.println(collisionAngle*180/Math.PI);
         double perpendicularAngle1 = (collisionAngleTop + Math.PI/2) ;
         double perpendicularAngle2 = (collisionAngleBottom + Math.PI/2) ;

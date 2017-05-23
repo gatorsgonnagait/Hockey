@@ -13,11 +13,7 @@ public class Main {
         //1024 576
         //1366, 768
 
-        GameDriver gd = new GameDriver(1024, 576 );
-        ///*
+        GameDriver gd = new GameDriver(1366, 768 );
 
-        //*/
-
-        //
     }
 }

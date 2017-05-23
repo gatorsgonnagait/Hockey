@@ -116,7 +116,7 @@ public class Puck extends MovingObject {
         //System.out.println(theta + " theta");
         int startingAngle = 0;
         double cornerAngle = 0;
-
+        System.out.println(num + "num");
         if(num == 1){
             startingAngle = 180;
             cornerAngle = Math.PI/2; // pi/2 to Pi
@@ -126,27 +126,26 @@ public class Puck extends MovingObject {
             cornerAngle = 0;// 0 to Pi/2
         }
         else if(num == 3){
-            startingAngle = 0;
+            startingAngle = 90;
             cornerAngle = 0; // 0 to pi/2
         }
         else if(num == 4){
-            startingAngle = 90;
+            startingAngle = 0;
             cornerAngle = Math.PI/2; // pi/2 to pi
         }
         int d = 0;
         for( int i = startingAngle; i < startingAngle + 90; i += 18){
-            cornerAngle = cornerAngle + Math.PI/10;
+            cornerAngle = cornerAngle + Math.PI/10; // every 18 degrees
 
-            if(theta > i * Math.PI / 180  && theta < (i + 18) * Math.PI / 180){
+            if(theta > i * Math.PI / 180  && theta < (i + 18) * Math.PI / 180){ //wbich of the 5 segments the puck is in
                 System.out.println(d + "d");
                 System.out.println(cornerAngle + " corner angle");
-                //double perpendicularAngle2 = (cornerAngle + Math.PI/2);
-                //double adjustment2 = Math.PI - perpendicularAngle2;
-                //;
-
-                //theta = theta + adjustment2;
-                //theta = reflection(theta, 2) - adjustment2;
-
+                /*
+                double adjustment = Math.PI - cornerAngle;
+                angle = angleAdjustment(angle);
+                angle = angle + adjustment;
+                angle = reflection(angle, 2) - adjustment;
+                */
                 angle =  (2 *cornerAngle) - angle;
                 break;
             }
@@ -164,8 +163,6 @@ public class Puck extends MovingObject {
 
     @Override
     public void hitWalls(){
-
-
 
 
         if(location.x <= GameDriver.leftBoundary + dummy_radius) {
@@ -206,9 +203,11 @@ public class Puck extends MovingObject {
             Point center = new Point(GameDriver.rightBoundary - GameDriver.rinkWidth/8,GameDriver.topBoundary + GameDriver.rinkWidth/8);
             double distance = Math.hypot(location.x-center.x, location.y-center.y);
             if (distance >= GameDriver.rinkWidth/8- dummy_radius){
-                double refAngle = reflectionAngleWithTangent(arcCenter2);
-                //setAngle(refAngle);
-                angle = reflection(refAngle,1);
+                //double refAngle = reflectionAngleWithTangent(arcCenter2);
+                //angle = reflection(refAngle,1);
+                System.out.println(" in corner 2");
+                double theta = angleWithArcCenter(arcCenter2.x, arcCenter2.y);
+                angle = cornerReflection(theta, 2);
             }
         }
         else if(location.x <= GameDriver.leftBoundary + GameDriver.rinkWidth/8 &&//bottom left
@@ -216,20 +215,22 @@ public class Puck extends MovingObject {
             double distance = Math.hypot(location.x-arcCenter3.x,
                     location.y-arcCenter3.y);
             if (distance >=  GameDriver.rinkWidth/8 - dummy_radius){
-                double refAngle = reflectionAngleWithTangent(arcCenter3);
-                angle = reflection(refAngle,2);
+                //double refAngle = reflectionAngleWithTangent(arcCenter3);
+                //angle = reflection(refAngle,2);
+                System.out.println(" in corner 3");
+                double theta = angleWithArcCenter(arcCenter3.x, arcCenter3.y);
+                angle = cornerReflection(theta, 3);
             }
         }
         else if(location.x >= GameDriver.rightBoundary - GameDriver.rinkWidth/8 &&// bottom right
                 location.y >= GameDriver.bottomBoundary - GameDriver.rinkWidth/8){    // 4th corner
             double distance = Math.hypot(location.x-arcCenter4.x, location.y-arcCenter4.y);
             if (distance >= GameDriver.rinkWidth/8 - dummy_radius){
-                //Line line4 = new Line(arcCenter4.x, arcCenter4.x, location.x, location.y);
-                //double slopeAngle = line4.slopeAngle;
-                double slopeAngle = angleWithArcCenter(arcCenter4.x, arcCenter4.y);
-
-                double refAngle = reflectionAngleWithTangent(arcCenter4);
-                angle = reflection(refAngle,2);
+                //double refAngle = reflectionAngleWithTangent(arcCenter4);
+                //angle = reflection(refAngle,2);
+                System.out.println(" in corner 4");
+                double theta = angleWithArcCenter(arcCenter4.x, arcCenter4.y);
+                angle = cornerReflection(theta, 4);
             }
         }
 
